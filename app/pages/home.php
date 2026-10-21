@@ -11,14 +11,6 @@ $problems = [
     ['fan', '換気扇の音・吸い込み不良', 'ファンの劣化や給気不足が原因のことが多くあります。'],
     ['store', '新規開業の換気設計', '図面の段階からご相談を。設計業者様との連携も可能です。'],
 ];
-$services = [
-    ['duct-hood', 'svc-kitchen-hood.jpg', '厨房換気扇・レンジフードのダクト工事', '給気と排気のバランスを取った厨房フードの新設・改修。'],
-    ['smoke_problems', 'svc-smoke.jpg', '煙・臭いのトラブル解決工事', '近隣苦情・店内の煙だまりを、原因調査から根本解決。'],
-    ['hood-installation', 'svc-yakiniku-hood.jpg', '焼肉店 上引きフードのダクト工事', '客席ごとの上引きフードを店の内装に合わせて特注製作。'],
-    ['smokeless_roster', 'svc-roaster.jpg', '焼肉店 無煙ロースターのダクト工事', '床下ダクト・点検口・防火対策まで含めた一式施工。'],
-    ['new_stores', 'svc-newstore.jpg', '新規店舗の開業をお考えの方へ', '図面段階からの換気設計で、開業後のトラブルを防ぎます。'],
-    ['about_duct_work', 'svc-duct-general.jpg', '店舗・飲食店のダクト工事について', 'ダクト工事の基本と、専門業者に頼むべき理由。'],
-];
 $steps = [
     ['お問い合わせ', '電話・メール・LINEで。写真を送っていただくとスムーズです。'],
     ['現地調査（無料）', '店舗の状況・建物・厨房機器を確認します。'],
@@ -104,21 +96,7 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
 <section class="band" aria-labelledby="service-title">
   <div class="section wrap">
     <?php render('section-head', ['label' => 'SERVICE', 'title' => 'ダクト工事の巧みな技', 'id' => 'service-title', 'lead' => '店舗の規模・業態・建物に合わせて、フードもダクトも一つひとつオーダーメイドで設計します。']); ?>
-    <ul class="grid grid--3">
-      <?php foreach ($services as $i => [$key, $img, $t, $d]): ?>
-        <li>
-          <a class="card service" href="<?= e(page_url($key)) ?>">
-            <span class="service__img"><?= picture($img, 900, 600, '') ?></span>
-            <span class="service__body">
-              <span class="service__no"><?= sprintf('%02d', $i + 1) ?></span>
-              <span class="service__title"><?= e($t) ?></span>
-              <span class="service__text"><?= e($d) ?></span>
-              <span class="service__go" aria-hidden="true"><?= icon('arrow', 18) ?></span>
-            </span>
-          </a>
-        </li>
-      <?php endforeach; ?>
-    </ul>
+    <?php render('service-cards'); ?>
   </div>
 </section>
 
