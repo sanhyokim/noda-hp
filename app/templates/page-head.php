@@ -4,15 +4,18 @@
 /** @var ?string $lead 導入文 */
 /** @var ?string $image 付録Cのファイル名 */
 /** @var ?array $ratio [幅, 高さ] */
+// 現行サイトの下層ページと同じく、青い帯の左に見出し・右に写真を置き、導入文はその下に続ける。
 $ratio ??= [16, 9];
 ?>
 <header class="page-head wrap">
-  <div class="page-head__text">
-    <p class="label"><?= e($label) ?></p>
-    <h1 class="h1 kw"><?= str_replace('|', '<wbr>', e($title)) ?></h1>
-    <?php if (!empty($lead)): ?><p class="lead"><?= e($lead) ?></p><?php endif; ?>
+  <div class="page-head__box<?= empty($image) ? ' page-head__box--plain' : '' ?>">
+    <div class="page-head__text">
+      <p class="page-head__en"><?= e($label) ?></p>
+      <h1 class="page-head__title kw"><?= str_replace('|', '<wbr>', e($title)) ?></h1>
+    </div>
+    <?php if (!empty($image)): ?>
+      <div class="page-head__img"><?= picture($image, $ratio[0] * 100, $ratio[1] * 100, '', ['priority' => true]) ?></div>
+    <?php endif; ?>
   </div>
-  <?php if (!empty($image)): ?>
-    <div class="page-head__img"><?= picture($image, $ratio[0] * 100, $ratio[1] * 100, '', ['priority' => true]) ?></div>
-  <?php endif; ?>
+  <?php if (!empty($lead)): ?><p class="page-head__lead"><?= e($lead) ?></p><?php endif; ?>
 </header>

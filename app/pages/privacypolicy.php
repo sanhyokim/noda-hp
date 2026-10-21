@@ -47,7 +47,7 @@ render('page-head', ['label' => 'PRIVACY POLICY', 'title' => 'プライバシー
 
     <section class="policy__item">
       <h2>お問い合わせ窓口</h2>
-      <p><?= e(company('name')) ?> 個人情報保護担当窓口<br>〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?><br>TEL <a href="<?= e(tel_href(company('tel'))) ?>"><?= e(company('tel')) ?></a>（<?= e(company('hours')) ?>）</p>
+      <p><?= e(company('name')) ?> 個人情報保護担当窓口<br>〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?><br>TEL <a href="<?= e(tel_href(company('tel'))) ?>"><?= e(company('tel')) ?></a>（<?= e(company('hours')) ?>・<?= e(company('closed')) ?>）</p>
     </section>
   </div>
 </div>

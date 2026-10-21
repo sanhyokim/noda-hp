@@ -28,8 +28,8 @@ render('page-head', [
 <section class="section wrap" aria-labelledby="s3">
   <?php render('section-head', ['label' => 'LINEUP', 'title' => 'Aタイプ・Bタイプと、|その他のフード', 'id' => 's3', 'lead' => 'NC-02以外のフードも取り扱い。予算に応じて提案します。内装に合わせた特注塗装も可能です。']); ?>
   <div class="grid grid--2">
-    <figure class="product"><?= picture('product-nc02-a.jpg', 900, 600, 'NC-02クリアーフード Aタイプ') ?><figcaption>Aタイプ</figcaption></figure>
-    <figure class="product"><?= picture('product-nc02-b.jpg', 900, 600, 'NC-02クリアーフード Bタイプ') ?><figcaption>Bタイプ</figcaption></figure>
+    <figure class="product"><?= picture('product-nc02-a.jpg', 232, 353, 'NC-02クリアーフード Aタイプ') ?><figcaption>Aタイプ</figcaption></figure>
+    <figure class="product"><?= picture('product-nc02-b.jpg', 232, 353, 'NC-02クリアーフード Bタイプ') ?><figcaption>Bタイプ</figcaption></figure>
   </div>
 </section>
 

@@ -39,7 +39,7 @@ $checks = ['開店以来ダクトを清掃していない', '煙の吸い込み�
 
 <section class="section wrap" aria-labelledby="s4">
   <a class="feature" href="https://www.cleaning-duct.com/" target="_blank" rel="noopener">
-    <span class="feature__img"><?= picture('banner-cleaning.jpg', 900, 450, '') ?></span>
+    <span class="feature__img feature__img--banner"><?= picture('banner-cleaning.jpg', 1200, 600, '') ?></span>
     <span class="feature__body">
       <span class="label">CLEANING</span>
       <span class="feature__title" id="s4">定期清掃について</span>

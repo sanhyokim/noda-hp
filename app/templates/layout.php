@@ -10,7 +10,7 @@ $graph = [organization_ld(), breadcrumb_ld(breadcrumb_items($trail ?? []))];
 foreach (($meta['jsonld'] ?? []) as $ld) {
     $graph[] = $ld;
 }
-$fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap';
+$fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap';
 ?><!doctype html>
 <html lang="ja">
 <head>
@@ -51,16 +51,30 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
 <?php endif; ?>
 <a class="skip" href="#main">本文へ移動</a>
 
-<header class="topbar">
-  <a class="topbar__logo" href="<?= e(url()) ?>" aria-label="<?= e(company('name')) ?> ホーム"><?= picture('logo.png', 240, 78, company('name')) ?></a>
-  <a class="topbar__btn" href="<?= e(tel_href(company('tel_free'))) ?>" aria-label="電話をかける <?= e(company('tel_free')) ?>"><?= icon('phone', 22) ?></a>
-  <button class="topbar__btn topbar__menu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="メニューを開く"><?= icon('menu', 24) ?></button>
+<div class="util">
+  <div class="frame util__inner">
+    <p class="util__copy">飲食店の換気扇・排煙ダクト工事｜福岡発・全国対応の<?= e(company('name')) ?></p>
+    <p class="util__tel">お電話でのご相談 <span>受付 <?= e(company('hours')) ?>（<?= e(company('closed')) ?>）</span><a href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 15) ?><?= e(company('tel_free')) ?></a></p>
+  </div>
+</div>
+
+<header class="gh">
+  <div class="frame gh__inner">
+    <a class="gh__logo" href="<?= e(url()) ?>" aria-label="<?= e(company('name')) ?> ホーム"><?= picture('logo.png', 240, 78, company('name'), ['priority' => true]) ?></a>
+    <?php render('gnav', ['current' => $current]); ?>
+    <div class="gh__actions">
+      <a class="gh__contact" href="<?= e(page_url('contact')) ?>"><?= icon('mail', 17) ?>お問い合わせ</a>
+      <a class="gh__sns" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener" aria-label="LINEで相談する"><?= line_icon(30) ?></a>
+      <a class="gh__sns gh__sns--ig" href="<?= e(company('instagram_url')) ?>" target="_blank" rel="noopener" aria-label="Instagram"><?= icon('instagram', 26) ?></a>
+    </div>
+    <a class="gh__btn gh__tel" href="<?= e(tel_href(company('tel_free'))) ?>" aria-label="電話をかける <?= e(company('tel_free')) ?>"><?= icon('phone', 22) ?></a>
+    <button class="gh__btn gh__menu topbar__menu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="メニューを開く"><?= icon('menu', 24) ?><span>MENU</span></button>
+  </div>
 </header>
 
-<div class="shell">
-  <?php render('sidebar', ['current' => $current]); ?>
-  <div class="backdrop" hidden></div>
+<?= $meta['top'] ?? '' ?>
 
+<div class="frame shell">
   <div class="body">
     <main id="main" tabindex="-1">
       <?php if ($trail !== null): ?>
@@ -69,9 +83,14 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
       <?= $content ?>
       <?php render('cta', ['text' => $meta['cta_text'] ?? null]); ?>
     </main>
-    <?php render('footer'); ?>
   </div>
+  <?php render('sidebar', ['current' => $current]); ?>
+  <div class="backdrop" hidden></div>
 </div>
+
+<?php render('footer'); ?>
+
+<a class="side-tab" href="<?= e(page_url('contact')) ?>"><?= icon('chat', 26) ?><span>お問い合わせはこちら</span></a>
 
 <nav class="dock" aria-label="お問い合わせ">
   <a class="dock__tel" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 20) ?>電話</a>

@@ -9,6 +9,7 @@ return [
         'tel' => '092-504-5502',
         'fax' => '092-504-5518',
         'hours' => '9:00〜17:00',
+        'closed' => '土日祝休み',
         'hq_zip' => '812-0854',
         'hq_address' => '福岡県福岡市博多区東月隈3-5-4',
         'hq_region' => '福岡県',
@@ -146,6 +147,30 @@ return [
         ['key' => 'company'],
         ['key' => 'customer'],
         ['key' => 'contact'],
+    ],
+
+    // PC 上部の横並びメニュー（現行サイトと同じ並び）。'children' はマウスを乗せると開く。
+    'gnav' => [
+        ['key' => 'home'],
+        ['key' => 'concept'],
+        ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+        ]],
+        ['key' => 'construction_examples'],
+        ['key' => 'flow'],
+        ['key' => 'afterfollow'],
+        ['key' => 'question'],
+        ['key' => 'company', 'children' => ['company', 'customer', 'news', 'privacypolicy']],
+    ],
+
+    // 左カラムの見出し付きメニュー（現行サイトの「ダクト工事の巧みな技」「会社案内」）
+    'side_groups' => [
+        ['title' => 'ダクト工事の巧みな技', 'en' => 'SERVICE', 'keys' => [
+            'new_stores', 'about_duct_work', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+        ]],
+        ['title' => '会社案内', 'en' => 'COMPANY', 'keys' => [
+            'home', 'concept', 'company', 'customer', 'flow', 'afterfollow', 'construction_examples', 'question', 'news', 'contact',
+        ]],
     ],
 
     // フッターのリンク（横並び）

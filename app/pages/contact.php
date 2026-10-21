@@ -17,7 +17,7 @@ $errMsg = fn(string $k) => isset($err[$k]) ? '<p class="field__err" id="err-' . 
       <span class="way__icon"><?= icon('phone', 26) ?></span>
       <h2 class="way__title" id="w1">お電話</h2>
       <a class="way__tel" href="<?= e(tel_href(company('tel_free'))) ?>"><?= e(company('tel_free')) ?></a>
-      <p class="way__text">受付 <?= e(company('hours')) ?></p>
+      <p class="way__text">受付 <?= e(company('hours')) ?>（<?= e(company('closed')) ?>）</p>
     </section>
     <section class="way way--line" aria-labelledby="w2">
       <span class="way__icon"><?= line_icon(30) ?></span>

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // 画像の出力はすべてこの関数を通す。
 // ファイルがあれば <picture>（WebP があれば優先）、無ければ同じ比率の灰色の枠にファイル名を出す。
-// $src は 'hero-top.jpg' のような名前（assets/img/ を探す）か、'media/cases/1/a.jpg' のような公開フォルダからの道筋。
+// $src は 'logo.png' のような名前（assets/img/ を探す）か、'media/cases/1/a.jpg' のような公開フォルダからの道筋。
 function picture(string $src, int $w, int $h, string $alt = '', array $opt = []): string
 {
     $rel = str_contains($src, '/') ? ltrim($src, '/') : 'assets/img/' . $src;

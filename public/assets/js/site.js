@@ -4,7 +4,7 @@
   var doc = document.documentElement;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-  /* ---- スマホメニュー（1024px 未満） ---- */
+  /* ---- スマホメニュー（1100px 未満） ---- */
   var openBtn = document.querySelector('.topbar__menu');
   var closeBtn = document.querySelector('.sidebar__close');
   var sidebar = document.getElementById('sidebar');
@@ -33,7 +33,7 @@
     document.addEventListener('keydown', function (ev) {
       if (ev.key === 'Escape' && doc.classList.contains('menu-open')) setOpen(false);
     });
-    window.matchMedia('(min-width: 1024px)').addEventListener('change', function (m) {
+    window.matchMedia('(min-width: 1100px)').addEventListener('change', function (m) {
       if (m.matches && doc.classList.contains('menu-open')) setOpen(false);
     });
   }
@@ -91,7 +91,7 @@
   document.querySelectorAll('main .section').forEach(function (sec) {
     var kids = [];
     Array.prototype.forEach.call(sec.children, function (el) {
-      if (el.matches('.grid, .bento, .steps, .ig, .news__list, .commit, .timeline, .numlist, .faq')) {
+      if (el.matches('.grid, .svcs, .problems, .reasons, .steps, .ig, .news__list, .commit, .timeline, .numlist, .faq')) {
         groups.push(Array.prototype.slice.call(el.children));
       } else {
         kids.push(el);

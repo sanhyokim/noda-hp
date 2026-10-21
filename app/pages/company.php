@@ -12,7 +12,7 @@ $rows = [
     [company('branch_name'), '〒' . company('branch_zip') . ' ' . company('branch_address')],
     ['電話', company('tel_free') . '・' . company('tel')],
     ['FAX', company('fax')],
-    ['営業時間', company('hours')],
+    ['営業時間', company('hours') . '（' . company('closed') . '）'],
     ['事業内容', '空調設備工事、設計・プランニング、施工管理・設置工事、保守・定期点検、改修工事、技術コンサルティング'],
 ];
 $mapQuery = rawurlencode(company('hq_address'));
