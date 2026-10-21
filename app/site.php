@@ -18,8 +18,8 @@ return [
         'branch_zip' => '731-0113',
         'branch_address' => '広島市安佐南区西原1-8-16-405',
         'founded_year' => 2005,
-        // 営業日（曜日）。資料に無いため未設定。例 ['Monday','Tuesday','Wednesday','Thursday','Friday']
-        'business_days' => null,
+        // 営業日（曜日）。ボス確認済み：月〜金
+        'business_days' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
         'line_url' => 'https://line.me/R/ti/p/@254bbzux',
         'instagram_url' => 'https://www.instagram.com/noda_duct/',
         'instagram_handle' => 'noda_duct',

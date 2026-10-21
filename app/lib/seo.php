@@ -39,7 +39,7 @@ function local_business_ld(): array
             'streetAddress' => company('hq_street'),
             'addressCountry' => 'JP',
         ],
-        // 営業日（曜日）は資料に無いので、site.php の business_days が入るまで曜日を出さない。
+        // 営業日（曜日）は site.php の business_days。未設定なら曜日を出さない。
         'openingHoursSpecification' => [array_filter([
             '@type' => 'OpeningHoursSpecification',
             'dayOfWeek' => site('company')['business_days'] ?? null,

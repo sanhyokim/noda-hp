@@ -92,12 +92,12 @@ h3 { font-size: 17px; line-height: 1.55; font-weight: 700; }
 .btn--blue { background: var(--c-blue); color: var(--c-white); }
 .btn--outline { background: var(--c-white); color: var(--c-blue-dark); border-color: var(--c-blue); }
 .btn--white { background: var(--c-white); color: var(--c-blue-dark); }
-.btn--line { background: var(--c-line-green); color: var(--c-text); }
+.btn--line { background: var(--c-line-green); color: var(--c-white); }
 .btn--ig { background: var(--c-ig); color: var(--c-white); }
 .btn--glass { background: rgba(255, 255, 255, .14); color: var(--c-white); border-color: rgba(255, 255, 255, .6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .btn--orange:hover, .btn--blue:hover, .btn--ig:hover, .btn--glass:hover { color: var(--c-white); }
 .btn--outline:hover, .btn--white:hover { color: var(--c-blue-dark); }
-.btn--line:hover { color: var(--c-text); }
+.btn--line:hover { color: var(--c-white); }
 .btn--outline:hover { background: var(--c-blue-bg); }
 
 /* ---------- チップ ---------- */
@@ -218,10 +218,10 @@ body { padding-top: var(--topbar); }
   }
   .dock a { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 14px; font-weight: 700; }
   .dock__tel { background: var(--c-orange); color: var(--c-white); }
-  .dock__line { background: var(--c-line-green); color: var(--c-text); }
+  .dock__line { background: var(--c-line-green); color: var(--c-white); }
   .dock__mail { background: var(--c-blue); color: var(--c-white); }
   .dock a:hover { color: inherit; filter: brightness(1.06); }
-  .dock__tel:hover, .dock__mail:hover { color: var(--c-white); }
+  .dock__tel:hover, .dock__line:hover, .dock__mail:hover { color: var(--c-white); }
   body { padding-bottom: calc(var(--dock) + env(safe-area-inset-bottom)); }
 }
 
