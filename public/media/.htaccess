@@ -1,0 +1,4 @@
+# アップロード先では PHP を動かさない
+<FilesMatch "\.(php|phtml|phar|pl|py|cgi|sh)$">
+  Require all denied
+</FilesMatch>

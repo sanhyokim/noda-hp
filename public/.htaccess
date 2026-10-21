@@ -1,0 +1,50 @@
+# 株式会社野田 公式サイト（Apache / コアサーバー用）
+Options -Indexes
+DirectoryIndex index.php
+AddDefaultCharset UTF-8
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # HTTPS へ寄せる
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  # 旧 WordPress の入口は 410 Gone
+  RewriteRule ^(wp-json|wp-admin)(/.*)?$ - [G,L]
+  RewriteRule ^(wp-login\.php|feed/?)$ - [G,L]
+  RewriteCond %{QUERY_STRING} (^|&)p=[0-9]+(&|$)
+  RewriteRule ^$ - [G,L]
+
+  # 旧URLの転送（/category/ と /construction_examples/page/N/）は段階4で追記する
+
+  # 実在するファイル・フォルダはそのまま、それ以外は index.php へ
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ index.php [L]
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+</IfModule>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml application/xml
+</IfModule>
+
+# 公開フォルダ内に app/ を置いた場合の保護
+<IfModule mod_rewrite.c>
+  RewriteRule ^(app|storage)(/|$) - [F,L]
+</IfModule>
