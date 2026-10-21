@@ -4,6 +4,7 @@
 render('page-head', [
     'label' => 'COMMITMENT',
     'title' => '私たちのこだわり',
+    'lead' => '当社は創業以来、全国の飲食店オーナー様をサポートしてきました。新規開業店舗には企画提案から施工、アフターメンテナンスまで一貫したサービスを提供しています。',
     'image' => 'concept-workshop.jpg', 'ratio' => [16, 9],
 ]);
 $commits = [
@@ -25,13 +26,6 @@ $commits = [
     ]],
 ];
 ?>
-<section class="section wrap">
-  <div class="prose">
-    <p>当社は創業以来、全国の飲食店オーナー様をサポートしてきました。新規開業店舗には企画提案から施工、アフターメンテナンスまで一貫したサービスを提供しています。また、東は広島県から南は鹿児島県まで幅広いエリアの既存店舗のダクト入れ替え工事にも対応しており、現在は日本全国どこでもお客様のニーズに応じた厨房換気設備のソリューションをご提供しております。</p>
-    <p>排煙・油煙に関するお悩みやトラブル予防のご相談など、厨房設備に関することならどんなことでもお気軽にお問い合わせください。</p>
-  </div>
-</section>
-
 <section class="section wrap" aria-labelledby="s1">
   <?php render('section-head', ['label' => 'OUR COMMITMENT', 'title' => '私たちの4つのこだわり', 'id' => 's1']); ?>
   <ol class="rows">
@@ -51,7 +45,10 @@ $commits = [
   <div class="section wrap">
     <?php render('section-head', ['label' => 'AREA', 'title' => '対応エリア', 'id' => 's2']); ?>
     <div class="area">
-      <p class="area__lead">福岡本社と広島出張所を拠点に、<br>東は広島県から南は鹿児島県まで。<br>現在は日本全国に対応しています。</p>
+      <div class="area__lead">
+        <p>福岡本社と広島出張所を拠点に、東は広島県から南は鹿児島県まで幅広いエリアの既存店舗のダクト入れ替え工事に対応してきました。現在は日本全国どこでも、お客様のニーズに応じた厨房換気設備のソリューションをご提供しております。</p>
+        <p>排煙・油煙に関するお悩みやトラブル予防のご相談など、厨房設備に関することならどんなことでもお気軽にお問い合わせください。</p>
+      </div>
       <dl class="area__list">
         <div><dt>福岡本社</dt><dd>〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?></dd></div>
         <div><dt><?= e(company('branch_name')) ?></dt><dd>〒<?= e(company('branch_zip')) ?> <?= e(company('branch_address')) ?></dd></div>

@@ -37,7 +37,7 @@ $mapQuery = rawurlencode(company('hq_address'));
 <section class="section wrap" aria-labelledby="s20">
   <?php render('section-head', ['label' => '20TH ANNIVERSARY', 'title' => '創業20周年の感謝を胸に、|さらなる飛躍を目指して', 'id' => 's20']); ?>
   <div class="anniv">
-    <p class="anniv__mark" aria-hidden="true"><b>20</b><span>th<br>ANNIVERSARY</span></p>
+    <p class="anniv__mark"><?= picture('anniv-20th.png', 179, 179, '愛し愛されて20周年 20th Anniversary') ?></p>
     <div class="prose">
       <p>おかげさまで株式会社野田は、2025年に創業20周年を迎えました。この20年間、多くのお客様との出会いに恵まれ、共に成長させていただけたことは、私たちにとって最大の誇りです。これまでのご愛顧に、改めて厚く御礼申し上げます。</p>
       <p>私たちはこの節目を、単なる通過点ではなく「新たなスタートライン」と捉えています。20年で培った技術と信頼を礎に、時代の変化を捉え、皆様の期待を超える価値を創造し続けてまいります。</p>
@@ -55,14 +55,6 @@ $mapQuery = rawurlencode(company('hq_address'));
       </tbody>
     </table>
   </div>
-</section>
-
-<section class="section wrap" aria-labelledby="s3">
-  <?php render('section-head', ['label' => 'HISTORY', 'title' => '沿革', 'id' => 's3']); ?>
-  <ol class="history">
-    <li><time>2005年11月</time><span>設立</span></li>
-    <li><time>2025年</time><span>創業20周年</span></li>
-  </ol>
 </section>
 
 <section class="section wrap" aria-labelledby="s4">

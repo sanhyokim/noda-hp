@@ -29,18 +29,9 @@ $troubles = [
   </div>
 </section>
 
-<section class="section wrap" aria-labelledby="s1">
-  <?php render('section-head', ['label' => 'BEFORE OPENING', 'title' => '開業前に決めておくべき|3つのこと', 'id' => 's1']); ?>
-  <?php render('cards', ['cols' => 3, 'numbered' => true, 'items' => [
-      ['吸引力の計算', '厨房機器の熱量や調理の内容から、必要な吸引力を計算します。足りないとホールに煙や臭いが充満します。'],
-      ['給排気のバランス', '排気だけ強くしても、同じ量の空気を取り込まなければドアが重くなり、煙を吸わなくなります。'],
-      ['排気口の位置と|近隣への配慮', '排気口が近隣に迷惑をかけないよう、事前の調査・検討と設計の配慮が欠かせません。'],
-  ]]); ?>
-</section>
-
 <section class="band" aria-labelledby="s2">
   <div class="section wrap">
-    <?php render('section-head', ['label' => 'TROUBLES', 'title' => '放っておくと|こんなトラブルに発展します', 'id' => 's2']); ?>
+    <?php render('section-head', ['label' => 'TROUBLES', 'title' => '換気・ダクトが原因で|実際に起きたトラブル', 'id' => 's2', 'lead' => '設計や機器の選び方、開業後のメンテナンスが不十分だと、近隣の方を巻き込んだトラブルにつながります。']); ?>
     <ol class="rows">
       <?php foreach ($troubles as $i => [$t, $img, $d]): ?>
         <li class="row row--thumb">
@@ -53,6 +44,15 @@ $troubles = [
       <?php endforeach; ?>
     </ol>
   </div>
+</section>
+
+<section class="section wrap" aria-labelledby="s1">
+  <?php render('section-head', ['label' => 'BEFORE OPENING', 'title' => '開業前に決めておくべき|3つのこと', 'id' => 's1', 'lead' => 'こうしたトラブルは、図面の段階で次の3つを決めておくことで防げます。']); ?>
+  <?php render('cards', ['cols' => 3, 'numbered' => true, 'items' => [
+      ['吸引力の計算', '厨房機器の熱量や調理の内容から必要な吸引力を計算し、換気扇とフードの大きさを決めます。'],
+      ['給排気のバランス', '排気する量に見合った空気を取り込めるよう、給気口とファンを合わせて設計します。'],
+      ['排気口の位置と|近隣への配慮', '排気口が近隣に迷惑をかけないよう、事前の調査・検討と設計の配慮が欠かせません。'],
+  ]]); ?>
 </section>
 
 <section class="section wrap" aria-labelledby="s3">

@@ -18,7 +18,12 @@ $steps = [
     ['製作・施工', '自社でフードを製作し、営業に支障が出ない日程で施工。'],
     ['アフターフォロー', '定期点検・清掃・ファン交換まで長くお付き合いします。'],
 ];
-$marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うなぎ店', '鉄板焼き店', 'カフェ', 'パン屋', '旅館・ホテル', 'チェーン店', 'セントラルキッチン', 'コインランドリー'];
+// 業態の帯。写真は移行した施工事例から業態ごとに1枚（2026-10-21）
+$marquee = [
+    ['焼肉店', 'yakiniku'], ['焼き鳥店', 'yakitori'], ['居酒屋', 'izakaya'], ['ラーメン店', 'ramen'],
+    ['うなぎ店', 'unagi'], ['鉄板焼き店', 'teppan'], ['カフェ', 'cafe'], ['パン屋', 'bakery'],
+    ['旅館・ホテル', 'ryokan'], ['チェーン店', 'chain'], ['セントラルキッチン', 'central'], ['コインランドリー', 'laundry'],
+];
 ?>
 
 <?php ob_start(); // 最初の画面・数字の帯・流れる帯は画面幅いっぱいに出すので、layout の $meta['top'] に渡す ?>
@@ -57,7 +62,7 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
   <div class="marquee__track">
     <?php for ($r = 0; $r < 2; $r++): ?>
       <ul class="marquee__list"<?= $r ? ' aria-hidden="true"' : '' ?>>
-        <?php foreach ($marquee as $m): ?><li><?= e($m) ?></li><?php endforeach; ?>
+        <?php foreach ($marquee as [$m, $img]): ?><li><?= picture('biz-' . $img . '.jpg', 160, 160, '') ?><span><?= e($m) ?></span></li><?php endforeach; ?>
       </ul>
     <?php endfor; ?>
   </div>
@@ -79,49 +84,22 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
     <?php endforeach; ?>
   </ul>
   <a class="anniv-band" href="<?= e(page_url('company')) ?>#s20">
-    <span class="anniv-band__num" aria-hidden="true">20<small>th</small></span>
-    <span class="anniv-band__text"><b>おかげさまで創業20周年を迎えました</b>20年で培った技術と信頼を礎に、21年目からも皆様の期待を超える価値を。</span>
+    <span class="anniv-band__mark"><?= picture('anniv-20th.png', 179, 179, '愛し愛されて20周年 20th Anniversary') ?></span>
+    <span class="anniv-band__text"><b class="kw">おかげさまで<wbr>創業20周年を<wbr>迎えました</b>20年で培った技術と信頼を礎に、<wbr>21年目からも皆様の期待を超える価値を。</span>
     <span class="more">ごあいさつを読む<?= icon('arrow', 16) ?></span>
   </a>
 </section>
 
 <section class="section wrap" aria-labelledby="intro-title">
   <?php render('section-head', ['label' => 'ABOUT', 'title' => '飲食店の換気・給排気を|自社一貫でトータルサポート', 'id' => 'intro-title']); ?>
+  <?php // 文章は現行サイトのトップから。お悩み→専門業者へ、の順に読めるよう区画を並べ替えた（2026-10-21） ?>
   <div class="intro">
     <div class="intro__text prose">
-      <p>焼肉店・焼き鳥店・居酒屋・ラーメン店。油と煙の多い厨房の換気扇・排煙ダクト工事を、福岡から全国へ。創業2005年、累計1,000件以上の施工実績があります。</p>
-      <p>当社は排煙・油煙対策のスペシャリストとして、居酒屋、ラーメン屋、焼鳥屋、焼肉店などの飲食店オーナー様を、新規開店からメンテナンスおよび清掃までトータルでサポートいたします。</p>
+      <p>当社は排煙・油煙対策のスペシャリストとして、居酒屋、ラーメン屋、焼鳥屋、焼肉店などの飲食店オーナー様を、新規開店からメンテナンスおよび清掃までトータルでサポートいたします。創業2005年、累計1,000件以上の施工実績があります。</p>
+      <p>換気扇やダクトのご提案から設計、施工まで、すべて自社で承っています。オーナー様のご希望・ご要望をしっかりうかがってそれを設計に反映し、その設計を施工により忠実に形にする――。自社一貫対応により、ミスなく、作業の無駄なく、責任を持って進行できます。</p>
       <a class="more" href="<?= e(page_url('concept')) ?>">野田のコンセプト<?= icon('arrow', 16) ?></a>
     </div>
-    <div class="intro__img"><?= picture('concept-drawing.jpg', 1108, 739, '野田が施工した店内のフードとダクト') ?></div>
-  </div>
-  <?php // 3項目の文章は現行サイトのトップの同じ区画から（明らかな重複の一文だけ除いた）。写真は AI 生成の人物画像を除き実写に置き換え ?>
-  <div class="rows u-mt">
-    <div class="row">
-      <div class="row__img row__img--contain"><?= picture('after-onestop.jpg', 800, 680, '打ち合わせ・施工・アフターフォローを同じ担当者が対応します') ?></div>
-      <div class="row__body">
-        <h3 class="row__head">安心の自社一貫対応</h3>
-        <p>当社は換気扇やダクトのご提案から設計、施工まで、すべて自社で承っています。オーナー様のご希望・ご要望をしっかりうかがってそれを設計に反映し、その設計を施工により忠実に形にする――。</p>
-        <p>自社一貫対応により、ミスなく、作業の無駄なく、責任を持って進行できます。</p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="row__img"><?= picture('after-grease.jpg', 900, 600, '厨房フードの内部') ?></div>
-      <div class="row__body">
-        <h3 class="row__head">メンテナンス・清掃でトラブル防止</h3>
-        <p>使えば使うほどダクト内部は油やホコリで汚れていき、その汚れがダクトの不具合や故障、ひいては火事（ダクト火災）の原因になることも……。大惨事を招かないためには、日頃から定期的なメンテナンス・清掃を行うことが重要です。</p>
-        <a class="more u-mt" href="<?= e(page_url('afterfollow')) ?>">アフターフォローについて<?= icon('arrow', 16) ?></a>
-      </div>
-    </div>
-    <div class="row">
-      <div class="row__img"><?= picture('concept-fullorder.jpg', 900, 600, '現場に合わせて組んだダクト') ?></div>
-      <div class="row__body">
-        <h3 class="row__head">私たち専門業者へご相談ください</h3>
-        <p>給気・排気ダクトは、単に設置すれば良いものではありません。飲食店の規模やレイアウトに応じて、適した種類・大きさ・形状のダクトを選定し、設計する必要があります。そうしなければ、本来の性能を発揮できず、後々トラブルが発生する恐れがあります。</p>
-        <p>しかし、ダクトを専門に取り扱っていない業者では、「店舗に適したダクト」の選定は難しく、出店時の選定ミスが原因で、相次ぐ故障の修理に年間数十万円もの費用がかかることもあります。</p>
-        <p>長期間にわたり確実に機能するダクトを実現するために、豊富なダクト設計・施工の経験を持つ当社が、最適な選定から施工までしっかりとサポートいたします。</p>
-      </div>
-    </div>
+    <div class="intro__img intro__img--contain"><?= picture('after-onestop.jpg', 800, 680, '打ち合わせ・施工・アフターフォローを同じ担当者が対応します') ?></div>
   </div>
 </section>
 
@@ -137,6 +115,15 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
     <?php endforeach; ?>
   </ul>
   <p class="problems__answer kw">身に覚えがある場合は、<wbr><strong>ファンやダクトの設計</strong>に<wbr>原因があるかもしれません。</p>
+  <div class="row u-mt">
+    <div class="row__img"><?= picture('concept-fullorder.jpg', 900, 600, '現場に合わせて組んだダクト') ?></div>
+    <div class="row__body">
+      <h3 class="row__head">私たち専門業者へご相談ください</h3>
+      <p>給気・排気ダクトは、単に設置すれば良いものではありません。飲食店の規模やレイアウトに応じて、適した種類・大きさ・形状のダクトを選定し、設計する必要があります。そうしなければ、本来の性能を発揮できず、後々トラブルが発生する恐れがあります。</p>
+      <p>しかし、ダクトを専門に取り扱っていない業者では、「店舗に適したダクト」の選定は難しく、出店時の選定ミスが原因で、相次ぐ故障の修理に年間数十万円もの費用がかかることもあります。</p>
+      <p>長期間にわたり確実に機能するダクトを実現するために、豊富なダクト設計・施工の経験を持つ当社が、最適な選定から施工までしっかりとサポートいたします。</p>
+    </div>
+  </div>
 </section>
 
 <section class="section wrap" aria-labelledby="service-title">
@@ -166,7 +153,7 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
       <div class="reason__body">
         <span class="reason__no">04</span>
         <h3 class="reason__title kw">工事後も続く<wbr>アフターフォロー</h3>
-        <p class="reason__text">点検・清掃・ファン交換まで。ダクト火災を防ぐ定期メンテナンスをご提案します。</p>
+        <p class="reason__text">使えば使うほどダクト内部は油やホコリで汚れていき、その汚れが不具合や故障、ひいてはダクト火災の原因になることも。点検・清掃・ファン交換まで、定期的なメンテナンスで長くお付き合いします。</p>
         <a class="more" href="<?= e(page_url('afterfollow')) ?>">アフターフォローについて<?= icon('arrow', 16) ?></a>
       </div>
       <div class="reason__img"><?= picture('top-afterfollow.jpg', 900, 600, '') ?></div>
@@ -209,7 +196,7 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
 </section>
 
 <section class="section wrap" aria-labelledby="ig-title">
-  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => '私たちの日々の仕事', 'id' => 'ig-title', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
+  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => 'Instagram - 私たちの日々の仕事', 'id' => 'ig-title', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
   <ul class="ig">
     <?php foreach ($ig as $item): ?>
       <li>

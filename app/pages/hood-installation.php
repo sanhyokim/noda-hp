@@ -87,4 +87,4 @@ $strengths = [
 
 <?php render('related', ['names' => ['焼肉 上引きフード']]); ?>
 
-<p class="wrap note note--foot">特許番号 3460996 / 3460998。約40%減は当社従来品「しちりんフード」との比較です。</p>
+<p class="wrap note note--foot">工事費用の約40％削減は、従来の「しちりんフード」との比較です。</p>

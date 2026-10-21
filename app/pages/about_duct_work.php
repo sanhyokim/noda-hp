@@ -16,13 +16,8 @@ $services = [
 ];
 $bizList = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うなぎ店', '鉄板焼き店', 'カフェ', 'パン屋', '旅館', 'チェーン店', '施設', 'セントラルキッチン', 'コインランドリー'];
 ?>
-<section class="section wrap" aria-labelledby="s0">
-  <?php render('section-head', ['label' => 'OUR SERVICES', 'title' => '株式会社野田の|各種ダクト工事サービス', 'id' => 's0']); ?>
-  <p class="prose">厨房換気扇・排煙ダクト工事に特化した福岡の専門業者「株式会社野田」では、店舗や飲食店向けのダクトの設計、施工、アフターフォローまでをワンストップで承っております。このページでは、当社が提供する各種ダクト工事サービスについてご説明いたします。</p>
-</section>
-
 <section class="section wrap" aria-labelledby="s1">
-  <?php render('section-head', ['label' => 'SERVICES', 'title' => 'サービス一覧', 'id' => 's1']); ?>
+  <?php render('section-head', ['label' => 'OUR SERVICES', 'title' => '株式会社野田の|各種ダクト工事サービス', 'id' => 's1', 'lead' => '厨房換気扇・排煙ダクト工事に特化した福岡の専門業者「株式会社野田」では、店舗や飲食店向けのダクトの設計、施工、アフターフォローまでをワンストップで承っております。当社が提供する各種ダクト工事サービスをご紹介します。']); ?>
   <ol class="rows">
     <?php foreach ($services as $i => [$key, $img, $t, $ps, $list, $more]): ?>
       <li class="row">
