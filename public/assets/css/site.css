@@ -240,7 +240,11 @@ body { padding-top: var(--topbar); }
 .hero__bg img, .hero__bg .ph { animation: zoom 18s ease-in-out infinite alternate; }
 .hero__bg .ph { height: 100%; }
 .hero__bg .ph__name { left: auto; right: 16px; top: 16px; bottom: auto; width: auto; color: var(--c-text); }
-.hero__veil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, rgba(11, 79, 130, .9), rgba(11, 79, 130, .6) 50%, rgba(11, 79, 130, .2)); }
+/* 青のかぶせは文字の下だけ。スマホは文字が全面に載るので下から上へ、640px 以上は左から右へ薄くして右側は写真をそのまま見せる */
+.hero__veil { position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(11, 79, 130, .9), rgba(11, 79, 130, .75) 55%, rgba(11, 79, 130, .55)); }
+@media (min-width: 640px) {
+  .hero__veil { background: linear-gradient(90deg, rgba(11, 79, 130, .9), rgba(11, 79, 130, .6) 45%, rgba(11, 79, 130, 0) 78%); }
+}
 .hero__inner { display: flex; flex-direction: column; gap: 16px; padding-block: 40px 36px; }
 .hero__badges { display: flex; flex-wrap: wrap; gap: 8px; }
 .glass {
