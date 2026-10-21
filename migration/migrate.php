@@ -40,6 +40,7 @@ foreach (['posts.json', 'categories.json', 'featured_media.json'] as $f) {
 $posts = json_decode(file_get_contents("$src/posts.json"), true);
 $oldCats = array_column(json_decode(file_get_contents("$src/categories.json"), true), 'name', 'id');
 $featured = json_decode(file_get_contents("$src/featured_media.json"), true);
+$overrides = require __DIR__ . '/category_overrides.php';
 
 // 1. テーブル
 foreach (array_filter(array_map('trim', explode(';', preg_replace('/^--.*$/m', '', file_get_contents(__DIR__ . '/schema.sql'))))) as $sql) {
@@ -120,6 +121,10 @@ foreach ($targets as $p) {
     $body = preg_replace('/\s*<h3>エリア<\/h3>\s*<p>[^<]*<\/p>\s*$/u', '', $body);
     $oldNames = array_map(fn($id) => $oldCats[$id] ?? '', $p['categories']);
     $cats = map_categories($oldNames, $title);
+    if (isset($overrides[$p['id']])) {
+        $o = $overrides[$p['id']];
+        $cats = ['biz' => $o['biz'], 'work' => $o['work'], 'needs_review' => !empty($o['review'])];
+    }
     $seoTitle = trim($p['aioseo_title']) !== '' ? trim($p['aioseo_title']) : $title . '｜施工事例【株式会社野田】';
     $seoDesc = trim($p['aioseo_description']) !== '' ? trim($p['aioseo_description']) : auto_description($body);
     $vals = [

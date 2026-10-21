@@ -51,12 +51,10 @@ $mapQuery = rawurlencode(company('hq_address'));
 
 <section class="section wrap" aria-labelledby="s4">
   <?php render('section-head', ['label' => 'ACCESS', 'title' => 'アクセス', 'id' => 's4']); ?>
-  <div class="split">
-    <div class="map" data-map-src="https://www.google.com/maps?q=<?= e($mapQuery) ?>&amp;output=embed">
-      <button class="map__btn btn btn--outline" type="button"><?= icon('pin', 18) ?>地図を表示する（Googleマップ）</button>
-      <p class="map__addr">〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?></p>
-    </div>
-    <div class="split__img"><?= picture('company-office.jpg', 900, 600, '株式会社野田 本社') ?></div>
+  <?php // 本社の外観写真は載せない（ボス決定 2026-10-21） ?>
+  <div class="map map--wide" data-map-src="https://www.google.com/maps?q=<?= e($mapQuery) ?>&amp;output=embed">
+    <button class="map__btn btn btn--outline" type="button"><?= icon('pin', 18) ?>地図を表示する（Googleマップ）</button>
+    <p class="map__addr">〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?></p>
   </div>
 </section>
 
