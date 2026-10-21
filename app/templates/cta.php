@@ -11,7 +11,7 @@ $text ??= '現地調査・お見積りは無料です。「煙の写真」を送
     </div>
     <div class="cta__actions">
       <a class="btn btn--white btn--lg" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 22) ?><span><small>受付 <?= e(company('hours')) ?></small><?= e(company('tel_free')) ?></span></a>
-      <a class="btn btn--line btn--lg" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener"><?= icon('chat', 22) ?>LINEで相談する</a>
+      <a class="btn btn--line btn--lg" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener"><?= line_icon(26) ?>LINEで相談する</a>
     </div>
   </div>
 </section>

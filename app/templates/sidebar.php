@@ -40,7 +40,7 @@ $navLink = function (string $key, ?string $label = null, bool $sub = false) use 
     </nav>
 
     <div class="sidebar__sns">
-      <a class="btn btn--line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener"><?= icon('chat', 18) ?>LINE</a>
+      <a class="btn btn--line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener"><?= line_icon(20) ?>LINE</a>
       <a class="btn btn--ig" href="<?= e(company('instagram_url')) ?>" target="_blank" rel="noopener"><?= icon('instagram', 18) ?>Instagram</a>
     </div>
 

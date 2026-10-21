@@ -93,6 +93,7 @@ h3 { font-size: 17px; line-height: 1.55; font-weight: 700; }
 .btn--outline { background: var(--c-white); color: var(--c-blue-dark); border-color: var(--c-blue); }
 .btn--white { background: var(--c-white); color: var(--c-blue-dark); }
 .btn--line { background: var(--c-line-green); color: var(--c-white); }
+.line-icon { flex: none; display: block; border-radius: 24%; }
 .btn--ig { background: var(--c-ig); color: var(--c-white); }
 .btn--glass { background: rgba(255, 255, 255, .14); color: var(--c-white); border-color: rgba(255, 255, 255, .6); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .btn--orange:hover, .btn--blue:hover, .btn--ig:hover, .btn--glass:hover { color: var(--c-white); }

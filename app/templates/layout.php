@@ -75,7 +75,7 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
 
 <nav class="dock" aria-label="お問い合わせ">
   <a class="dock__tel" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 20) ?>電話</a>
-  <a class="dock__line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener"><?= icon('chat', 20) ?>LINE</a>
+  <a class="dock__line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener"><?= line_icon(22) ?>LINE</a>
   <a class="dock__mail" href="<?= e(page_url('contact')) ?>"><?= icon('mail', 20) ?>メール</a>
 </nav>
 

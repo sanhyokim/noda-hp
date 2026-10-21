@@ -94,3 +94,9 @@ function icon(string $name, int $size = 20, string $class = ''): string
     $c = $class !== '' ? ' class="' . e($class) . '"' : '';
     return '<svg' . $c . ' width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' . $d . '</svg>';
 }
+
+// LINE 公式ロゴ（ボス支給）。LINE のボタンだけに使う。
+function line_icon(int $size = 20): string
+{
+    return '<img class="line-icon" src="' . e(asset('img/line-icon.png')) . '" width="' . $size . '" height="' . $size . '" alt="" decoding="async">';
+}
