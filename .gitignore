@@ -8,3 +8,8 @@
 !/images/README.md
 .DS_Store
 /node_modules/
+# 移行で作る画像（php migration/migrate.php で作り直せる。合計約1GBのため git に入れない）
+/public/wp-content/uploads/*
+!/public/wp-content/uploads/.htaccess
+!/public/wp-content/uploads/.gitkeep
+/public/media/cases/
