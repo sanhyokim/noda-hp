@@ -108,3 +108,25 @@ function instagram_items(): array
     }
     return $items;
 }
+
+// 指定カテゴリ（名前で指定、どれか1つに当てはまれば可）の新しい施工事例
+function cases_in_categories(array $names, int $limit = 3): array
+{
+    $pdo = db();
+    if (!$pdo) {
+        $rows = array_filter(dummy_data()['cases'], fn($c) => array_intersect($names, array_merge($c['biz'], $c['work'])));
+        usort($rows, fn($a, $b) => strcmp($b['published_at'], $a['published_at']));
+        return array_map(fn($r) => $r + ['image' => null, 'image_w' => 800, 'image_h' => 533], array_slice($rows, 0, $limit));
+    }
+    $in = implode(',', array_fill(0, count($names), '?'));
+    $st = $pdo->prepare(
+        "SELECT DISTINCT c.id, c.slug, c.title, c.published_at, c.location, i.path_thumb AS image, i.width AS image_w, i.height AS image_h
+         FROM cases c
+         JOIN case_categories cc ON cc.case_id = c.id
+         JOIN categories cat ON cat.id = cc.category_id AND cat.name IN ($in)
+         LEFT JOIN case_images i ON i.id = c.thumbnail_image_id
+         WHERE c.status = 'published' ORDER BY c.published_at DESC, c.id DESC LIMIT " . (int)$limit
+    );
+    $st->execute(array_values($names));
+    return attach_categories($st->fetchAll());
+}

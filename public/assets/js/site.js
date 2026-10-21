@@ -1,4 +1,4 @@
-/* 株式会社野田 公式サイト：スマホメニューと、表示時のふわっと上がる動き */
+/* 株式会社野田 公式サイト：スマホメニュー、地図の読み込み、フォームの添付チェック、表示時のふわっと上がる動き */
 (function () {
   'use strict';
   var doc = document.documentElement;
@@ -38,13 +38,60 @@
     });
   }
 
+  /* ---- 地図：押したときだけ Google マップを読み込む ---- */
+  document.querySelectorAll('.map[data-map-src]').forEach(function (box) {
+    var btn = box.querySelector('.map__btn');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var f = document.createElement('iframe');
+      f.src = box.getAttribute('data-map-src');
+      f.title = '地図（Googleマップ）';
+      f.loading = 'lazy';
+      f.referrerPolicy = 'no-referrer-when-downgrade';
+      box.appendChild(f);
+      box.classList.add('is-loaded');
+      btn.hidden = true;
+    });
+  });
+
+  /* ---- お問い合わせ：添付ファイルの数と大きさを送る前に確かめる（最終チェックはサーバー側） ---- */
+  document.querySelectorAll('input[type="file"][data-max-files]').forEach(function (input) {
+    var maxFiles = parseInt(input.getAttribute('data-max-files'), 10);
+    var maxSize = parseInt(input.getAttribute('data-max-size'), 10);
+    var msg = document.createElement('p');
+    msg.className = 'field__err';
+    msg.id = input.id + '-err';
+    msg.hidden = true;
+    input.insertAdjacentElement('afterend', msg);
+    input.addEventListener('change', function () {
+      var text = '';
+      if (input.files.length > maxFiles) {
+        text = '添付できるのは' + maxFiles + 'ファイルまでです。';
+      } else {
+        Array.prototype.forEach.call(input.files, function (f) {
+          if (!text && f.size > maxSize) text = '「' + f.name + '」が10MBを超えています。';
+        });
+      }
+      msg.textContent = text;
+      msg.hidden = !text;
+      if (text) {
+        input.setAttribute('aria-invalid', 'true');
+        input.setAttribute('aria-describedby', msg.id);
+        input.value = '';
+      } else {
+        input.removeAttribute('aria-invalid');
+        input.removeAttribute('aria-describedby');
+      }
+    });
+  });
+
   /* ---- 表示時の動き：各セクション直下の要素と、格子の中身を1回だけ ---- */
   if (reduce.matches || !('IntersectionObserver' in window)) return;
   var groups = [];
   document.querySelectorAll('main .section').forEach(function (sec) {
     var kids = [];
     Array.prototype.forEach.call(sec.children, function (el) {
-      if (el.matches('.grid, .bento, .steps, .ig, .news__list')) {
+      if (el.matches('.grid, .bento, .steps, .ig, .news__list, .commit, .timeline, .numlist, .faq')) {
         groups.push(Array.prototype.slice.call(el.children));
       } else {
         kids.push(el);
