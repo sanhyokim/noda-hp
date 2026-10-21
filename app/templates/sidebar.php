@@ -1,23 +1,32 @@
 <?php
 /** @var string $current */
-// 左カラム。現行サイトと同じく「電話の案内 → 見出し付きメニュー2つ → 会社情報 → バナー」の順。
+// 左カラム。現行サイトと同じく「電話の案内 → 動画・施工事例バナー → 見出し付きメニュー2つ → 会社情報 → バナー」の順。
 // 1100px 未満ではメニューボタンで画面右から出す。
 ?>
 <aside id="sidebar" class="sidebar" aria-label="サイトメニュー">
   <div class="sidebar__inner">
     <div class="sidebar__top">
-      <a class="sidebar__logo" href="<?= e(url()) ?>" aria-label="<?= e(company('name')) ?> ホーム"><?= picture('logo.png', 240, 78, company('name')) ?></a>
+      <a class="sidebar__logo" href="<?= e(url()) ?>" aria-label="<?= e(company('name')) ?> ホーム"><?= picture('logo.png', 240, 60, company('name')) ?></a>
       <button class="sidebar__close" type="button" aria-label="メニューを閉じる"><?= icon('close', 24) ?></button>
     </div>
 
     <div class="scall">
       <p class="scall__head">お電話でのご相談</p>
       <div class="scall__body">
-        <a class="scall__num" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 20) ?><?= e(company('tel_free')) ?></a>
+        <a class="scall__num" href="<?= e(tel_href(company('tel_free'))) ?>"><span class="scall__icon"><?= icon('phone', 16) ?></span><?= e(company('tel_free')) ?></a>
         <p class="scall__hours">受付 <?= e(company('hours')) ?>（<?= e(company('closed')) ?>）</p>
         <a class="btn btn--blue btn--block" href="<?= e(page_url('contact')) ?>"><?= icon('mail', 18) ?>メールで相談する</a>
         <a class="btn btn--line btn--block" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener"><?= line_icon(22) ?>LINEで相談する</a>
       </div>
+    </div>
+
+    <?php $v = site('side_video'); $c = site('side_cases'); ?>
+    <div class="sidebar__banners">
+      <a class="banner svideo" href="https://www.youtube.com/watch?v=<?= e($v['youtube_id']) ?>" target="_blank" rel="noopener" data-yt="<?= e($v['youtube_id']) ?>" data-yt-title="<?= e($v['title']) ?>">
+        <?= picture($v['image'], 640, 360, $v['title'] . '（動画を再生）') ?>
+        <span class="svideo__play" aria-hidden="true"></span>
+      </a>
+      <a class="banner" href="<?= e(page_url('construction_examples')) ?>"><?= picture($c['image'], $c['w'], $c['h'], $c['alt']) ?></a>
     </div>
 
     <nav class="snav" aria-label="サイト内メニュー">
@@ -49,7 +58,7 @@
 
     <div class="sidebar__banners">
       <?php foreach (site('banners') as $b): ?>
-        <a class="banner" href="<?= e($b['url']) ?>" target="_blank" rel="noopener"><?= picture($b['image'], 1200, 600, $b['alt'] . '（別サイトが開きます）') ?></a>
+        <a class="banner" href="<?= e($b['url']) ?>" target="_blank" rel="noopener"><?= picture($b['image'], $b['w'], $b['h'], $b['alt'] . '（別サイトが開きます）') ?></a>
       <?php endforeach; ?>
     </div>
   </div>

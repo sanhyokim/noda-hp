@@ -49,6 +49,28 @@ function attach_categories(array $rows): array
 }
 
 // トップの「お知らせ」：施工事例とお知らせを混ぜて新しい順。各要素：type(case|news), title, url, published_at
+// トップのお知らせ。site.php の 'top_news'（現行サイトと同じ並び・日付）を施工事例のページにつなぐ。
+function top_news(): array
+{
+    $pdo = db();
+    $items = [];
+    foreach (site('top_news') as $n) {
+        $slug = null;
+        if ($pdo) {
+            $st = $pdo->prepare("SELECT slug FROM cases WHERE wp_id = ? AND status = 'published'");
+            $st->execute([$n['wp_id']]);
+            $slug = $st->fetchColumn() ?: null;
+        }
+        $items[] = [
+            'type' => 'case',
+            'title' => $n['title'],
+            'url' => $slug !== null ? url(rawurlencode($slug) . '/') : page_url('construction_examples'),
+            'published_at' => $n['date'],
+        ];
+    }
+    return $items;
+}
+
 function latest_feed(int $limit): array
 {
     $pdo = db();

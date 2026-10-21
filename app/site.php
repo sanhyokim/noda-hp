@@ -179,9 +179,23 @@ return [
         'question', 'company', 'customer', 'news', 'contact', 'privacypolicy',
     ],
 
-    // 左カラム下のバナー
+    // トップの「お知らせ」5件。現行サイトのトップのお知らせ欄と同じ日付・題名（ボス指示 2026-10-21）。
+    // 'wp_id' の施工事例のページへつなぐ。お知らせの管理画面（段階5）ができたら、そちらに移す。
+    'top_news' => [
+        ['date' => '2026-06-17', 'wp_id' => 4605, 'title' => 'パン屋さんの天井の低い難所をクリアした特注ダクト工事'],
+        ['date' => '2026-06-10', 'wp_id' => 4603, 'title' => '大容量の特注「大型山型フード」が誕生！'],
+        ['date' => '2026-06-03', 'wp_id' => 4601, 'title' => '平尾の人気店に消煙機を設置しました！'],
+        ['date' => '2026-05-20', 'wp_id' => 4570, 'title' => '漆黒の美学。鶏焼肉店のダクト施工が完了！'],
+        ['date' => '2026-05-06', 'wp_id' => 4568, 'title' => '「煙を出さない」焼肉店！消煙機導入工事完了'],
+    ],
+
+    // 左カラム上の動画と施工事例バナー（現行サイトと同じもの。動画は押したときだけ YouTube を読み込む）
+    'side_video' => ['youtube_id' => 'Bd9sD0_vSvU', 'image' => 'side-video.jpg', 'title' => 'この吸引力をご覧ください！（消煙機の動画）'],
+    'side_cases' => ['image' => 'side-cases.jpg', 'w' => 540, 'h' => 425, 'alt' => '全てオーダーメイド設計 施工事例'],
+
+    // 左カラム下のバナー。w・h は元画像の大きさ（文字入りなので比率を変えず、元より大きく引き伸ばさない）
     'banners' => [
-        ['image' => 'banner-shoenki.png', 'alt' => '野田の消煙機', 'url' => 'https://shoenki.duct-noda.com/'],
-        ['image' => 'banner-cleaning.jpg', 'alt' => 'ダクト清掃', 'url' => 'https://www.cleaning-duct.com/'],
+        ['image' => 'banner-shoenki.png', 'w' => 260, 'h' => 112, 'alt' => '野田の消煙機', 'url' => 'https://shoenki.duct-noda.com/'],
+        ['image' => 'banner-cleaning.jpg', 'w' => 1200, 'h' => 600, 'alt' => 'ダクト清掃', 'url' => 'https://www.cleaning-duct.com/'],
     ],
 ];

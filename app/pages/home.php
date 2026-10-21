@@ -1,12 +1,12 @@
 <?php
 // トップページ。区画の順番・文言は design/top-reference.html と付録A-1 に合わせる。
 $years = years_in_business();
-$feed = latest_feed(5);
+$feed = top_news();
 $cases = latest_cases(6);
 $ig = instagram_items();
 
 $problems = [
-    ['smoke', '店内に煙がこもる', '焼肉・焼き鳥の煙が客席に流れ、服や髪に臭いが残る。'],
+    ['smoke', '店内に煙がこもる', '服や髪に臭いがつきやすくなった。お客様から煙で目が痛いと言われた。'],
     ['wave', '近隣から臭いの苦情', '排気口の向きや高さ、消煙機の導入で解決できます。'],
     ['fan', '換気扇の音・吸い込み不良', 'ファンの劣化や給気不足が原因のことが多くあります。'],
     ['store', '新規開業の換気設計', '図面の段階からご相談を。設計業者様との連携も可能です。'],
@@ -35,12 +35,11 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
   </div>
   <div class="hero__veil" aria-hidden="true"></div>
   <div class="hero__inner frame">
-    <p class="hero__since rise"><span>SINCE 2005</span><em>飲食店の換気一筋 <b><?= $years ?></b> 年</em></p>
+    <p class="hero__since rise"><span>飲食店のフード・ダクトに</span><span>関わり続けて<b><?= $years ?></b>年</span></p>
     <p class="hero__catch rise rise--1">空気が変われば、<br>店舗が変わる。</p>
     <h1 id="hero-title" class="hero__title kw rise rise--2">飲食店の<wbr>煙・臭い・換気、<br>専門会社が<wbr>設計から<wbr>施工まで。</h1>
     <div class="hero__actions rise rise--3">
-      <a class="btn btn--orange btn--lg" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 22) ?><span><small>受付 <?= e(company('hours')) ?></small><?= e(company('tel_free')) ?></span></a>
-      <a class="btn btn--ghost btn--lg" href="<?= e(page_url('contact')) ?>">無料相談・現地調査を申し込む<?= icon('arrow', 18) ?></a>
+      <a class="btn btn--white btn--lg hero__cta" href="<?= e(page_url('contact')) ?>">無料相談・現地調査を申し込む<?= icon('arrow', 20) ?></a>
     </div>
   </div>
 </section>
@@ -66,7 +65,7 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
 <?php $meta['top'] = ob_get_clean(); ?>
 
 <section class="section wrap" aria-labelledby="news-title">
-  <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title', 'link' => ['一覧を見る', page_url('news')]]); ?>
+  <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>
   <ul class="news__list">
     <?php foreach ($feed as $f): ?>
       <li>
@@ -79,6 +78,11 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
       </li>
     <?php endforeach; ?>
   </ul>
+  <a class="anniv-band" href="<?= e(page_url('company')) ?>#s20">
+    <span class="anniv-band__num" aria-hidden="true">20<small>th</small></span>
+    <span class="anniv-band__text"><b>おかげさまで創業20周年を迎えました</b>20年で培った技術と信頼を礎に、21年目からも皆様の期待を超える価値を。</span>
+    <span class="more">ごあいさつを読む<?= icon('arrow', 16) ?></span>
+  </a>
 </section>
 
 <section class="section wrap" aria-labelledby="intro-title">
@@ -86,10 +90,38 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
   <div class="intro">
     <div class="intro__text prose">
       <p>焼肉店・焼き鳥店・居酒屋・ラーメン店。油と煙の多い厨房の換気扇・排煙ダクト工事を、福岡から全国へ。創業2005年、累計1,000件以上の施工実績があります。</p>
-      <p>ご提案から設計・製作・施工、工事後の点検や修理まで、すべて自社で行います。お店ごとの「困った」に、ひとつの窓口でお応えします。</p>
+      <p>当社は排煙・油煙対策のスペシャリストとして、居酒屋、ラーメン屋、焼鳥屋、焼肉店などの飲食店オーナー様を、新規開店からメンテナンスおよび清掃までトータルでサポートいたします。</p>
       <a class="more" href="<?= e(page_url('concept')) ?>">野田のコンセプト<?= icon('arrow', 16) ?></a>
     </div>
     <div class="intro__img"><?= picture('concept-drawing.jpg', 1108, 739, '野田が施工した店内のフードとダクト') ?></div>
+  </div>
+  <?php // 3項目の文章は現行サイトのトップの同じ区画から（明らかな重複の一文だけ除いた）。写真は AI 生成の人物画像を除き実写に置き換え ?>
+  <div class="rows u-mt">
+    <div class="row">
+      <div class="row__img row__img--contain"><?= picture('after-onestop.jpg', 800, 680, '打ち合わせ・施工・アフターフォローを同じ担当者が対応します') ?></div>
+      <div class="row__body">
+        <h3 class="row__head">安心の自社一貫対応</h3>
+        <p>当社は換気扇やダクトのご提案から設計、施工まで、すべて自社で承っています。オーナー様のご希望・ご要望をしっかりうかがってそれを設計に反映し、その設計を施工により忠実に形にする――。</p>
+        <p>自社一貫対応により、ミスなく、作業の無駄なく、責任を持って進行できます。</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="row__img"><?= picture('after-grease.jpg', 900, 600, '厨房フードの内部') ?></div>
+      <div class="row__body">
+        <h3 class="row__head">メンテナンス・清掃でトラブル防止</h3>
+        <p>使えば使うほどダクト内部は油やホコリで汚れていき、その汚れがダクトの不具合や故障、ひいては火事（ダクト火災）の原因になることも……。大惨事を招かないためには、日頃から定期的なメンテナンス・清掃を行うことが重要です。</p>
+        <a class="more u-mt" href="<?= e(page_url('afterfollow')) ?>">アフターフォローについて<?= icon('arrow', 16) ?></a>
+      </div>
+    </div>
+    <div class="row">
+      <div class="row__img"><?= picture('concept-fullorder.jpg', 900, 600, '現場に合わせて組んだダクト') ?></div>
+      <div class="row__body">
+        <h3 class="row__head">私たち専門業者へご相談ください</h3>
+        <p>給気・排気ダクトは、単に設置すれば良いものではありません。飲食店の規模やレイアウトに応じて、適した種類・大きさ・形状のダクトを選定し、設計する必要があります。そうしなければ、本来の性能を発揮できず、後々トラブルが発生する恐れがあります。</p>
+        <p>しかし、ダクトを専門に取り扱っていない業者では、「店舗に適したダクト」の選定は難しく、出店時の選定ミスが原因で、相次ぐ故障の修理に年間数十万円もの費用がかかることもあります。</p>
+        <p>長期間にわたり確実に機能するダクトを実現するために、豊富なダクト設計・施工の経験を持つ当社が、最適な選定から施工までしっかりとサポートいたします。</p>
+      </div>
+    </div>
   </div>
 </section>
 

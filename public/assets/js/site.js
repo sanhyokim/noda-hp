@@ -54,6 +54,22 @@
     });
   });
 
+  /* ---- 左カラムの動画：押したときだけ YouTube を読み込む（読み込めない環境ではリンクで YouTube を開く） ---- */
+  document.querySelectorAll('.svideo[data-yt]').forEach(function (a) {
+    a.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      var box = document.createElement('div');
+      box.className = 'banner svideo is-playing';
+      var f = document.createElement('iframe');
+      f.src = 'https://www.youtube-nocookie.com/embed/' + a.getAttribute('data-yt') + '?autoplay=1&rel=0';
+      f.title = a.getAttribute('data-yt-title');
+      f.allow = 'autoplay; encrypted-media; picture-in-picture';
+      f.allowFullscreen = true;
+      box.appendChild(f);
+      a.replaceWith(box);
+    });
+  });
+
   /* ---- お問い合わせ：添付ファイルの数と大きさを送る前に確かめる（最終チェックはサーバー側） ---- */
   document.querySelectorAll('input[type="file"][data-max-files]').forEach(function (input) {
     var maxFiles = parseInt(input.getAttribute('data-max-files'), 10);
