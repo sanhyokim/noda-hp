@@ -1,0 +1,10 @@
+/app/config.php
+/storage/cache/*
+/storage/logs/*
+/storage/contact/*
+!/storage/**/.gitkeep
+/images/*
+!/images/.gitkeep
+!/images/README.md
+.DS_Store
+/node_modules/
