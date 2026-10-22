@@ -1,5 +1,6 @@
 <?php
 /** @var array $todo 答えられなかった質問（log, idx, q, code, at） */
+/** @var array $suggest AI のおすすめ（Q&A に足すとよい質問。id, q, why, points, at） */
 /** @var array $answers 登録済みの答え */
 /** @var array $form */
 /** @var array $errors */
@@ -39,6 +40,35 @@ $aria = fn(string $k): string => isset($errors[$k]) ? ' aria-invalid="true" aria
 <?php endif; ?>
 </section>
 
+<section class="box" id="suggest">
+  <h2 class="box__ttl">Q&amp;A に足すとよい質問（AI のおすすめ）<span class="box__count"><?= count($suggest) ?>件</span></h2>
+<?php if (!$suggest): ?>
+  <p class="note">いまはありません。毎朝のまとめメールを送る時に、前の日の質問から AI が選んでここに並べます。</p>
+<?php else: ?>
+  <p class="field__help">前の日の AI 相談から、答えられなかった質問や、今の Q&amp;A に無い新しい質問を AI が選びました。「答えを書く」を押すと、下の欄に質問が入ります。</p>
+  <ul class="qa">
+<?php foreach ($suggest as $t): ?>
+    <li class="qa__item">
+      <p class="qa__q"><?= e($t['q']) ?></p>
+      <p class="qa__meta"><?= e(date('Y.m.d', strtotime($t['at'] ?? 'now'))) ?><?= ($t['why'] ?? '') !== '' ? '・' . e($t['why']) : '' ?></p>
+<?php if (($t['points'] ?? '') !== ''): ?>
+      <p class="qa__a">答えに書くとよいこと：<?= e($t['points']) ?></p>
+<?php endif; ?>
+      <div class="qa__btns">
+        <a class="abtn abtn--primary abtn--sm" href="?sug=<?= e($t['id']) ?>#form">答えを書く</a>
+        <form method="post">
+          <?= csrf_field() ?>
+          <input type="hidden" name="op" value="dismiss_suggest">
+          <input type="hidden" name="sug" value="<?= e($t['id']) ?>">
+          <button class="abtn abtn--line abtn--sm" type="submit">外す</button>
+        </form>
+      </div>
+    </li>
+<?php endforeach; ?>
+  </ul>
+<?php endif; ?>
+</section>
+
 <section class="box" id="form">
   <h2 class="box__ttl"><?= $form['id'] ? '答えを直す' : '答えを足す' ?></h2>
   <form method="post" class="form">
@@ -47,6 +77,7 @@ $aria = fn(string $k): string => isset($errors[$k]) ? ' aria-invalid="true" aria
     <input type="hidden" name="id" value="<?= (int)$form['id'] ?>">
     <input type="hidden" name="log" value="<?= (int)$form['log'] ?>">
     <input type="hidden" name="idx" value="<?= (int)$form['idx'] ?>">
+    <input type="hidden" name="sug" value="<?= e($form['sug']) ?>">
     <div class="field">
       <label class="field__label" for="question">お客様の質問</label>
       <input class="input" type="text" id="question" name="question" value="<?= e($form['question']) ?>" maxlength="500" placeholder="例：日曜日に工事してもらえますか？" required<?= $aria('question') ?>>
@@ -58,9 +89,13 @@ $aria = fn(string $k): string => isset($errors[$k]) ? ' aria-invalid="true" aria
       <?= $err('answer') ?>
       <p class="field__help">お客様に話すように、そのまま書いてください。似た聞き方の質問にも、AI がこの答えをもとに言葉を合わせて答えます。金額や日数を書くと、AI もその数字を伝えます。</p>
     </div>
+    <div class="field">
+      <label class="check"><input type="checkbox" name="on_faq" value="1"<?= $form['on_faq'] ? ' checked' : '' ?>><span>よくある質問のページにも載せる</span></label>
+      <p class="field__help">印を付けると、ホームページの「よくある質問」（<a href="<?= e(page_url('question')) ?>" target="_blank" rel="noopener">開く</a>）の「その他のご質問」に、この質問と答えがそのまま出ます。</p>
+    </div>
     <div class="actions-inline">
       <button class="abtn abtn--primary" type="submit">保存する</button>
-<?php if ($form['id'] || $form['log']): ?>
+<?php if ($form['id'] || $form['log'] || $form['sug'] !== ''): ?>
       <a class="abtn abtn--line" href="<?= e(admin_url('settings/answers/')) ?>">やめる</a>
 <?php endif; ?>
     </div>
@@ -75,7 +110,7 @@ $aria = fn(string $k): string => isset($errors[$k]) ? ' aria-invalid="true" aria
   <ul class="qa">
 <?php foreach ($answers as $a): ?>
     <li class="qa__item">
-      <p class="qa__q"><?= e($a['question']) ?></p>
+      <p class="qa__q"><?= e($a['question']) ?><?php if (!empty($a['on_faq'])): ?> <span class="badge">よくある質問に掲載</span><?php endif; ?></p>
       <p class="qa__a"><?= nl2br(e($a['answer'])) ?></p>
       <div class="qa__btns">
         <a class="abtn abtn--line abtn--sm" href="?edit=<?= (int)$a['id'] ?>#form">直す</a>

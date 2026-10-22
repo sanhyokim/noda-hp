@@ -25,11 +25,16 @@ $groups = [
         ['対応エリアを教えてください。', '九州全域および中国地方を中心に対応しております。その他の地域につきましても、できる限り柔軟に対応いたしますので、どうぞお気軽にご相談ください。'],
     ],
 ];
+// 管理画面の「AI に教える答え」で「よくある質問のページにも載せる」に印を付けたものは「その他のご質問」に出す（Boss 2026-10-23）
+$more = array_map(fn($r) => [trim($r['question']), trim($r['answer'])], array_filter(chat_answers(), fn($r) => !empty($r['on_faq'])));
+if ($more) {
+    $groups['その他のご質問'] = $more;
+}
 $links = ['おすすめの上引きフードはありますか？' => 'hood-installation', 'おすすめのロースターはありますか？' => 'smokeless_roster'];
 $ld = [];
 $i = 0;
 ?>
-<?php $labels = ['CONSTRUCTION', 'PRICE', 'PRODUCTS & AREA']; ?>
+<?php $labels = ['CONSTRUCTION', 'PRICE', 'PRODUCTS & AREA', 'OTHERS']; ?>
 <?php foreach ($groups as $g => $items): $i++; ?>
   <section class="section wrap" aria-labelledby="g<?= $i ?>">
     <?php render('section-head', ['label' => $labels[$i - 1], 'title' => $g, 'id' => 'g' . $i]); ?>
@@ -37,7 +42,7 @@ $i = 0;
       <?php foreach ($items as [$q, $a]): $ld[] = ['@type' => 'Question', 'name' => $q, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $a]]; ?>
         <details class="faq__item" open>
           <summary><span class="faq__q" aria-hidden="true">Q</span><span class="faq__qt"><?= e($q) ?></span><span class="faq__toggle" aria-hidden="true"></span></summary>
-          <div class="faq__a"><span class="faq__al" aria-hidden="true">A</span><p><?= e($a) ?><?php if (isset($links[$q])): ?> <a href="<?= e(page_url($links[$q])) ?>"><?= e(page($links[$q])['name']) ?>のページへ</a><?php endif; ?></p></div>
+          <div class="faq__a"><span class="faq__al" aria-hidden="true">A</span><p><?= nl2br(e($a)) ?><?php if (isset($links[$q])): ?> <a href="<?= e(page_url($links[$q])) ?>"><?= e(page($links[$q])['name']) ?>のページへ</a><?php endif; ?></p></div>
         </details>
       <?php endforeach; ?>
     </div>

@@ -266,7 +266,8 @@ const CHAT_UNANSWERED_MARK = '<要確認>';
 function chat_answers(): array
 {
     try {
-        return db()->query('SELECT id, question, answer, updated_at FROM chat_answers ORDER BY id')->fetchAll();
+        // on_faq（よくある質問のページにも載せる）は手直し 004 で足した列。まだ無い時も読めるように * で取る
+        return db()->query('SELECT * FROM chat_answers ORDER BY id')->fetchAll();
     } catch (\Throwable $e) {
         return [];
     }
@@ -834,16 +835,37 @@ function chat_send_reports(?int $now = null): int
             $w = ['日', '月', '火', '水', '木', '金', '土'][(int)date('w', strtotime($day))];
             $label = date('n月j日', strtotime($day)) . "（{$w}）";
             $handed = count(array_filter($rows, fn($r) => (int)$r['handed_off'] === 1));
+            // 答えられなかった質問や新しい質問から、Q&A に足すとよいものを AI に選んでもらい、いちばん上に載せる
+            $sug = [];
+            try {
+                $sug = chat_faq_suggest($rows);
+                if ($sug) {
+                    chat_suggest_add($sug);
+                }
+            } catch (Throwable $e) {
+                error_log('AI チャット Q&A の提案: ' . $e->getMessage());
+            }
+            $sugText = '';
+            if ($sug) {
+                $sugText = "━━━ Q&A に足すとよい質問（AI のおすすめ " . count($sug) . "件） ━━━\n";
+                foreach ($sug as $it) {
+                    $sugText .= "・" . $it['q'] . ($it['why'] !== '' ? "（" . $it['why'] . "）" : '') . "\n"
+                        . ($it['points'] !== '' ? "　答えに書くとよいこと：" . $it['points'] . "\n" : '');
+                }
+                $sugText .= "→ 管理画面の「AI に教える答え」で「答えを書く」を押すと、質問が入った状態で答えを書けます。\n"
+                    . "　答えを保存すると次から AI が使います。「よくある質問のページにも載せる」に印を付けると、ホームページの Q&A にも出ます。\n"
+                    . "　" . abs_url('admin/settings/answers/') . "#suggest\n\n";
+            }
             $body = "【野田の公式ホームページの AI 相談 1日のまとめ】\n"
                 . $label . " の AI 相談は " . count($rows) . " 件でした（うち、問い合わせ・電話・LINE へ進んだ相談 {$handed} 件）。\n"
                 . (($unN = count(array_filter($rows, fn($r) => !empty($r['unanswered'])))) ? "AI が答えられなかった質問がある相談が {$unN} 件ありました。管理画面の「AI に教える答え」で答えを足すと、次から AI が答えられます：" . abs_url('admin/settings/answers/') . "\n" : '')
-                . "\n";
+                . "\n" . $sugText;
             foreach ($rows as $i => $r) {
                 $body .= "━━━ " . ($i + 1) . "件目 ━━━\n" . chat_report_block($r) . "\n";
             }
             $body .= "――\n会話の記録は管理画面でも見られます：" . abs_url('admin/settings/chats/') . "\n"
                 . "このお知らせの送り方は、管理画面の「設定」→「AI 相談」で変えられます。\n";
-            if (contact_mail($to, '【野田公式HP】AI相談のまとめ ' . $label . '（' . count($rows) . '件）', $body, '', '', [])) {
+            if (contact_mail($to, '【野田公式HP】AI相談のまとめ ' . $label . '（' . count($rows) . '件' . ($sug ? '・Q&A のおすすめ ' . count($sug) . '件' : '') . '）', $body, '', '', [])) {
                 $sent++;
             }
         }
@@ -897,4 +919,150 @@ function chat_report_block(array $r): string
         . (($un = json_decode((string)($r['unanswered'] ?? ''), true) ?: []) ? "■AI が答えられなかった質問　" . implode('／', array_map(fn($q) => '「' . mb_strimwidth($q, 0, 80, '…') . '」', $un)) . "\n　→ 管理画面の「AI に教える答え」で答えを足すと、次から AI が答えられます：" . abs_url('admin/settings/answers/') . "\n" : '')
         . "\n"
         . trim($talk) . "\n";
+}
+
+// ---------- Q&A に足すとよい質問（毎朝のまとめで、前の日の質問から AI が選んで担当者に知らせる。Boss 2026-10-23） ----------
+
+/** AI に1回だけ聞いて、答えの文を返す（毎朝のまとめ用。失敗した時は null） */
+function chat_complete(string $system, string $user, int $maxTokens = 1500): ?string
+{
+    $messages = [['role' => 'user', 'content' => $user]];
+    if (chat_provider() === 'openrouter') {
+        $r = chat_openrouter_post((string)chat_config('api_key'), [
+            'model' => (string)chat_config('model'),
+            'max_tokens' => $maxTokens,
+            'messages' => array_merge([['role' => 'system', 'content' => $system]], $messages),
+            'reasoning' => ['effort' => 'low'],
+            'provider' => ['data_collection' => 'deny'],
+            'usage' => ['include' => true],
+        ], 60);
+        if ($r['status'] !== 200) {
+            error_log('AI チャット Q&A の提案（OpenRouter）: ' . $r['status'] . ' ' . $r['error']);
+            return null;
+        }
+        chat_add_usage(['requests' => 1, 'cost_micro' => (int)round((float)($r['json']['usage']['cost'] ?? 0) * 1e6)]);
+        return (string)($r['json']['choices'][0]['message']['content'] ?? '');
+    }
+    require_once ROOT_DIR . '/vendor/autoload.php';
+    try {
+        $client = new \Anthropic\Client(
+            apiKey: (string)chat_config('api_key'),
+            baseUrl: (string)(chat_config('base_url') ?: 'https://api.anthropic.com'),
+            requestOptions: ['timeout' => 60, 'maxRetries' => 1],
+        );
+        $res = $client->messages->create(
+            model: (string)(chat_config('model') ?: 'claude-sonnet-5-5'),
+            maxTokens: $maxTokens,
+            system: $system,
+            messages: $messages,
+        );
+    } catch (\Throwable $e) {
+        error_log('AI チャット Q&A の提案: ' . get_class($e) . ' ' . $e->getMessage());
+        return null;
+    }
+    chat_add_usage(['requests' => 1, 'input' => (int)($res->usage->inputTokens ?? 0), 'output' => (int)($res->usage->outputTokens ?? 0)]);
+    if ($res->stopReason === 'refusal') {
+        return null;
+    }
+    $text = '';
+    foreach ($res->content as $block) {
+        if ($block->type === 'text') {
+            $text .= $block->text;
+        }
+    }
+    return $text;
+}
+
+/** いま Q&A にある質問（サイトの「よくある質問」と、管理画面で教えた答え） */
+function chat_known_questions(): array
+{
+    $qs = [];
+    foreach (preg_split('/\R/', (string)@file_get_contents(ROOT_DIR . '/app/data/chat-knowledge.md')) as $line) {
+        if (str_starts_with($line, 'Q. ')) {
+            $qs[] = trim(substr($line, 3));
+        }
+    }
+    foreach (chat_answers() as $a) {
+        $qs[] = trim($a['question']);
+    }
+    return array_values(array_unique($qs));
+}
+
+/**
+ * 前の日の相談（chat_logs の行）から、Q&A に足すとよい質問を AI に選んでもらう。
+ * 戻り値：[['q' => 質問, 'why' => 理由, 'points' => 答えに書くとよいこと], …]（最大5件。無ければ空）
+ */
+function chat_faq_suggest(array $rows): array
+{
+    $asked = [];
+    foreach ($rows as $r) {
+        $un = json_decode((string)($r['unanswered'] ?? ''), true) ?: [];
+        foreach ((array)json_decode((string)$r['messages'], true) as $m) {
+            if (($m['role'] ?? '') === 'user') {
+                $q = trim(preg_replace('/\s+/u', ' ', (string)($m['content'] ?? '')));
+                $asked[] = '- ' . mb_strimwidth($q, 0, 300, '…') . (in_array($m['content'], $un, true) ? '　［AI が答えられなかった］' : '');
+            }
+        }
+    }
+    if (!$asked) {
+        return [];
+    }
+    $system = "あなたは株式会社野田（福岡の、飲食店の換気扇・フード・排煙ダクト工事の会社）のホームページの係です。\n"
+        . "AI 相談でお客様が聞いた質問を見て、ホームページの Q&A（よくある質問）に足すとよい質問を選び、担当者に知らせます。\n\n"
+        . "選ぶもの：\n"
+        . "- AI が答えられなかった質問（［AI が答えられなかった］の印）\n"
+        . "- 今の Q&A に無い、ほかのお客様も聞きそうな新しい質問\n"
+        . "選ばないもの：今の Q&A と同じ意味の質問、あいさつ、工事と関係ない質問、1つのお店だけの事情、いたずら。\n"
+        . "似た質問はまとめて1つにしてください。多くても5つまで。足すものが無ければ空の並び [] にしてください。\n\n"
+        . "書き方：\n"
+        . "- question：Q&A にそのまま載せられる、一般的な聞き方の質問（お店の名前・人の名前・電話番号・住所は入れない）\n"
+        . "- reason：「AI が答えられなかった」か「今の Q&A に無い新しい質問」のどちらか\n"
+        . "- points：担当者が答えに書くとよいこと（何を決めて書けばよいか）を短く。野田の対応や金額を推測して書かないこと\n\n"
+        . "答えは JSON の並びだけにしてください（説明の文や ``` は付けない）。例：\n"
+        . "[{\"question\":\"日曜日や夜間でも工事をしてもらえますか？\",\"reason\":\"AI が答えられなかった\",\"points\":\"日曜・夜間に対応できるか、追加の費用があるか\"}]";
+    $user = "# 今の Q&A にある質問\n- " . implode("\n- ", chat_known_questions()) . "\n\n# お客様が AI 相談で聞いた質問\n" . implode("\n", $asked);
+    $text = chat_complete($system, $user);
+    if ($text === null) {
+        return [];
+    }
+    $s = strpos($text, '[');
+    $e = strrpos($text, ']');
+    $list = $s !== false && $e !== false ? json_decode(substr($text, $s, $e - $s + 1), true) : null;
+    if (!is_array($list)) {
+        error_log('AI チャット Q&A の提案: 答えが読めませんでした ' . mb_substr($text, 0, 200));
+        return [];
+    }
+    $out = [];
+    foreach ($list as $it) {
+        $q = trim((string)($it['question'] ?? ''));
+        if ($q === '' || mb_strlen($q) > 300) {
+            continue;
+        }
+        $out[] = ['q' => $q, 'why' => mb_substr(trim((string)($it['reason'] ?? '')), 0, 40), 'points' => mb_substr(trim((string)($it['points'] ?? '')), 0, 300)];
+        if (count($out) >= 5) {
+            break;
+        }
+    }
+    return $out;
+}
+
+/** 提案を管理画面の「AI に教える答え」に並べるために残す（新しい順、30件まで） */
+function chat_suggest_list(): array
+{
+    return json_decode((string)setting_safe('chat_faq_suggest'), true) ?: [];
+}
+function chat_suggest_save(array $list): void
+{
+    set_setting('chat_faq_suggest', $list ? json_encode(array_slice(array_values($list), 0, 30), JSON_UNESCAPED_UNICODE) : null);
+}
+function chat_suggest_add(array $items): void
+{
+    $list = chat_suggest_list();
+    $have = array_column($list, 'q');
+    foreach (array_reverse($items) as $it) {
+        if (!in_array($it['q'], $have, true)) {
+            array_unshift($list, $it + ['id' => bin2hex(random_bytes(4)), 'at' => date('Y-m-d')]);
+        }
+    }
+    chat_suggest_save($list);
 }

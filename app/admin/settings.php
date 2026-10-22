@@ -99,13 +99,22 @@ if ($action === 'answers') {
             ->execute([$list ? json_encode(array_values($list), JSON_UNESCAPED_UNICODE) : null, $logId]);
     };
     $errors = [];
-    $form = ['id' => 0, 'question' => '', 'answer' => '', 'log' => 0, 'idx' => 0];
+    $form = ['id' => 0, 'question' => '', 'answer' => '', 'on_faq' => 0, 'log' => 0, 'idx' => 0, 'sug' => ''];
+    // AI のおすすめ（Q&A に足すとよい質問）から1つ外す
+    $dropSug = function (string $id): void {
+        chat_suggest_save(array_filter(chat_suggest_list(), fn($it) => ($it['id'] ?? '') !== $id));
+    };
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $op = (string)($_POST['op'] ?? '');
         if ($op === 'dismiss') {
             $drop((int)($_POST['log'] ?? 0), (int)($_POST['idx'] ?? 0));
             flash('ok', '一覧から外しました。');
             redirect($back . '#todo');
+        }
+        if ($op === 'dismiss_suggest') {
+            $dropSug((string)($_POST['sug'] ?? ''));
+            flash('ok', 'おすすめから外しました。');
+            redirect($back . '#suggest');
         }
         if ($op === 'delete') {
             $pdo->prepare('DELETE FROM chat_answers WHERE id = ?')->execute([(int)($_POST['id'] ?? 0)]);
@@ -117,8 +126,10 @@ if ($action === 'answers') {
                 'id' => (int)($_POST['id'] ?? 0),
                 'question' => trim((string)($_POST['question'] ?? '')),
                 'answer' => trim((string)($_POST['answer'] ?? '')),
+                'on_faq' => isset($_POST['on_faq']) ? 1 : 0,
                 'log' => (int)($_POST['log'] ?? 0),
                 'idx' => (int)($_POST['idx'] ?? 0),
+                'sug' => (string)($_POST['sug'] ?? ''),
             ];
             if ($form['question'] === '') {
                 $errors['question'] = 'お客様の質問を入れてください。';
@@ -132,22 +143,32 @@ if ($action === 'answers') {
             }
             if (!$errors) {
                 if ($form['id'] > 0) {
-                    $pdo->prepare('UPDATE chat_answers SET question = ?, answer = ? WHERE id = ?')->execute([$form['question'], $form['answer'], $form['id']]);
+                    $pdo->prepare('UPDATE chat_answers SET question = ?, answer = ?, on_faq = ? WHERE id = ?')->execute([$form['question'], $form['answer'], $form['on_faq'], $form['id']]);
                 } else {
-                    $pdo->prepare('INSERT INTO chat_answers (question, answer) VALUES (?, ?)')->execute([$form['question'], $form['answer']]);
+                    $pdo->prepare('INSERT INTO chat_answers (question, answer, on_faq) VALUES (?, ?, ?)')->execute([$form['question'], $form['answer'], $form['on_faq']]);
                 }
                 if ($form['log'] > 0) {
                     $drop($form['log'], $form['idx']);
                 }
-                flash('ok', '答えを保存しました。次の質問から AI がこの答えを使います。');
+                if ($form['sug'] !== '') {
+                    $dropSug($form['sug']);
+                }
+                flash('ok', '答えを保存しました。次の質問から AI がこの答えを使います。' . ($form['on_faq'] ? 'よくある質問のページにも出ています。' : ''));
                 redirect($back . '#list');
             }
         }
     } elseif (isset($_GET['edit'])) {
-        $st = $pdo->prepare('SELECT id, question, answer FROM chat_answers WHERE id = ?');
+        $st = $pdo->prepare('SELECT * FROM chat_answers WHERE id = ?');
         $st->execute([(int)$_GET['edit']]);
         if ($row = $st->fetch()) {
-            $form = ['id' => (int)$row['id'], 'question' => $row['question'], 'answer' => $row['answer'], 'log' => 0, 'idx' => 0];
+            $form = ['id' => (int)$row['id'], 'question' => $row['question'], 'answer' => $row['answer'], 'on_faq' => (int)($row['on_faq'] ?? 0), 'log' => 0, 'idx' => 0, 'sug' => ''];
+        }
+    } elseif (isset($_GET['sug'])) {
+        // AI のおすすめの「答えを書く」から来た時は、質問を入れておく
+        foreach (chat_suggest_list() as $it) {
+            if (($it['id'] ?? '') === $_GET['sug']) {
+                $form = ['id' => 0, 'question' => $it['q'], 'answer' => '', 'on_faq' => 0, 'log' => 0, 'idx' => 0, 'sug' => $it['id']];
+            }
         }
     } elseif (isset($_GET['log'])) {
         // 「答えられなかった質問」の「答えを書く」から来た時は、質問を入れておく
@@ -156,7 +177,7 @@ if ($action === 'answers') {
         $list = json_decode((string)$st->fetchColumn(), true) ?: [];
         $idx = (int)($_GET['idx'] ?? 0);
         if (isset($list[$idx])) {
-            $form = ['id' => 0, 'question' => $list[$idx], 'answer' => '', 'log' => (int)$_GET['log'], 'idx' => $idx];
+            $form = ['id' => 0, 'question' => $list[$idx], 'answer' => '', 'on_faq' => 0, 'log' => (int)$_GET['log'], 'idx' => $idx, 'sug' => ''];
         }
     }
     $todo = [];
@@ -165,7 +186,7 @@ if ($action === 'answers') {
             $todo[] = ['log' => (int)$r['id'], 'idx' => $i, 'q' => $q, 'code' => chat_code($r['conv_key']), 'at' => $r['started_at']];
         }
     }
-    admin_render('answers', ['user' => $user, 'nav' => 'settings', 'title' => 'AI に教える答え', 'todo' => $todo, 'answers' => chat_answers(), 'form' => $form, 'errors' => $errors, 'flash' => take_flash()]);
+    admin_render('answers', ['user' => $user, 'nav' => 'settings', 'title' => 'AI に教える答え', 'todo' => $todo, 'suggest' => chat_suggest_list(), 'answers' => chat_answers(), 'form' => $form, 'errors' => $errors, 'flash' => take_flash()]);
     exit;
 }
 
