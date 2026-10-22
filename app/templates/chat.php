@@ -5,6 +5,13 @@ $pagesForLinks = [];
 foreach (site('pages') as $p) {
     $pagesForLinks[url($p['path'])] = $p['name'];
 }
+// 業態・工事の種類で絞った施工事例（AI が事例の一覧から案内する）と、消煙機の専用サイト
+foreach (case_categories() as $axis => $cats) {
+    foreach ($cats as $slug => $name) {
+        $pagesForLinks[url('construction_examples/') . '?' . $axis . '=' . $slug] = '施工事例（' . $name . '）';
+    }
+}
+$pagesForLinks['https://shoenki.duct-noda.com/'] = '野田の消煙機（資料請求）';
 $starters = ['店内に煙がこもる', '近所から臭いの苦情が来た', '新しくお店を開く予定', '費用の目安を知りたい', '対応エリアを知りたい'];
 
 // しばらくサイトを見ている人に、ボタンの上から1回だけ声をかける（見ているページに合わせた言葉と、そのまま聞ける質問2つ）

@@ -87,6 +87,7 @@ $routes = [
     '#^settings/$#' => ['settings', 'index'],
     '#^settings/contacts/$#' => ['settings', 'contacts'],
     '#^settings/chats/$#' => ['settings', 'chats'],
+    '#^settings/answers/$#' => ['settings', 'answers'],
     '#^settings/export/$#' => ['settings', 'export'],
 ];
 foreach ($routes as $re => [$file, $action]) {

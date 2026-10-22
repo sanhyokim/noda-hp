@@ -38,6 +38,7 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
   <p class="note note--sub">費用は使った量からの計算で、実際の請求額とは少しずれることがあります。正確な金額は AI の利用契約の管理画面（OpenRouter の「Activity」など）で確かめられます。</p>
   <div class="actions-inline">
     <a class="abtn abtn--line" href="<?= e(admin_url('settings/chats/')) ?>">会話の記録を見る（<?= number_format($chat['logs']) ?>件）</a>
+    <a class="abtn abtn--line" href="<?= e(admin_url('settings/answers/')) ?>">AI に教える答え（<?= number_format($chat['answers']) ?>件<?= $chat['todo'] ? '・答えられなかった質問あり' : '' ?>）</a>
     <form method="post">
       <?= csrf_field() ?>
       <input type="hidden" name="op" value="chat">

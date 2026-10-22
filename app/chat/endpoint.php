@@ -69,6 +69,9 @@ if (($reason = chat_rate_check((string)($_SERVER['REMOTE_ADDR'] ?? ''))) !== nul
 $r = chat_ask($messages);
 $page = is_string($in['page'] ?? null) ? $in['page'] : '';
 $isNew = chat_log($conv, array_merge($messages, [['role' => 'assistant', 'content' => $r['reply']]]), $page);
+if (!empty($r['unanswered'])) {
+    chat_mark_unanswered($conv, end($messages)['content']);
+}
 if (isset($r['usage'])) {
     chat_add_usage($r['usage'] + ['conversations' => $isNew ? 1 : 0]);
 }

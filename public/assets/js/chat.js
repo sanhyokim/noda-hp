@@ -46,13 +46,13 @@
   let state = load() || { conv: rid(), messages: [], open: false };
   let busy = false;
 
-  // 答えの中のサイト内アドレス（/flow/ など）だけをリンクにする
+  // 答えの中のサイト内アドレス（/flow/ など）と消煙機の専用サイトだけをリンクにする（外のサイトは新しいタブで）
   const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const paths = Object.keys(pages).filter((p) => p.length > 1).sort((a, b) => b.length - a.length).map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const linkRe = paths.length ? new RegExp('(?<![\\w/.:@-])(' + paths.join('|') + ')(?![\\w/-])', 'g') : null;
   const render = (text) => {
     let html = esc(text);
-    if (linkRe) html = html.replace(linkRe, (p) => `<a href="${p}">${esc(pages[p] || p)}</a>`);
+    if (linkRe) html = html.replace(linkRe, (p) => `<a href="${p}"${/^https?:/.test(p) ? ' target="_blank" rel="noopener"' : ''}>${esc(pages[p] || p)}</a>`);
     return html.split(/\n{2,}/).map((para) => `<p>${para.replace(/\n/g, '<br>')}</p>`).join('');
   };
 

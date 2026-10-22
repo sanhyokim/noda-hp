@@ -38,7 +38,7 @@ $where = function (string $path) use ($pageNames): string {
       <summary class="inq__sum">
         <time datetime="<?= e(date('c', strtotime($r['started_at']))) ?>"><?= e(date('Y.m.d H:i', strtotime($r['started_at']))) ?><small class="inq__code">相談番号 <?= e(chat_code($r['conv_key'])) ?></small></time>
         <span class="inq__who inq__who--q"><?= e(mb_strimwidth($first, 0, 90, '…')) ?></span>
-        <span class="inq__pref"><?= (int)$r['turns'] ?>往復・<?= e($where($r['page'])) ?>から<?php if ($r['handed_off']): ?> <span class="badge badge--published">問い合わせへ進んだ</span><?php endif; ?><?php if (isset($r['rating']) && $r['rating'] !== null): ?> <span class="badge<?= (int)$r['rating'] === 1 ? ' badge--published' : '' ?>"><?= (int)$r['rating'] === 1 ? '役に立った' : '役に立たなかった' ?></span><?php endif; ?></span>
+        <span class="inq__pref"><?= (int)$r['turns'] ?>往復・<?= e($where($r['page'])) ?>から<?php if ($r['handed_off']): ?> <span class="badge badge--published">問い合わせへ進んだ</span><?php endif; ?><?php if (!empty($r['unanswered'])): ?> <span class="badge badge--review">答えられなかった質問あり</span><?php endif; ?><?php if (isset($r['rating']) && $r['rating'] !== null): ?> <span class="badge<?= (int)$r['rating'] === 1 ? ' badge--published' : '' ?>"><?= (int)$r['rating'] === 1 ? '役に立った' : '役に立たなかった' ?></span><?php endif; ?></span>
         <?= icon('chev', 18, 'inq__chev') ?>
       </summary>
       <ol class="talk">
@@ -46,6 +46,9 @@ $where = function (string $path) use ($pageNames): string {
         <li class="talk__msg talk__msg--<?= $me ? 'me' : 'ai' ?>"><span class="talk__who"><?= $me ? 'お客様' : 'AI' ?></span><p><?= nl2br(e((string)($m['content'] ?? ''))) ?></p></li>
 <?php endforeach; ?>
       </ol>
+<?php if (!empty($r['unanswered'])): ?>
+      <p class="talk__todo"><a class="abtn abtn--line abtn--sm" href="<?= e(admin_url('settings/answers/')) ?>#todo">AI に答えを教える</a></p>
+<?php endif; ?>
     </details>
   </li>
 <?php endforeach; ?>

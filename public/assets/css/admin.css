@@ -382,3 +382,13 @@ fieldset.box[aria-invalid="true"] { border-color: var(--c-err); }
 .check input[type="radio"] + span::before { border-radius: 50%; }
 .check input[type="radio"]:checked + span::before { background-image: none; box-shadow: inset 0 0 0 4px var(--c-white); }
 .field--radios { display: grid; gap: 6px; }
+
+/* ---------- AI に教える答え ---------- */
+.qa { margin-top: 12px; border-top: 1px solid var(--c-line); }
+.qa__item { display: grid; gap: 6px; padding: 16px 0; border-bottom: 1px solid var(--c-line); }
+.qa__q { font-weight: 700; color: var(--c-ink); overflow-wrap: anywhere; }
+.qa__q::before { content: "Q."; margin-right: 6px; font-family: var(--font-num); color: var(--c-blue); }
+.qa__a { color: var(--c-text); overflow-wrap: anywhere; }
+.qa__meta { font-size: 14px; color: var(--c-muted); }
+.qa__btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.talk__todo { padding: 0 16px 20px; }

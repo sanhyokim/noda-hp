@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // 設定・保守（指示書 5-5）：Instagram のトークンと接続テスト、AI 相談の利用状況と会話の記録、パスワードの変更、
 // お問い合わせの受信一覧、データの書き出し。
-/** @var string $action index|contacts|chats|export */
+/** @var string $action index|contacts|chats|answers|export */
 /** @var array $user */
 
 $pdo = db();
@@ -83,6 +83,89 @@ if ($action === 'chats') {
         $pageNames[url($p['path'])] = $p['name'];
     }
     admin_render('chats', ['user' => $user, 'nav' => 'settings', 'title' => 'AI 相談の会話の記録', 'rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => admin_pages($total, $per), 'pageNames' => $pageNames, 'q' => $q, 'flash' => take_flash()]);
+    exit;
+}
+
+// ---------- AI に教える答え（答えられなかった質問に、担当者が後から答えを足す） ----------
+if ($action === 'answers') {
+    $back = admin_url('settings/answers/');
+    // 答えられなかった質問の一覧から1つ外す（$logId の記録の $idx 番目）
+    $drop = function (int $logId, int $idx) use ($pdo): void {
+        $st = $pdo->prepare('SELECT unanswered FROM chat_logs WHERE id = ?');
+        $st->execute([$logId]);
+        $list = json_decode((string)$st->fetchColumn(), true) ?: [];
+        unset($list[$idx]);
+        $pdo->prepare('UPDATE chat_logs SET unanswered = ? WHERE id = ?')
+            ->execute([$list ? json_encode(array_values($list), JSON_UNESCAPED_UNICODE) : null, $logId]);
+    };
+    $errors = [];
+    $form = ['id' => 0, 'question' => '', 'answer' => '', 'log' => 0, 'idx' => 0];
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $op = (string)($_POST['op'] ?? '');
+        if ($op === 'dismiss') {
+            $drop((int)($_POST['log'] ?? 0), (int)($_POST['idx'] ?? 0));
+            flash('ok', '一覧から外しました。');
+            redirect($back . '#todo');
+        }
+        if ($op === 'delete') {
+            $pdo->prepare('DELETE FROM chat_answers WHERE id = ?')->execute([(int)($_POST['id'] ?? 0)]);
+            flash('ok', '答えを消しました。次の質問から AI は使いません。');
+            redirect($back . '#list');
+        }
+        if ($op === 'save') {
+            $form = [
+                'id' => (int)($_POST['id'] ?? 0),
+                'question' => trim((string)($_POST['question'] ?? '')),
+                'answer' => trim((string)($_POST['answer'] ?? '')),
+                'log' => (int)($_POST['log'] ?? 0),
+                'idx' => (int)($_POST['idx'] ?? 0),
+            ];
+            if ($form['question'] === '') {
+                $errors['question'] = 'お客様の質問を入れてください。';
+            } elseif (mb_strlen($form['question']) > 500) {
+                $errors['question'] = '質問は500字以内にしてください。';
+            }
+            if ($form['answer'] === '') {
+                $errors['answer'] = '答えを入れてください。';
+            } elseif (mb_strlen($form['answer']) > 2000) {
+                $errors['answer'] = '答えは2,000字以内にしてください。';
+            }
+            if (!$errors) {
+                if ($form['id'] > 0) {
+                    $pdo->prepare('UPDATE chat_answers SET question = ?, answer = ? WHERE id = ?')->execute([$form['question'], $form['answer'], $form['id']]);
+                } else {
+                    $pdo->prepare('INSERT INTO chat_answers (question, answer) VALUES (?, ?)')->execute([$form['question'], $form['answer']]);
+                }
+                if ($form['log'] > 0) {
+                    $drop($form['log'], $form['idx']);
+                }
+                flash('ok', '答えを保存しました。次の質問から AI がこの答えを使います。');
+                redirect($back . '#list');
+            }
+        }
+    } elseif (isset($_GET['edit'])) {
+        $st = $pdo->prepare('SELECT id, question, answer FROM chat_answers WHERE id = ?');
+        $st->execute([(int)$_GET['edit']]);
+        if ($row = $st->fetch()) {
+            $form = ['id' => (int)$row['id'], 'question' => $row['question'], 'answer' => $row['answer'], 'log' => 0, 'idx' => 0];
+        }
+    } elseif (isset($_GET['log'])) {
+        // 「答えられなかった質問」の「答えを書く」から来た時は、質問を入れておく
+        $st = $pdo->prepare('SELECT unanswered FROM chat_logs WHERE id = ?');
+        $st->execute([(int)$_GET['log']]);
+        $list = json_decode((string)$st->fetchColumn(), true) ?: [];
+        $idx = (int)($_GET['idx'] ?? 0);
+        if (isset($list[$idx])) {
+            $form = ['id' => 0, 'question' => $list[$idx], 'answer' => '', 'log' => (int)$_GET['log'], 'idx' => $idx];
+        }
+    }
+    $todo = [];
+    foreach ($pdo->query('SELECT id, conv_key, started_at, unanswered FROM chat_logs WHERE unanswered IS NOT NULL ORDER BY started_at DESC, id DESC LIMIT 100') as $r) {
+        foreach (json_decode((string)$r['unanswered'], true) ?: [] as $i => $q) {
+            $todo[] = ['log' => (int)$r['id'], 'idx' => $i, 'q' => $q, 'code' => chat_code($r['conv_key']), 'at' => $r['started_at']];
+        }
+    }
+    admin_render('answers', ['user' => $user, 'nav' => 'settings', 'title' => 'AI に教える答え', 'todo' => $todo, 'answers' => chat_answers(), 'form' => $form, 'errors' => $errors, 'flash' => take_flash()]);
     exit;
 }
 
@@ -208,6 +291,14 @@ admin_render('settings', [
         'prev' => chat_usage(date('Ym', strtotime('first day of last month'))),
         'limit' => (int)chat_config('monthly_limit'),
         'logs' => (int)$pdo->query('SELECT COUNT(*) FROM chat_logs')->fetchColumn(),
+        'answers' => count(chat_answers()),
+        'todo' => (function () use ($pdo): int {
+            try {
+                return (int)$pdo->query('SELECT COUNT(*) FROM chat_logs WHERE unanswered IS NOT NULL')->fetchColumn();
+            } catch (Throwable $e) {
+                return 0;
+            }
+        })(),
         'report' => chat_report_mode(),
         'handed' => (int)$pdo->query("SELECT COUNT(*) FROM chat_logs WHERE handed_off = 1 AND started_at >= '" . date('Y-m-01') . "'")->fetchColumn(),
         'rated' => (function () use ($pdo): array {
