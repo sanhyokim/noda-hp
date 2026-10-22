@@ -1424,18 +1424,24 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .aic__panel {
   position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column;
   background: var(--c-white); color: var(--c-text);
-  opacity: 0; transform: translateY(32px); transform-origin: 100% 100%;
-  transition: opacity .22s var(--ease), transform .3s var(--ease);
+  /* スマホ：下から画面いっぱいにせり上がり、閉じると下へ沈む */
+  transform: translateY(100%); box-shadow: 0 -12px 40px rgba(20, 24, 32, .18);
+  transition: transform .3s cubic-bezier(.5, 0, .75, 0); /* 閉じる時 */
 }
-.aic__panel.is-in { opacity: 1; transform: none; }
+.aic__panel.is-in { opacity: 1; transform: none; transition: transform .42s cubic-bezier(.16, 1, .3, 1); } /* 開く時 */
 .aic__panel[hidden] { display: none; }
 @media (min-width: 640px) {
+  /* 中身は窓が広がってから少し遅れて浮かぶ */
+  .aic__panel > * { opacity: 0; transition: opacity .12s linear; }
+  .aic__panel.is-in > * { opacity: 1; transition: opacity .25s linear .14s; }
   .aic__panel {
     inset: auto 24px 24px auto; width: 400px; height: min(720px, calc(100dvh - 48px));
     border: 1px solid var(--c-line); border-radius: var(--r); box-shadow: 0 24px 60px rgba(20, 24, 32, .24); overflow: hidden;
-    transform: translateY(20px) scale(.94); /* パソコンでは右下のボタンの位置から広がる */
+    /* パソコン：右下の「AIに相談」ボタンから大きく広がり、閉じるとボタンへ縮んで戻る */
+    opacity: 0; transform: scale(.12); transform-origin: calc(100% - 70px) calc(100% - 4px); border-radius: 28px;
+    transition: transform .3s cubic-bezier(.55, 0, .75, .2), opacity .18s linear .12s, border-radius .3s;
   }
-  .aic__panel.is-in { transform: none; }
+  .aic__panel.is-in { transform: none; border-radius: var(--r); transition: transform .46s cubic-bezier(.2, 1.15, .35, 1), opacity .14s linear, border-radius .46s; }
 }
 @media (max-width: 639.98px) { html.aic-open, html.aic-open body { overflow: hidden; } }
 .aic__head { display: flex; align-items: center; gap: 12px; padding: 12px 8px 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: var(--c-ink); color: var(--c-white); }
@@ -1602,7 +1608,8 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 @media (prefers-reduced-motion: reduce) { .aic__sheet, .aic__hand-toggle.is-hint, .aic__msg.is-live p:last-child::after { animation: none; } }
 /* 「動きを減らす」設定の画面（Windows で「アニメーション効果」を切っている時など）でも、動かさずに、ふわっと出る・消えるだけは残す */
 @media (prefers-reduced-motion: reduce) {
-  .aic__panel { transform: none !important; transition: opacity .2s linear !important; }
+  .aic__panel { transform: none !important; transition: opacity .3s linear !important; }
+  .aic__panel > * { opacity: 1 !important; }
   .aic__fab { transform: none !important; transition: opacity .2s linear !important; }
   .aic.is-intro .aic__fab, .aic__fab-icon::after { animation: none !important; }
 }

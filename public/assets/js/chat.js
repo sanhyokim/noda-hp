@@ -87,7 +87,7 @@
       else requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('is-in')));
     } else {
       panel.classList.remove('is-in');
-      closeTimer = setTimeout(() => { if (!state.open) panel.hidden = true; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 200 : 280);
+      closeTimer = setTimeout(() => { if (!state.open) panel.hidden = true; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 300 : 340);
     }
     fab.setAttribute('aria-expanded', String(open));
     root.classList.toggle('is-open', open);
