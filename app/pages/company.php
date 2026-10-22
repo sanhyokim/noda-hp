@@ -61,10 +61,11 @@ $mapQuery = rawurlencode(company('hq_address'));
 <section class="section wrap" aria-labelledby="s4">
   <?php render('section-head', ['label' => 'ACCESS', 'title' => 'アクセス', 'id' => 's4']); ?>
   <?php // 本社の外観写真は載せない（ボス決定 2026-10-21） ?>
-  <div class="map map--wide" data-map-src="https://www.google.com/maps?q=<?= e($mapQuery) ?>&amp;output=embed">
-    <button class="map__btn btn btn--outline" type="button"><?= icon('pin', 18) ?>地図を表示する（Googleマップ）</button>
-    <p class="map__addr">〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?></p>
+  <?php // 地図は最初から出す。ページを開いた時ではなく、地図の近くまで見に来た時に読み込む（loading="lazy"） ?>
+  <div class="map map--wide is-loaded">
+    <iframe src="https://www.google.com/maps?q=<?= e($mapQuery) ?>&amp;output=embed" title="本社の地図（Googleマップ）" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
   </div>
+  <p class="map__under"><?= icon('pin', 16) ?>〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?>　<a href="https://www.google.com/maps/search/?api=1&amp;query=<?= e($mapQuery) ?>" target="_blank" rel="noopener">Googleマップで開く</a></p>
 </section>
 
 <section class="section wrap" aria-labelledby="s5">
