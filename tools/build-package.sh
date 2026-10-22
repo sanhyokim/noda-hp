@@ -1,6 +1,6 @@
 #!/bin/sh
 # サーバーに上げるファイル一式を作る（指示書 段階7）。
-# 出来上がり：dist/upload/noda-site.zip と dist/upload/install.php（この2つを FTP で置きたいフォルダへ上げる）
+# 出来上がり：dist/upload/ の noda-site-1-of-N.zip … と install.php（全部を FTP で置きたいフォルダへ上げる）
 # zip の中は「公開フォルダの中に app/ などを置く」形（コアサーバー向け。app/ storage/ vendor/ migration/ は .htaccess で閉じる）。
 # 実行：sh tools/build-package.sh（先に php tools/export-seed.php で migration/seed.sql を最新にしておく）
 set -eu
@@ -45,10 +45,31 @@ for need in index.php .htaccess app/.htaccess storage/.htaccess vendor/autoload.
   [ -e "$PKG/$need" ] || { echo "足りないファイルがあります: $need"; exit 1; }
 done
 
-# zip（写真はもう縮んでいるので、そのまま入れる）
-(cd "$PKG" && zip -q -r -n .jpg:.jpeg:.webp:.png:.gif:.mp4:.woff2 "$DIST/upload/noda-site.zip" .)
+# zip（1つ90MBまでに分ける。大きすぎるファイルは送る途中で切れやすいため。写真はもう縮んでいるので、そのまま入れる）
+(cd "$PKG" && find . -type f | sed 's#^\./##' | sort) > "$DIST/files.txt"
+(cd "$PKG" && python3 - "$DIST/files.txt" "$DIST/part" <<'PY'
+import os, sys
+files = open(sys.argv[1], encoding='utf-8').read().splitlines()
+limit, parts, cur, size = 90 * 1024 * 1024, [], [], 0
+for f in files:
+    s = os.path.getsize(f)
+    if cur and size + s > limit:
+        parts.append(cur); cur, size = [], 0
+    cur.append(f); size += s
+parts.append(cur)
+for n, group in enumerate(parts, 1):
+    open(f'{sys.argv[2]}-{n}.txt', 'w', encoding='utf-8').write('\n'.join(group) + '\n')
+print(len(parts))
+PY
+) > "$DIST/count.txt"
+N=$(cat "$DIST/count.txt")
+i=1
+while [ "$i" -le "$N" ]; do
+  (cd "$PKG" && zip -q -n .jpg:.jpeg:.webp:.png:.gif:.mp4:.woff2 "$DIST/upload/noda-site-$i-of-$N.zip" -@ < "$DIST/part-$i.txt")
+  i=$((i + 1))
+done
 cp tools/install.php "$DIST/upload/install.php"
 
-echo "できました：dist/upload/"
+echo "できました：dist/upload/（zip $N 個と install.php）"
 ls -la "$DIST/upload"
-echo "ファイル数：$(unzip -Z1 "$DIST/upload/noda-site.zip" | wc -l)"
+echo "ファイル数：$(wc -l < "$DIST/files.txt")"

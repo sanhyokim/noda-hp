@@ -2,16 +2,14 @@
 declare(strict_types=1);
 
 // サーバーでファイル一式を広げる（指示書 段階7）。
-// noda-site.zip と一緒に、置きたいフォルダ（例：public_html/duct-noda.com/new/）へ FTP で上げ、ブラウザでこのファイルを開く。
+// noda-site-1-of-N.zip …（全部）と一緒に、置きたいフォルダ（例：public_html/duct-noda.com/new/）へ FTP で上げ、ブラウザでこのファイルを開く。
 //   1. PHP の版と必要な機能を確かめる（足りなければ何もしないで止まる）
-//   2. zip を少しずつ広げる（サーバーの時間制限にかからないよう、数秒ごとに画面を読み込み直して続ける）
+//   2. zip がそろっているか確かめ、1つ目から少しずつ広げる（サーバーの時間制限にかからないよう、数秒ごとに画面を読み込み直して続ける）
 //   3. 終わったら zip とこのファイルを消し、最初の設定画面（admin/setup.php）へ進む
 
-const ZIP_NAME = 'noda-site.zip';
 const STEP_SECONDS = 8;
 
 $dir = __DIR__;
-$zipPath = $dir . '/' . ZIP_NAME;
 $h = fn(string $s): string => htmlspecialchars($s, ENT_QUOTES, 'UTF-8');
 
 function page(string $title, string $body, ?string $refresh = null): never
@@ -49,15 +47,29 @@ if (in_array(false, $checks, true)) {
         . '<p>PHP の版は、コアサーバーの管理画面の「ドメイン設定」で、このドメインの PHP を 8.2 以上（あれば最新）に変えると直ります。</p>');
 }
 
-if (!is_file($zipPath)) {
-    page('zip が見つかりません', '<p>このファイルと同じフォルダに <b>' . $h(ZIP_NAME) . '</b> を上げてから、このページを読み込み直してください。</p>'
+// 2. zip がそろっているか
+$count = 0;
+foreach (glob($dir . '/noda-site-*-of-*.zip') ?: [] as $f) {
+    if (preg_match('/noda-site-\d+-of-(\d+)\.zip$/', $f, $m)) {
+        $count = max($count, (int)$m[1]);
+    }
+}
+if ($count === 0) {
+    page('zip が見つかりません', '<p>このファイルと同じフォルダに、<b>noda-site-1-of-○.zip</b> などの zip を全部上げてから、このページを読み込み直してください。</p>'
         . '<p>もう広げ終わっている時は、<a href="admin/setup.php">最初の設定</a>へ進んでください。</p>');
 }
+$zipName = fn(int $n): string => 'noda-site-' . $n . '-of-' . $count . '.zip';
+$lack = array_filter(range(1, $count), fn($n) => !is_file($dir . '/' . $zipName($n)));
+if ($lack) {
+    page('zip が足りません', '<p>次の zip がまだありません。FTP で上げてから、このページを読み込み直してください。</p><ul><li>'
+        . implode('</li><li>', array_map(fn($n) => $h($zipName($n)), $lack)) . '</li></ul>');
+}
 
-// 2. 少しずつ広げる
+// 3. 少しずつ広げる（?p=何個目&i=その中の何件目）
+$part = min($count, max(1, (int)($_GET['p'] ?? 1)));
 $zip = new ZipArchive();
-if ($zip->open($zipPath) !== true) {
-    page('zip を開けません', '<p>' . $h(ZIP_NAME) . ' が途中までしか上がっていない可能性があります。FTP でもう一度上げ直してから、このページを読み込み直してください。</p>');
+if ($zip->open($dir . '/' . $zipName($part)) !== true) {
+    page('zip を開けません', '<p>' . $h($zipName($part)) . ' が途中までしか上がっていない可能性があります。FTP でこの zip をもう一度上げ直して（上書き）から、このページを読み込み直してください。</p>');
 }
 $total = $zip->numFiles;
 $i = max(0, (int)($_GET['i'] ?? 0));
@@ -76,13 +88,16 @@ while ($i < $total && microtime(true) - $start < STEP_SECONDS) {
 }
 $zip->close();
 
-if ($i < $total) {
-    $pct = (int)floor($i / $total * 100);
-    page('ファイルを広げています… ' . $pct . '%', '<div class="bar"><span style="width:' . $pct . '%"></span></div><p>' . $i . ' / ' . $total . ' 件。自動で進みます。このまま閉じずにお待ちください（数分かかります）。</p>'
-        . '<p>止まってしまった時は、このページを読み込み直すと続きから進みます。</p>', '?i=' . $i);
+if ($i < $total || $part < $count) {
+    $next = $i < $total ? '?p=' . $part . '&i=' . $i : '?p=' . ($part + 1) . '&i=0';
+    $pct = (int)floor((($part - 1) + $i / max(1, $total)) / $count * 100);
+    page('ファイルを広げています… ' . $pct . '%', '<div class="bar"><span style="width:' . $pct . '%"></span></div><p>zip ' . $part . ' / ' . $count . ' 個目。自動で進みます。このまま閉じずにお待ちください（数分かかります）。</p>'
+        . '<p>止まってしまった時は、このページを読み込み直すと続きから進みます。</p>', $next);
 }
 
-// 3. 片付け
-@unlink($zipPath);
+// 4. 片付け
+for ($n = 1; $n <= $count; $n++) {
+    @unlink($dir . '/' . $zipName($n));
+}
 @unlink(__FILE__);
-page('ファイルを広げ終わりました', '<p>' . $total . ' 件のファイルを置きました。zip とこのファイルは消しました。</p><p>次に、データベースの情報を入れて最初の設定をします。</p><a class="btn" href="admin/setup.php">最初の設定へ進む</a>');
+page('ファイルを広げ終わりました', '<p>ファイルを置き終わりました。zip とこのファイルは消しました。</p><p>次に、データベースの情報を入れて最初の設定をします。</p><a class="btn" href="admin/setup.php">最初の設定へ進む</a>');
