@@ -90,4 +90,4 @@ render('page-head', [
   </a>
 </section>
 
-<?php render('related', ['names' => ['煙・臭い対策', '消煙機']]); ?>
+<?php render('related', ['names' => ['消煙機']]); ?>

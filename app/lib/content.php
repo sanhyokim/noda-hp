@@ -129,15 +129,17 @@ function cases_in_categories(array $names, int $limit = 3): array
         return array_map(fn($r) => $r + ['image' => null, 'image_w' => 800, 'image_h' => 533], array_slice($rows, 0, $limit));
     }
     $in = implode(',', array_fill(0, count($names), '?'));
+    // 題名にカテゴリ名（例：消煙機）が入っている事例を先に出す。タグが付いているだけで主役は別の物、という事例が上に来ないように（Boss 指摘 2026-10-22）
+    $inTitle = implode(' OR ', array_fill(0, count($names), "c.title LIKE CONCAT('%', ?, '%')"));
     $st = $pdo->prepare(
-        "SELECT DISTINCT c.id, c.slug, c.title, c.published_at, c.location, i.path_thumb AS image, i.width AS image_w, i.height AS image_h
+        "SELECT c.id, c.slug, c.title, c.published_at, c.location, i.path_thumb AS image, i.width AS image_w, i.height AS image_h
          FROM cases c
-         JOIN case_categories cc ON cc.case_id = c.id
-         JOIN categories cat ON cat.id = cc.category_id AND cat.name IN ($in)
          LEFT JOIN case_images i ON i.id = c.thumbnail_image_id
-         WHERE " . live_sql('c') . " ORDER BY c.published_at DESC, c.id DESC LIMIT " . (int)$limit
+         WHERE " . live_sql('c') . "
+           AND c.id IN (SELECT cc.case_id FROM case_categories cc JOIN categories cat ON cat.id = cc.category_id WHERE cat.name IN ($in))
+         ORDER BY ($inTitle) DESC, c.published_at DESC, c.id DESC LIMIT " . (int)$limit
     );
-    $st->execute(array_values($names));
+    $st->execute([...array_values($names), ...array_values($names)]);
     return attach_categories($st->fetchAll());
 }
 
