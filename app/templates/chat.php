@@ -158,7 +158,7 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
           <textarea id="aic-input" rows="1" maxlength="800" placeholder="ここに質問を入力してください" enterkeyhint="send"></textarea>
           <button class="aic__send" type="submit" aria-label="送る"><?= icon('send', 20) ?><span class="aic__send-text">送る</span></button>
         </div>
-        <p class="aic__note">AI がサイトの情報をもとにお答えします。会話は野田の担当者も確認します。お名前・電話番号は書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>
+        <p class="aic__note">AI がサイトの情報をもとにお答えします。お名前・電話番号は書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>
       </form>
     </div>
   </section>
