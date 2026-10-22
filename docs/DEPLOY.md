@@ -127,5 +127,6 @@
 - `base_url` は `'auto'`（`SCRIPT_NAME` のフォルダから決める）。/new/ から本番の場所へ移しても書き換え不要
 - 最初の設定（`/admin/setup.php`）：`app/config.php` が無ければデータベースの情報を聞いて作る → `schema.sql` → cases が空なら `seed.sql` を取り込む → 管理者登録 → `setup.php.done` に名前を変えて無効化。データベースの場所は localhost・127.0.0.1・*.coreserver.jp だけ受け付ける
 - 試験用の場所の印（`noindex => true`）がある間は、`X-Robots-Tag` と meta robots で検索に載せず、Google タグマネージャーも読み込まない
-- 直した一式の渡し方：zip を作り直して同じ手順4〜5で上書きすれば、設定ファイル・データベース・管理画面で上げた写真はそのまま残る（setup.php が戻っても、管理者がいれば何もせず無効化される）
+- 置いた後の手直し：`sh tools/build-update.sh <前に渡したコミット>` で、変わったファイルだけの `noda-site-1-of-1.zip` と `install.php` を作る。ボスは2つを `new` に上げて install.php を開くだけ（設定・データベース・上げた写真はそのまま）
+- 直した一式の渡し方（全部入れ直す時）：zip を作り直して同じ手順4〜5で上書きすれば、設定ファイル・データベース・管理画面で上げた写真はそのまま残る（setup.php が戻っても、管理者がいれば何もせず無効化される）
 - 手元の Apache（`/srv/wp` を WordPress の場所に見立て、`/srv/wp/new/` に置く）で、install.php → 最初の設定 → 投稿・編集・削除 → フォームまで確認済み（2026-10-22）
