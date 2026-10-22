@@ -65,7 +65,7 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
     <div class="gh__actions">
       <a class="gh__contact" href="<?= e(page_url('contact')) ?>">お問い合わせ</a>
       <a class="gh__sns" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener" aria-label="LINEで相談する"><img src="<?= e(asset('img/line-icon-black.png')) ?>" width="30" height="30" alt="" decoding="async"></a>
-      <a class="gh__sns gh__sns--ig" href="<?= e(company('instagram_url')) ?>" target="_blank" rel="noopener" aria-label="Instagram"><?= icon('instagram', 26) ?></a>
+      <a class="gh__sns gh__sns--ig" href="<?= e(company('instagram_url')) ?>" target="_blank" rel="noopener" aria-label="Instagram"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="7" fill="#111"/><rect x="7.5" y="7.5" width="15" height="15" rx="4.2" fill="none" stroke="#fff" stroke-width="1.9"/><circle cx="15" cy="15" r="3.6" fill="none" stroke="#fff" stroke-width="1.9"/><circle cx="19.4" cy="10.6" r="1.1" fill="#fff"/></svg></a>
     </div>
     <a class="gh__btn gh__tel" href="<?= e(tel_href(company('tel_free'))) ?>" aria-label="電話をかける <?= e(company('tel_free')) ?>"><?= icon('phone', 22) ?></a>
     <button class="gh__btn gh__menu topbar__menu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="メニューを開く"><?= icon('menu', 24) ?><span>MENU</span></button>
