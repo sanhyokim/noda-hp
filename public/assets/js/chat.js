@@ -467,4 +467,19 @@
       root.classList.add('is-intro');
     }
   } catch (_) { /* 何もしない */ }
+
+  // 一度も開いていない間は、10秒ごとにボタンを弾ませ、吹き出しを揺らし、輪を広げて気づいてもらう（ページを移っても、開くまで続ける）
+  const BKEY = 'noda-chat-opened';
+  const opened = () => { try { return !!sessionStorage.getItem(BKEY); } catch (_) { return false; } };
+  fab.addEventListener('click', () => { try { sessionStorage.setItem(BKEY, '1'); } catch (_) { /* 何もしない */ } });
+  let beckonOff = 0;
+  const beckon = () => {
+    if (state.open || state.messages.length || document.hidden || opened() || (nudge && !nudge.hidden)) return;
+    clearTimeout(beckonOff);
+    fab.classList.remove('is-beckon');
+    void fab.offsetWidth; // 付け直して、動きを最初から
+    fab.classList.add('is-beckon');
+    beckonOff = setTimeout(() => fab.classList.remove('is-beckon'), 3400);
+  };
+  setTimeout(() => { beckon(); setInterval(beckon, 10000); }, root.classList.contains('is-intro') ? 7000 : 3000);
 })();

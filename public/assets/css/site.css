@@ -1419,6 +1419,13 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .aic__fab-icon::after { content: ""; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--c-blue); opacity: 0; pointer-events: none; }
 .aic.is-intro .aic__fab-icon::after { animation: aic-ping 1.6s var(--ease) 1.6s 3; }
 .aic__fab.is-ping .aic__fab-icon::after { animation: aic-ping 1.6s var(--ease) 0s 2; }
+/* 一度も開いていない間は、10秒ごとに弾んで、吹き出しが揺れて、輪が2回広がる（chat.js が is-beckon を付け外し） */
+.aic__fab.is-beckon { animation: aic-hop .9s var(--ease) 1; }
+.aic__fab.is-beckon .aic__fab-icon svg { animation: aic-wiggle .9s ease-in-out .1s 1; }
+.aic__fab.is-beckon .aic__fab-icon::after { animation: aic-ping 1.6s var(--ease) 0s 2; }
+@keyframes aic-hop { 0%, 100% { transform: none; } 30% { transform: translateY(-8px); } 55% { transform: none; } 72% { transform: translateY(-3px); } }
+@keyframes aic-wiggle { 0%, 100% { transform: none; } 20% { transform: rotate(-16deg); } 40% { transform: rotate(13deg); } 60% { transform: rotate(-8deg); } 80% { transform: rotate(4deg); } }
+@keyframes aic-glow { 0%, 100% { opacity: 0; transform: scale(1.4); } 35%, 60% { opacity: .9; transform: scale(1.4); } }
 @keyframes aic-fab-in { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
 @keyframes aic-ping { 0% { opacity: .9; transform: scale(1); } 100% { opacity: 0; transform: scale(1.9); } }
 
@@ -1614,5 +1621,7 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
   .aic__panel > * { opacity: 1 !important; }
   .aic__fab { transform: none !important; transition: opacity .2s linear !important; }
   .aic.is-intro .aic__fab, .aic__fab-icon::after { animation: none !important; }
+  /* 動きを減らす設定でも、ボタンのまわりの輪が光って消えるだけは見せる（位置や大きさは動かさない） */
+  .aic__fab.is-beckon .aic__fab-icon::after { animation: aic-glow 1.6s linear 2 !important; }
 }
 @media print { .aic { display: none !important; } }
