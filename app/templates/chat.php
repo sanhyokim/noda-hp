@@ -150,13 +150,13 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
         <p class="aic__hand-tel">お急ぎの方は <a href="<?= e(tel_href(company('tel_free'))) ?>" data-handoff><?= e(company('tel_free')) ?></a>（平日 <?= e(company('hours')) ?>）</p>
       </div>
       <form class="aic__form" data-form>
+        <div class="aic__over">
+          <button class="aic__hand-toggle" type="button" aria-expanded="false" aria-controls="aic-hand-body" data-hand-toggle><?= icon('phone', 16) ?>担当者に相談</button>
+        </div>
         <div class="aic__box">
           <label class="u-sr" for="aic-input">相談内容</label>
           <textarea id="aic-input" rows="1" maxlength="800" placeholder="ここに質問を入力してください" enterkeyhint="send"></textarea>
-          <div class="aic__tools">
-            <button class="aic__hand-toggle" type="button" aria-expanded="false" aria-controls="aic-hand-body" data-hand-toggle><?= icon('phone', 16) ?>担当者に相談</button>
-            <button class="aic__send" type="submit" aria-label="送る"><?= icon('send', 20) ?><span class="aic__send-text">送る</span></button>
-          </div>
+          <button class="aic__send" type="submit" aria-label="送る"><?= icon('send', 20) ?><span class="aic__send-text">送る</span></button>
         </div>
         <p class="aic__note">AI がサイトの情報をもとにお答えします。お名前・電話番号は書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>
       </form>
