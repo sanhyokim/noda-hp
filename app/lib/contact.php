@@ -265,14 +265,16 @@ function contact_summary(array $in): string
 
 function contact_send_staff(array $in, array $files, bool $fromChat): bool
 {
-    $body = "ホームページのお問い合わせフォームから、次の内容が届きました。\n"
+    // 件名と本文の1行目で、他の LP からのお問い合わせと見分けられるように（Boss 指示 2026-10-22）
+    $body = "【野田の公式ホームページからのお問い合わせ】\n"
+        . "株式会社野田の公式ホームページ（" . abs_url() . "）のお問い合わせフォームから、次の内容が届きました。\n"
         . ($fromChat ? "（AI相談のあとに送られたお問い合わせです）\n" : '')
         . "\n受信日時：" . date('Y年n月j日 H:i') . "\n\n"
         . contact_summary($in)
         . ($files ? "\n■添付ファイル\n" . implode("\n", array_column($files, 'name')) . "\n（このメールに添付しています）\n" : '')
         . "\n――\nこのメールに返信すると、お客様（" . $in['email'] . "）あてに届きます。\n"
         . "管理画面でも確認できます：" . abs_url('admin/settings/contacts/') . "\n";
-    $subject = '【HPお問い合わせ】' . $in['name'] . '様（' . $in['prefecture'] . '）';
+    $subject = '【野田公式HPからのお問い合わせ】' . $in['name'] . '様（' . $in['prefecture'] . '）';
     return contact_mail((array)config('mail')['to'], $subject, $body, $in['email'], $in['name'], $files);
 }
 

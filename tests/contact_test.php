@@ -100,7 +100,7 @@ $m = array_map(fn($f) => json_decode((string)file_get_contents($f), true), $new)
 $staff = array_values(array_filter($m, fn($x) => count($x['to']) === 4))[0] ?? null;
 $reply = array_values(array_filter($m, fn($x) => $x['to'] === [$marker]))[0] ?? null;
 $check('担当者4宛先あてのメール（件名・返信先・添付）', $mails() - $before === 2 && $staff
-    && $staff['subject'] === '【HPお問い合わせ】試験 太郎様（福岡県）' && $staff['reply_to'] === $marker && $staff['files'] === ['煙の写真.jpg']
+    && $staff['subject'] === '【野田公式HPからのお問い合わせ】試験 太郎様（福岡県）' && $staff['reply_to'] === $marker && $staff['files'] === ['煙の写真.jpg']
     && str_contains($staff['body'], '092-504-5502'));
 $check('お客様への自動返信', $reply && $reply['subject'] === 'お問い合わせを受け付けました｜株式会社野田' && str_contains($reply['body'], '営業日 9:00〜17:00 に担当者よりご連絡します'));
 $saved = json_decode((string)$pdo->query('SELECT attachment_path FROM contact_logs WHERE email = ' . $pdo->quote($marker))->fetchColumn(), true);
