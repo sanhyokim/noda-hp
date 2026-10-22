@@ -373,6 +373,8 @@ main:focus { outline: none; }
 .hero__actions { display: flex; flex-direction: column; align-items: stretch; gap: 10px; width: 100%; max-width: 360px; margin-top: 26px; }
 .hero__cta { min-height: 60px; padding: 0 32px; border-radius: 999px; font-size: 17px; color: var(--c-blue-dark); box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
 .hero__cta svg { color: var(--c-blue); }
+.hero__sub { min-height: 60px; padding: 0 30px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .8); background: rgba(0, 0, 0, .28); color: var(--c-white); font-size: 17px; }
+.hero__sub:hover { background: var(--c-white); color: var(--c-ink); filter: none; }
 @media (min-width: 640px) {
   .hero { --h: 600px; }
   .hero__since { font-size: 20px; }
@@ -386,6 +388,7 @@ main:focus { outline: none; }
   .hero__since { font-size: 14px; }
   .hero__since b { font-size: 30px; }
   .hero__cta { padding: 0 18px; font-size: 15px; white-space: normal; }
+  .hero__sub { min-height: 48px; padding: 0 18px; font-size: 15px; }
 }
 /* 1行に収まらない幅では2行にする */
 @media (max-width: 419.98px) {

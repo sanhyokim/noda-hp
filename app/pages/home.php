@@ -1,5 +1,5 @@
 <?php
-// トップページ。区画の順番・文言は design/top-reference.html と付録A-1 に合わせる。
+// トップページ。区画の順番は Boss と相談して決めた（2026-10-22）：最初の画面のすぐ下に施工事例、Instagram は最後。
 $years = years_in_business();
 $feed = top_news();
 $cases = latest_cases(6);
@@ -45,6 +45,7 @@ $marquee = [
     <h1 id="hero-title" class="hero__title kw rise rise--2">飲食店の<wbr>煙・臭い・換気、<br>専門会社が<wbr>設計から<wbr>施工まで。</h1>
     <div class="hero__actions rise rise--3">
       <a class="btn btn--white btn--lg hero__cta" href="<?= e(page_url('contact')) ?>">無料相談・現地調査を申し込む<?= icon('arrow', 20) ?></a>
+      <a class="btn btn--lg hero__sub" href="<?= e(page_url('construction_examples')) ?>">施工事例を見る<?= icon('arrow', 20) ?></a>
     </div>
   </div>
 </section>
@@ -69,38 +70,13 @@ $marquee = [
 </div>
 <?php $meta['top'] = ob_get_clean(); ?>
 
-<section class="section wrap" aria-labelledby="news-title">
-  <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>
-  <ul class="news__list">
-    <?php foreach ($feed as $f): ?>
-      <li>
-        <a class="news__row" href="<?= e($f['url']) ?>">
-          <time datetime="<?= e($f['published_at']) ?>"><?= e(format_date($f['published_at'])) ?></time>
-          <span class="chip <?= $f['type'] === 'case' ? 'chip--solid' : 'chip--outline' ?>"><?= $f['type'] === 'case' ? '施工事例' : 'お知らせ' ?></span>
-          <span class="news__title"><?= e($f['title']) ?></span>
-          <?= icon('arrow', 16, 'news__arrow') ?>
-        </a>
-      </li>
+<section class="section wrap" aria-labelledby="works-title">
+  <?php render('section-head', ['label' => 'WORKS', 'title' => '最新の施工事例', 'id' => 'works-title', 'link' => ['施工事例をもっと見る', page_url('construction_examples')]]); ?>
+  <ul class="grid grid--3 cases">
+    <?php foreach ($cases as $case): ?>
+      <li><?php render('case-card', ['case' => $case]); ?></li>
     <?php endforeach; ?>
   </ul>
-  <a class="anniv-band" href="<?= e(page_url('company')) ?>#s20">
-    <span class="anniv-band__mark"><?= picture('anniv-20th.png', 179, 179, '愛し愛されて20周年 20th Anniversary') ?></span>
-    <span class="anniv-band__text"><b class="kw">おかげさまで<wbr>創業20周年を<wbr>迎えました</b>20年で培った技術と信頼を礎に、<wbr>21年目からも皆様の期待を超える価値を。</span>
-    <span class="more">ごあいさつを読む<?= icon('arrow', 16) ?></span>
-  </a>
-</section>
-
-<section class="section wrap" aria-labelledby="intro-title">
-  <?php render('section-head', ['label' => 'ABOUT', 'title' => '飲食店の換気・給排気を|自社一貫でトータルサポート', 'id' => 'intro-title']); ?>
-  <?php // 文章は現行サイトのトップから。お悩み→専門業者へ、の順に読めるよう区画を並べ替えた（2026-10-21） ?>
-  <div class="intro">
-    <div class="intro__text prose">
-      <p>当社は排煙・油煙対策のスペシャリストとして、居酒屋、ラーメン屋、焼鳥屋、焼肉店などの飲食店オーナー様を、新規開店からメンテナンスおよび清掃までトータルでサポートいたします。創業2005年、累計1,000件以上の施工実績があります。</p>
-      <p>換気扇やダクトのご提案から設計、施工まで、すべて自社で承っています。オーナー様のご希望・ご要望をしっかりうかがってそれを設計に反映し、その設計を施工により忠実に形にする――。自社一貫対応により、ミスなく、作業の無駄なく、責任を持って進行できます。</p>
-      <a class="more" href="<?= e(page_url('concept')) ?>">野田のコンセプト<?= icon('arrow', 16) ?></a>
-    </div>
-    <div class="intro__img intro__img--contain"><?= picture('after-onestop.jpg', 800, 680, '打ち合わせ・施工・アフターフォローを同じ担当者が対応します') ?></div>
-  </div>
 </section>
 
 <section class="section wrap" aria-labelledby="problems-title">
@@ -129,6 +105,19 @@ $marquee = [
 <section class="section wrap" aria-labelledby="service-title">
   <?php render('section-head', ['label' => 'SERVICE', 'title' => 'ダクト工事の巧みな技', 'id' => 'service-title', 'lead' => '店舗の規模・業態・建物に合わせて、フードもダクトも一つひとつオーダーメイドで設計します。']); ?>
   <?php render('service-cards'); ?>
+</section>
+
+<section class="section wrap" aria-labelledby="intro-title">
+  <?php render('section-head', ['label' => 'ABOUT', 'title' => '飲食店の換気・給排気を|自社一貫でトータルサポート', 'id' => 'intro-title']); ?>
+  <?php // 文章は現行サイトのトップから。お悩み→専門業者へ、の順に読めるよう区画を並べ替えた（2026-10-21） ?>
+  <div class="intro">
+    <div class="intro__text prose">
+      <p>当社は排煙・油煙対策のスペシャリストとして、居酒屋、ラーメン屋、焼鳥屋、焼肉店などの飲食店オーナー様を、新規開店からメンテナンスおよび清掃までトータルでサポートいたします。創業2005年、累計1,000件以上の施工実績があります。</p>
+      <p>換気扇やダクトのご提案から設計、施工まで、すべて自社で承っています。オーナー様のご希望・ご要望をしっかりうかがってそれを設計に反映し、その設計を施工により忠実に形にする――。自社一貫対応により、ミスなく、作業の無駄なく、責任を持って進行できます。</p>
+      <a class="more" href="<?= e(page_url('concept')) ?>">野田のコンセプト<?= icon('arrow', 16) ?></a>
+    </div>
+    <div class="intro__img intro__img--contain"><?= picture('after-onestop.jpg', 800, 680, '打ち合わせ・施工・アフターフォローを同じ担当者が対応します') ?></div>
+  </div>
 </section>
 
 <section class="section wrap" aria-labelledby="reason-title">
@@ -161,15 +150,6 @@ $marquee = [
   </ol>
 </section>
 
-<section class="section wrap" aria-labelledby="works-title">
-  <?php render('section-head', ['label' => 'WORKS', 'title' => '最新の施工事例', 'id' => 'works-title', 'link' => ['施工事例をもっと見る', page_url('construction_examples')]]); ?>
-  <ul class="grid grid--3 cases">
-    <?php foreach ($cases as $case): ?>
-      <li><?php render('case-card', ['case' => $case]); ?></li>
-    <?php endforeach; ?>
-  </ul>
-</section>
-
 <section class="section wrap" aria-labelledby="flow-title">
   <?php render('section-head', ['label' => 'FLOW', 'title' => 'お問い合わせから|施工までの流れ', 'id' => 'flow-title', 'link' => ['詳しい流れを見る', page_url('flow')]]); ?>
   <ol class="steps">
@@ -181,6 +161,27 @@ $marquee = [
       </li>
     <?php endforeach; ?>
   </ol>
+</section>
+
+<section class="section wrap" aria-labelledby="news-title">
+  <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>
+  <ul class="news__list">
+    <?php foreach ($feed as $f): ?>
+      <li>
+        <a class="news__row" href="<?= e($f['url']) ?>">
+          <time datetime="<?= e($f['published_at']) ?>"><?= e(format_date($f['published_at'])) ?></time>
+          <span class="chip <?= $f['type'] === 'case' ? 'chip--solid' : 'chip--outline' ?>"><?= $f['type'] === 'case' ? '施工事例' : 'お知らせ' ?></span>
+          <span class="news__title"><?= e($f['title']) ?></span>
+          <?= icon('arrow', 16, 'news__arrow') ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+  <a class="anniv-band" href="<?= e(page_url('company')) ?>#s20">
+    <span class="anniv-band__mark"><?= picture('anniv-20th.png', 179, 179, '愛し愛されて20周年 20th Anniversary') ?></span>
+    <span class="anniv-band__text"><b class="kw">おかげさまで<wbr>創業20周年を<wbr>迎えました</b>20年で培った技術と信頼を礎に、<wbr>21年目からも皆様の期待を超える価値を。</span>
+    <span class="more">ごあいさつを読む<?= icon('arrow', 16) ?></span>
+  </a>
 </section>
 
 <section class="section wrap" aria-labelledby="partner-title">
@@ -196,7 +197,7 @@ $marquee = [
 </section>
 
 <section class="section wrap" aria-labelledby="ig-title">
-  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => 'Instagram - 私たちの日々の仕事', 'id' => 'ig-title', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
+  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => '私たちの日々の仕事', 'id' => 'ig-title', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
   <ul class="ig">
     <?php foreach ($ig as $item): ?>
       <li>
