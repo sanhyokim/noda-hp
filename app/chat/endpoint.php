@@ -66,7 +66,34 @@ if (($reason = chat_rate_check((string)($_SERVER['REMOTE_ADDR'] ?? ''))) !== nul
     $send(['error' => 'limit', 'reply' => $reason], 429);
 }
 
-$r = chat_ask($messages);
+// 画面が「少しずつ受け取れる」と言ってきた時は、答えができた分から1行ずつ送る（1行に1つの JSON：{"d":"足す文字"}、最後に {"done":true,...}）
+$onText = null;
+if (($in['stream'] ?? false) === true) {
+    @ini_set('zlib.output_compression', '0');
+    while (ob_get_level() > 0) {
+        ob_end_flush();
+    }
+    ignore_user_abort(true); // 途中で窓を閉じられても、記録と費用の集計は最後まで行う
+    set_time_limit(90);
+    header('Content-Type: application/x-ndjson; charset=UTF-8');
+    header('Cache-Control: no-store, no-transform');
+    header('X-Accel-Buffering: no');                 // 間のサーバーに溜め込まず、すぐ流してもらう
+    header('X-LiteSpeed-Cache-Control: no-cache');
+    // 少し溜まってから送る仕組みでも最初の文字がすぐ届くように、空白の行を先に送る（画面では読み飛ばす）
+    echo str_repeat(' ', 4096), "\n";
+    flush();
+    $shown = '';
+    $onText = function (string $raw) use (&$shown): void {
+        $v = chat_visible_part($raw);
+        if (mb_strlen($v) > mb_strlen($shown) && str_starts_with($v, $shown)) {
+            echo json_encode(['d' => mb_substr($v, mb_strlen($shown))], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), "\n";
+            flush();
+            $shown = $v;
+        }
+    };
+}
+
+$r = chat_ask($messages, $onText);
 $page = is_string($in['page'] ?? null) ? $in['page'] : '';
 $isNew = chat_log($conv, array_merge($messages, [['role' => 'assistant', 'content' => $r['reply']]]), $page);
 if (!empty($r['unanswered'])) {
@@ -74,5 +101,10 @@ if (!empty($r['unanswered'])) {
 }
 if (isset($r['usage'])) {
     chat_add_usage($r['usage'] + ['conversations' => $isNew ? 1 : 0]);
+}
+if ($onText) {
+    // 最後に仕上げた答え全体を送る（画面はこれで置き換える）
+    echo json_encode(['done' => true, 'ok' => $r['ok'], 'reply' => $r['reply']], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), "\n";
+    exit;
 }
 $send(['ok' => $r['ok'], 'reply' => $r['reply']], $r['ok'] ? 200 : 502);

@@ -440,29 +440,64 @@ function chat_log(string $key, array $messages, string $page, bool $handedOff = 
 /**
  * Claude に答えを作ってもらう。戻り値：['ok' => bool, 'reply' => 文, 'usage' => [...]]
  */
-function chat_ask(array $messages): array
+function chat_ask(array $messages, ?callable $onText = null): array
 {
     if (chat_provider() === 'openrouter') {
-        return chat_ask_openrouter($messages);
+        return chat_ask_openrouter($messages, $onText);
     }
     require_once ROOT_DIR . '/vendor/autoload.php';
     $client = new \Anthropic\Client(
         apiKey: (string)chat_config('api_key'),
         baseUrl: (string)(chat_config('base_url') ?: 'https://api.anthropic.com'),
-        requestOptions: ['timeout' => 40, 'maxRetries' => 1],
+        requestOptions: ['timeout' => 60, 'maxRetries' => 1],
     );
-    try {
+    $params = [
+        'model' => (string)(chat_config('model') ?: 'claude-sonnet-5-5'),
+        'maxTokens' => 4000,
+        // 2つとも読み込みを省く印を付ける。事例が増えて一覧が変わっても、前の決まりごとの分は省ける
+        'system' => array_map(fn($t) => ['type' => 'text', 'text' => $t, 'cacheControl' => ['type' => 'ephemeral']], chat_system_blocks()),
+        'messages' => $messages,
+        'outputConfig' => ['effort' => 'low'],
         // 安全のための自動判定で断られた時は、別のモデルで答え直す（fallbacks: default）
-        $res = $client->beta->messages->create(
-            model: (string)(chat_config('model') ?: 'claude-sonnet-5-5'),
-            maxTokens: 4000,
-            // 2つとも読み込みを省く印を付ける。事例が増えて一覧が変わっても、前の決まりごとの分は省ける
-            system: array_map(fn($t) => ['type' => 'text', 'text' => $t, 'cacheControl' => ['type' => 'ephemeral']], chat_system_blocks()),
-            messages: $messages,
-            outputConfig: ['effort' => 'low'],
-            fallbacks: 'default',
-            betas: ['server-side-fallback-2026-07-01'],
-        );
+        'fallbacks' => 'default',
+        'betas' => ['server-side-fallback-2026-07-01'],
+    ];
+    $text = '';
+    $stop = null;
+    $usage = ['requests' => 1, 'input' => 0, 'output' => 0, 'cache_read' => 0, 'cache_write' => 0];
+    try {
+        if ($onText) {
+            // 答えができた分から少しずつ受け取る
+            foreach ($client->beta->messages->createStream(...$params) as $ev) {
+                if ($ev instanceof \Anthropic\Beta\Messages\BetaRawMessageStartEvent) {
+                    $u = $ev->message->usage;
+                    $usage['input'] = (int)$u->inputTokens;
+                    $usage['cache_read'] = (int)($u->cacheReadInputTokens ?? 0);
+                    $usage['cache_write'] = (int)($u->cacheCreationInputTokens ?? 0);
+                } elseif ($ev instanceof \Anthropic\Beta\Messages\BetaRawContentBlockDeltaEvent && $ev->delta instanceof \Anthropic\Beta\Messages\BetaTextDelta) {
+                    $text .= $ev->delta->text;
+                    $onText($text);
+                } elseif ($ev instanceof \Anthropic\Beta\Messages\BetaRawMessageDeltaEvent) {
+                    $stop = $ev->delta->stopReason ?? $stop;
+                    $usage['output'] = (int)$ev->usage->outputTokens;
+                    $usage['input'] = (int)($ev->usage->inputTokens ?? $usage['input']);
+                    $usage['cache_read'] = (int)($ev->usage->cacheReadInputTokens ?? $usage['cache_read']);
+                    $usage['cache_write'] = (int)($ev->usage->cacheCreationInputTokens ?? $usage['cache_write']);
+                }
+            }
+        } else {
+            $res = $client->beta->messages->create(...$params);
+            $usage['input'] = (int)($res->usage->inputTokens ?? 0);
+            $usage['output'] = (int)($res->usage->outputTokens ?? 0);
+            $usage['cache_read'] = (int)($res->usage->cacheReadInputTokens ?? 0);
+            $usage['cache_write'] = (int)($res->usage->cacheCreationInputTokens ?? 0);
+            $stop = $res->stopReason;
+            foreach ($res->content as $block) {
+                if ($block->type === 'text') {
+                    $text .= $block->text;
+                }
+            }
+        }
     } catch (\Anthropic\Core\Exceptions\RateLimitException | \Anthropic\Core\Exceptions\InternalServerException $e) {
         error_log('AI チャット 混雑: ' . $e->getMessage());
         return ['ok' => false, 'reply' => 'ただいま AI が混み合っています。少し時間をおいてお試しいただくか、お電話・お問い合わせフォームからご相談ください。'];
@@ -470,22 +505,14 @@ function chat_ask(array $messages): array
         error_log('AI チャット 失敗: ' . get_class($e) . ' ' . $e->getMessage());
         return ['ok' => false, 'reply' => '申し訳ありません、うまくお答えできませんでした。お電話か、お問い合わせフォーム・LINE からご相談ください。'];
     }
+    return chat_finish($text, $stop === 'refusal', $usage);
+}
 
-    $usage = [
-        'requests' => 1,
-        'input' => (int)($res->usage->inputTokens ?? 0),
-        'output' => (int)($res->usage->outputTokens ?? 0),
-        'cache_read' => (int)($res->usage->cacheReadInputTokens ?? 0),
-        'cache_write' => (int)($res->usage->cacheCreationInputTokens ?? 0),
-    ];
-    if ($res->stopReason === 'refusal') {
+/** AI の答えの仕上げ（断られた時の言葉・太字の印と「答えられなかった」印を外す・長さの上限） */
+function chat_finish(string $text, bool $refused, array $usage): array
+{
+    if ($refused) {
         return ['ok' => true, 'usage' => $usage, 'reply' => 'その内容には、こちらではお答えできません。換気やダクトのご相談でしたら、お気軽にどうぞ。担当者への直接のご相談は、お電話・お問い合わせフォーム・LINE からどうぞ。'];
-    }
-    $text = '';
-    foreach ($res->content as $block) {
-        if ($block->type === 'text') {
-            $text .= $block->text;
-        }
     }
     [$text, $unanswered] = chat_take_mark(trim(str_replace(['**', '##'], '', $text)));
     if ($text === '') {
@@ -494,8 +521,26 @@ function chat_ask(array $messages): array
     return ['ok' => true, 'usage' => $usage, 'unanswered' => $unanswered, 'reply' => mb_substr($text, 0, CHAT_MAX_ASSIST_LEN)];
 }
 
-/** OpenRouter 経由で答えを作る（戻り値は chat_ask と同じ） */
-function chat_ask_openrouter(array $messages): array
+/**
+ * 少しずつ届いている答えのうち、お客様に見せてよい所まで。太字の印「**」や「<要確認>」の書きかけは、続きが届くまで見せない。
+ * 前に返した文字列は、必ず次に返す文字列の頭と同じになる（画面では足りない分だけ足していく）
+ */
+function chat_visible_part(string $raw): string
+{
+    $t = rtrim(ltrim(str_replace(['**', '##'], '', $raw)), '*#');
+    foreach ([CHAT_UNANSWERED_MARK, '＜要確認＞'] as $mark) {
+        $t = str_replace($mark, '', $t);
+        for ($i = mb_strlen($mark) - 1; $i >= 1; $i--) {
+            if (str_ends_with($t, mb_substr($mark, 0, $i))) {
+                $t = mb_substr($t, 0, mb_strlen($t) - $i);
+                break;
+            }
+        }
+    }
+    return mb_substr($t, 0, CHAT_MAX_ASSIST_LEN);
+}
+
+function chat_ask_openrouter(array $messages, ?callable $onText = null): array
 {
     $model = (string)chat_config('model');
     $blocks = chat_system_blocks();
@@ -504,14 +549,23 @@ function chat_ask_openrouter(array $messages): array
         // Claude の時は、毎回同じ決まりごとの読み込みを省く（キャッシュ）
         $system['content'] = array_map(fn($t) => ['type' => 'text', 'text' => $t, 'cache_control' => ['type' => 'ephemeral']], $blocks);
     }
-    $r = chat_openrouter_post((string)chat_config('api_key'), [
+    $body = [
         'model' => $model,
         'max_tokens' => 4000,
         'messages' => array_merge([$system], $messages),
         'reasoning' => ['effort' => 'low'],
         'provider' => ['data_collection' => 'deny'], // 相談内容を学習などに使う会社には送らない
         'usage' => ['include' => true],              // 1回ごとの費用を返してもらう
-    ], 40);
+    ];
+    if ($onText) {
+        $r = chat_openrouter_stream((string)chat_config('api_key'), $body, 60, $onText);
+    } else {
+        $r = chat_openrouter_post((string)chat_config('api_key'), $body, 40);
+        $choice = (array)($r['json']['choices'][0] ?? []);
+        $r['text'] = (string)($choice['message']['content'] ?? '');
+        $r['finish'] = (string)($choice['finish_reason'] ?? '');
+        $r['usage'] = (array)($r['json']['usage'] ?? []);
+    }
     if ($r['status'] !== 200) {
         error_log('AI チャット 失敗（OpenRouter）: ' . $r['status'] . ' ' . $r['error']);
         $busy = $r['status'] === 429 || $r['status'] >= 500 || $r['status'] === 0;
@@ -519,20 +573,93 @@ function chat_ask_openrouter(array $messages): array
             ? 'ただいま AI が混み合っています。少し時間をおいてお試しいただくか、お電話・お問い合わせフォームからご相談ください。'
             : '申し訳ありません、うまくお答えできませんでした。お電話か、お問い合わせフォーム・LINE からご相談ください。'];
     }
-    $u = (array)($r['json']['usage'] ?? []);
     $usage = [
         'requests' => 1,
-        'cost_micro' => (int)round((float)($u['cost'] ?? 0) * 1e6),
+        'cost_micro' => (int)round((float)($r['usage']['cost'] ?? 0) * 1e6),
     ];
-    $choice = (array)($r['json']['choices'][0] ?? []);
-    if (($choice['finish_reason'] ?? '') === 'content_filter') {
-        return ['ok' => true, 'usage' => $usage, 'reply' => 'その内容には、こちらではお答えできません。換気やダクトのご相談でしたら、お気軽にどうぞ。担当者への直接のご相談は、お電話・お問い合わせフォーム・LINE からどうぞ。'];
+    return chat_finish($r['text'], $r['finish'] === 'content_filter', $usage);
+}
+
+/**
+ * OpenRouter に答えを少しずつ送ってもらう（stream）。届くたびに $onText(ここまでの答え) を呼ぶ。
+ * 戻り値：['status' => 200 など, 'text' => 答え全部, 'finish' => 終わった理由, 'usage' => 使った量と費用, 'error' => 失敗の説明]
+ */
+function chat_openrouter_stream(string $apiKey, array $body, int $timeout, callable $onText): array
+{
+    $url = rtrim((string)((config('chat', [])['openrouter_url'] ?? '') ?: 'https://openrouter.ai/api/v1'), '/') . '/chat/completions';
+    $out = ['status' => 0, 'text' => '', 'finish' => '', 'usage' => [], 'error' => ''];
+    $buf = '';
+    $errBody = '';
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_TIMEOUT => $timeout,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json',
+            'Accept: text/event-stream',
+            'HTTP-Referer: ' . abs_url(),
+            'X-Title: Noda HP AI chat',
+        ],
+        CURLOPT_POSTFIELDS => json_encode($body + ['stream' => true], JSON_UNESCAPED_UNICODE),
+        CURLOPT_WRITEFUNCTION => function ($ch, string $chunk) use (&$out, &$buf, &$errBody, $onText): int {
+            $out['status'] = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+            if ($out['status'] !== 200) {
+                $errBody .= $chunk; // 失敗の時は、ふつうの JSON で理由が届く
+                return strlen($chunk);
+            }
+            $buf .= $chunk;
+            // 「data: {...}」の行ごとに読む（「: OPENROUTER PROCESSING」のような行は待っている印なので読み飛ばす）
+            while (($nl = strpos($buf, "\n")) !== false) {
+                $line = trim(substr($buf, 0, $nl));
+                $buf = substr($buf, $nl + 1);
+                if (!str_starts_with($line, 'data:')) {
+                    continue;
+                }
+                $data = trim(substr($line, 5));
+                if ($data === '[DONE]') {
+                    continue;
+                }
+                $j = json_decode($data, true);
+                if (!is_array($j)) {
+                    continue;
+                }
+                if (isset($j['error'])) {
+                    // 途中で失敗した時は、200 のまま error が届く
+                    $out['status'] = (int)($j['error']['code'] ?? 500) ?: 500;
+                    $out['error'] = (string)($j['error']['message'] ?? '');
+                    continue;
+                }
+                if (isset($j['usage'])) {
+                    $out['usage'] = (array)$j['usage'];
+                }
+                $c = (array)($j['choices'][0] ?? []);
+                if (($c['finish_reason'] ?? null) !== null) {
+                    $out['finish'] = (string)$c['finish_reason'];
+                }
+                $d = $c['delta']['content'] ?? '';
+                if (is_string($d) && $d !== '') {
+                    $out['text'] .= $d;
+                    $onText($out['text']);
+                }
+            }
+            return strlen($chunk);
+        },
+    ]);
+    $ok = curl_exec($ch);
+    if ($ok === false) {
+        $out['status'] = $out['status'] === 200 && $out['text'] !== '' ? 200 : 0;
+        $out['error'] = curl_error($ch);
+        if ($out['status'] === 200) {
+            $out['finish'] = 'length'; // 途中で切れたが、そこまでの答えは見せる
+        }
+    } elseif ($out['status'] !== 200 && $errBody !== '') {
+        $j = json_decode($errBody, true);
+        $out['error'] = (string)($j['error']['message'] ?? mb_substr($errBody, 0, 200));
     }
-    [$text, $unanswered] = chat_take_mark(trim(str_replace(['**', '##'], '', (string)($choice['message']['content'] ?? ''))));
-    if ($text === '') {
-        return ['ok' => false, 'usage' => $usage, 'reply' => '申し訳ありません、うまくお答えできませんでした。もう一度お試しいただくか、お電話・お問い合わせフォームからご相談ください。'];
-    }
-    return ['ok' => true, 'usage' => $usage, 'unanswered' => $unanswered, 'reply' => mb_substr($text, 0, CHAT_MAX_ASSIST_LEN)];
+    curl_close($ch);
+    return $out;
 }
 
 /** 会話の「相談番号」（LINE や折り返し依頼で、担当者が会話の記録を探す時に使う） */

@@ -139,22 +139,87 @@
     track('ai_chat_send', { chat_turn: Math.ceil(state.messages.length / 2) });
     let reply = '';
     let ok = false;
+    // 答えはできた分から少しずつ届く。届いた文字は、人が打っているように順に出す（読み上げは、全部そろってから1回だけ）
+    let live = null;
+    let target = '';
+    let shown = '';
+    let frame = 0;
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const draw = () => {
+      frame = 0;
+      if (!live) {
+        waitTimers.forEach(clearTimeout);
+        wait.remove();
+        live = add('ai', '', 'is-live');
+        live.setAttribute('aria-hidden', 'true');
+      }
+      const back = target.length - shown.length;
+      if (back <= 0) return;
+      const near = log.scrollHeight - log.scrollTop - log.clientHeight < 80;
+      // 遅れが大きい時（まとめて届いた時）ほど速く出して、待たせない
+      shown = calm ? target : target.slice(0, shown.length + Math.max(1, Math.ceil(back / 14)));
+      live.innerHTML = render(shown);
+      if (near) log.scrollTop = log.scrollHeight;
+      if (shown.length < target.length) frame = requestAnimationFrame(draw);
+    };
+    const caughtUp = () => new Promise((done) => {
+      const check = () => (!frame || shown.length >= target.length ? done() : requestAnimationFrame(check));
+      check();
+    });
     try {
       const res = await fetch(root.dataset.endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-Noda-Chat': '1' },
-        body: JSON.stringify({ conv: state.conv, page: location.pathname, messages: state.messages }),
+        body: JSON.stringify({ conv: state.conv, page: location.pathname, messages: state.messages, stream: true }),
       });
-      const data = await res.json().catch(() => ({}));
+      let data = {};
+      if (res.body && (res.headers.get('Content-Type') || '').includes('ndjson')) {
+        const reader = res.body.getReader();
+        const dec = new TextDecoder();
+        let buf = '';
+        const take = (line) => {
+          if (!line.trim()) return; // 最初に届く空白の行は読み飛ばす
+          let j;
+          try { j = JSON.parse(line); } catch (_) { return; }
+          if (j.done) { data = j; return; }
+          if (typeof j.d === 'string') {
+            target += j.d;
+            if (!frame) frame = requestAnimationFrame(draw);
+          }
+        };
+        for (;;) {
+          const { value, done } = await reader.read();
+          if (done) break;
+          buf += dec.decode(value, { stream: true });
+          let nl;
+          while ((nl = buf.indexOf('\n')) >= 0) {
+            take(buf.slice(0, nl));
+            buf = buf.slice(nl + 1);
+          }
+        }
+        take(buf + dec.decode());
+        ok = res.ok && !!data.ok;
+      } else {
+        data = await res.json().catch(() => ({}));
+        ok = res.ok && !!data.ok;
+      }
       reply = data.reply || '';
-      ok = res.ok && !!data.ok;
+      if (ok && live) await caughtUp();
     } catch (_) {
       reply = '';
+      ok = false;
     }
     waitTimers.forEach(clearTimeout);
     wait.remove();
+    if (frame) cancelAnimationFrame(frame);
     if (!reply) reply = '通信がうまくいきませんでした。電波の良い所でもう一度お試しいただくか、お電話・お問い合わせフォームからご相談ください。';
-    add('ai', reply, ok ? '' : 'is-error');
+    // 仕上がった答えに置き換える（ここで読み上げられる）。途中まで出ていた答えは、同じ場所で差し替えて画面が動かないようにする
+    const top = log.scrollTop;
+    const fin = add('ai', reply, ok ? '' : 'is-error');
+    if (live) {
+      live.replaceWith(fin);
+      log.scrollTop = top;
+    }
     if (ok) {
       state.messages.push({ role: 'assistant', content: reply });
       state.last = Date.now();

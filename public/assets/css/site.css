@@ -1461,6 +1461,8 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .aic__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--c-muted); animation: aic-dot 1.2s infinite ease-in-out; }
 .aic__dots i:nth-child(2) { animation-delay: .15s; }
 .aic__dots i:nth-child(3) { animation-delay: .3s; }
+.aic__msg.is-live p:last-child::after { content: ""; display: inline-block; width: 2px; height: 1.1em; margin-left: 2px; vertical-align: -.2em; background: var(--c-blue); animation: aic-caret 1s steps(1) infinite; } /* 答えを書いている途中の印 */
+@keyframes aic-caret { 50% { opacity: 0; } }
 @keyframes aic-dot { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
 .aic__starters { display: flex; flex-wrap: wrap; gap: 8px; }
 .aic__starters-ttl { flex-basis: 100%; margin-top: 4px; font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--c-muted); }
@@ -1597,7 +1599,7 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .aic__note { margin-top: 6px; font-size: 11px; line-height: 1.6; color: var(--c-muted); }
 .aic__note a { color: var(--c-muted); text-decoration: underline; white-space: nowrap; }
 @keyframes aic-hint { 0%, 100% { transform: none; } 50% { transform: scale(1.06); } }
-@media (prefers-reduced-motion: reduce) { .aic__sheet, .aic__hand-toggle.is-hint { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .aic__sheet, .aic__hand-toggle.is-hint, .aic__msg.is-live p:last-child::after { animation: none; } }
 /* 「動きを減らす」設定の画面（Windows で「アニメーション効果」を切っている時など）でも、動かさずに、ふわっと出る・消えるだけは残す */
 @media (prefers-reduced-motion: reduce) {
   .aic__panel { transform: none !important; transition: opacity .2s linear !important; }
