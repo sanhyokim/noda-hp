@@ -191,7 +191,7 @@ $marquee = [
 </section>
 
 <section class="section wrap" aria-labelledby="ig-title">
-  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => '私たちの日々の仕事', 'id' => 'ig-title', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
+  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => '私たちの日々の仕事', 'id' => 'ig-title', 'icon' => 'instagram', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
   <ul class="ig">
     <?php foreach ($ig as $item): ?>
       <li>
