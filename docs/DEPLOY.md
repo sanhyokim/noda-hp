@@ -169,7 +169,7 @@
 |---|---|---|
 | ① | https://duct-noda.com/ （パソコンとスマホ） | 新しいトップページが出る。写真も出る |
 | ② | https://duct-noda.com/construction_examples/ と、事例を1つ | 一覧と詳しいページが出る |
-| ③ | https://duct-noda.com/category/yakiniku/ （旧サイトのアドレスの例） | 新しい施工事例の一覧へ自動で移る |
+| ③ | https://duct-noda.com/category/焼肉屋/ （旧サイトのカテゴリのアドレスの例） | 新しい施工事例の一覧の「焼肉店」の絞り込みへ自動で移る |
 | ④ | https://duct-noda.com/admin/ | ログイン画面が出る。/new/ の時と同じ ID・パスワードで入れる |
 | ⑤ | https://duct-noda.com/contact/ から1回送信 | 担当の方と、入れたアドレスにメールが届く |
 | ⑥ | AI 相談のキーを入れている場合：右下の「AIに相談」 | 答えが返ってくる |
