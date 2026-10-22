@@ -120,6 +120,7 @@
       state = { conv: rid(), messages: [], open: true };
     }
     starters.hidden = true;
+    if (handOpen) setHand(false);
     hideNudge(false);
     add('user', text);
     state.messages.push({ role: 'user', content: text });
@@ -157,7 +158,7 @@
       state.messages.push({ role: 'assistant', content: reply });
       state.last = Date.now();
       // 答えが担当者への相談をすすめている時は、たたんだ欄にそっと印を付ける（勝手には開かない）
-      if (/問い合わせ|電話|LINE|現地調査|担当者/.test(reply) && !state.handOpen) handToggle.classList.add('is-hint');
+      if (/問い合わせ|電話|LINE|現地調査|担当者/.test(reply) && !handOpen) handToggle.classList.add('is-hint');
     } else {
       state.messages.pop(); // 答えられなかった質問は履歴から外す（次に送り直せるように）
     }
@@ -372,22 +373,23 @@
   });
 
   // ---------- 担当者にくわしく相談する（ふだんはたたんでおき、押したら開く） ----------
+  // 開いた状態は覚えない（ページを移った時や、次に質問した時は、たたんだ1行に戻す）
+  let handOpen = false;
   const setHand = (open) => {
-    state.handOpen = open;
-    save(state);
+    handOpen = open;
     handBody.hidden = !open;
     handToggle.setAttribute('aria-expanded', String(open));
     hand.classList.toggle('is-open', open);
     if (open) handToggle.classList.remove('is-hint');
   };
   handToggle.addEventListener('click', () => {
-    setHand(!state.handOpen);
-    if (state.handOpen) {
+    setHand(!handOpen);
+    if (handOpen) {
       track('ai_chat_hand_open');
       log.scrollTop = log.scrollHeight;
     }
   });
-  setHand(!!state.handOpen);
+  setHand(false);
 
   restore();
   if (state.open) setOpen(true, false, true);
