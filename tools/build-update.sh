@@ -14,7 +14,7 @@ cd "$ROOT"
 rm -rf "$OUT" "$STAGE"
 mkdir -p "$OUT" "$STAGE"
 # 公開フォルダの中身は一番上に、app/ はそのまま（サーバーでは公開フォルダの中に app/ がある）
-git diff --name-only --diff-filter=AMR "$1" HEAD -- public app | while read -r f; do
+git diff --name-only --diff-filter=AMR "$1" HEAD -- public app migration/fixes migration/schema.sql migration/seed.sql | while read -r f; do
   case "$f" in
     app/config.php|public/wp-content/*) continue ;;
     public/*) to=${f#public/} ;;

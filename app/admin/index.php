@@ -34,6 +34,7 @@ if (!db()) {
     admin_render('error', ['title' => 'データベースにつながりません', 'message' => 'app/config.php のデータベースの設定を確認してください。']);
     exit;
 }
+apply_data_fixes();
 
 if ($sub === 'login/') {
     admin_session_start();

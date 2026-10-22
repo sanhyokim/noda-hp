@@ -39,3 +39,37 @@ function set_setting(string $key, ?string $value): void
 {
     db()->prepare('INSERT INTO settings (`key`, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value)')->execute([$key, $value]);
 }
+
+/**
+ * 置いた後のデータの手直し（migration/fixes/NNN-名前.sql）を、まだのものだけ1回ずつ流す。
+ * 管理画面を開いた時に呼ぶ。済んだファイル名は settings の fixes_done に残す。
+ */
+function apply_data_fixes(): void
+{
+    $files = glob(ROOT_DIR . '/migration/fixes/*.sql') ?: [];
+    if (!$files) {
+        return;
+    }
+    $done = json_decode((string)setting('fixes_done', '[]'), true) ?: [];
+    $pdo = db();
+    foreach ($files as $f) {
+        $name = basename($f);
+        if (in_array($name, $done, true)) {
+            continue;
+        }
+        $sql = preg_replace('/^--.*$/m', '', (string)file_get_contents($f));
+        $pdo->beginTransaction();
+        try {
+            foreach (array_filter(array_map('trim', explode(";\n", $sql . "\n"))) as $q) {
+                $pdo->exec(rtrim($q, ';'));
+            }
+            $pdo->commit();
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            error_log('データの手直しに失敗: ' . $name . ' ' . $e->getMessage());
+            return;
+        }
+        $done[] = $name;
+        set_setting('fixes_done', json_encode($done));
+    }
+}
