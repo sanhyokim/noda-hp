@@ -810,11 +810,11 @@ main:focus { outline: none; }
 .area { display: grid; gap: 20px; }
 .area__lead { font-size: 15px; line-height: 1.9; }
 .area__lead p + p { margin-top: .8em; }
-.area__lead p:first-child { font-size: 17px; line-height: 1.75; font-weight: 700; color: var(--c-blue-dark); font-feature-settings: "palt"; }
-.area__list { display: grid; gap: 10px; }
-.area__list > div { padding: 16px 18px; background: var(--c-white); border: 1px solid var(--c-line); border-radius: var(--r); }
-.area__list dt { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--c-blue-dark); }
-.area__list dt::before { content: ""; width: 8px; height: 8px; background: var(--c-blue); }
+.area__lead p:first-child { font-size: 18px; line-height: 1.75; font-weight: 700; color: var(--c-ink); font-feature-settings: "palt"; }
+.area__list { display: grid; gap: 0; border-top: 2px solid var(--c-ink); align-self: start; }
+.area__list > div { padding: 16px 4px; border-bottom: 1px solid var(--c-line); }
+.area__list dt { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: var(--c-ink); }
+.area__list dt::before { content: ""; width: 14px; height: 2px; background: var(--c-blue); }
 .area__list dd { margin-top: 4px; font-size: 14px; color: var(--c-sub); }
 @media (min-width: 1100px) {
   .area { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 36px; }
@@ -869,18 +869,17 @@ main:focus { outline: none; }
 
 /* 工程を横につなぐ */
 .chain { display: grid; gap: 10px; margin-bottom: 20px; }
-.chain li { position: relative; display: flex; align-items: center; gap: 14px; padding: 14px 18px; background: var(--c-blue-dark); color: var(--c-white); border-radius: var(--r-sm); font-weight: 700; line-height: 1.5; word-break: keep-all; overflow-wrap: anywhere; }
-.chain li span { font-family: var(--font-num); font-size: 14px; font-weight: 600; letter-spacing: .14em; color: var(--c-blue-light); }
-.chain li:nth-child(even) { background: var(--c-blue); }
+.chain li { position: relative; display: flex; align-items: center; gap: 14px; padding: 16px 4px; border-top: 2px solid var(--c-ink); color: var(--c-ink); font-weight: 700; line-height: 1.5; word-break: keep-all; overflow-wrap: anywhere; }
+.chain li span { font-family: var(--font-num); font-size: 22px; line-height: 1; font-weight: 700; letter-spacing: .02em; color: var(--c-blue); }
 @media (min-width: 640px) {
   .chain { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
   .chain--5 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .chain li { flex-direction: column; align-items: flex-start; gap: 4px; padding: 18px; min-height: 100px; }
-  .chain li:not(:last-child)::after { content: ""; position: absolute; right: -9px; top: 50%; z-index: 1; width: 14px; height: 14px; margin-top: -7px; background: inherit; transform: rotate(45deg); }
+  .chain li { flex-direction: column; align-items: flex-start; gap: 8px; padding: 18px 28px 6px 0; min-height: 0; }
+  .chain li:not(:last-child)::after { content: ""; position: absolute; right: 10px; top: 24px; width: 8px; height: 8px; border-top: 2px solid var(--c-blue); border-right: 2px solid var(--c-blue); transform: rotate(45deg); }
 }
 @media (min-width: 1100px) {
   .chain--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); }
-  .chain--5 li { padding: 16px 14px; font-size: 15px; }
+  .chain--5 li { font-size: 15px; }
 }
 @media (min-width: 640px) and (max-width: 1099.98px) { .chain--5 li:nth-child(3)::after { display: none; } }
 
@@ -889,7 +888,7 @@ main:focus { outline: none; }
   .row--thumb { grid-template-columns: 228px minmax(0, 1fr); align-items: start; }
   .row--thumb:nth-child(even) .row__img { order: 0; }
 }
-@media (min-width: 768px) { .row--thumb .row__img { max-width: 228px; } }
+.row--thumb .row__img { max-width: 228px; } /* 元の写真が小さいので広げない */
 .row__case { flex: none; padding: 3px 10px; border-radius: 3px; background: var(--c-blue-dark); color: var(--c-white); font-size: 13px; letter-spacing: .06em; }
 .pairs { display: grid; gap: 10px; margin-top: 22px; }
 .pairs { gap: 0; border-top: 1px solid var(--c-line); }
@@ -901,8 +900,7 @@ main:focus { outline: none; }
 .row--text .row__head { margin-bottom: 10px; padding-bottom: 0; border-bottom: 0; }
 .rows:has(.row--text) { gap: 18px; }
 .figs { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
-.figs figure { width: calc(50% - 7px); }
-@media (min-width: 768px) { .figs figure { width: 228px; } }
+.figs figure { width: 228px; max-width: calc(50% - 7px); }
 .figs .media { overflow: hidden; border-radius: var(--r-sm); aspect-ratio: 4 / 3; }
 .figs figcaption { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--c-text); }
 .callout { padding: 4px 0 4px 22px; border-left: 3px solid var(--c-orange); }
@@ -932,12 +930,12 @@ main:focus { outline: none; }
 .row__img--figure { aspect-ratio: auto; background: var(--c-white); border-radius: 0; }
 .row__img--contain img { object-fit: contain; }
 .row__img--square { aspect-ratio: 1; max-width: 420px; }
-.checks { display: grid; gap: 10px; counter-reset: chk; }
-.checks__item { position: relative; padding: 16px 18px 16px 54px; background: var(--c-white); border: 1px solid var(--c-line); border-radius: var(--r-sm); }
-.checks__item::before { content: ""; position: absolute; left: 18px; top: 18px; width: 22px; height: 22px; border: 2px solid var(--c-blue); border-radius: 3px; }
+.checks { display: grid; gap: 0 32px; border-top: 1px solid var(--c-ink); counter-reset: chk; }
+.checks__item { position: relative; padding: 18px 4px 18px 40px; border-bottom: 1px solid var(--c-line); }
+.checks__item::before { content: ""; position: absolute; left: 4px; top: 21px; width: 20px; height: 20px; border: 2px solid var(--c-ink); border-radius: 2px; }
 .checks__title { font-size: 16px; line-height: 1.6; font-weight: 700; color: var(--c-text); }
 .checks__item p { margin-top: 6px; font-size: 14px; line-height: 1.85; color: var(--c-sub); }
-.checks__note { margin-top: 18px; padding: 14px 18px; border-left: 4px solid var(--c-orange); background: var(--c-white); font-weight: 700; color: var(--c-text); }
+.checks__note { margin-top: 22px; padding: 4px 0 4px 18px; border-left: 3px solid var(--c-orange); font-weight: 700; color: var(--c-ink); }
 @media (min-width: 900px) { .checks { grid-template-columns: repeat(2, minmax(0, 1fr)); } .checks__item:last-child { grid-column: 1 / -1; } }
 
 /* ご挨拶 */
@@ -961,9 +959,9 @@ main:focus { outline: none; }
 @media (min-width: 1100px) { .greeting { grid-template-columns: 240px minmax(0, 1fr); align-items: start; gap: 36px; } }
 
 /* 会社概要の表 */
-.table { width: 100%; border-collapse: collapse; background: var(--c-white); border-top: 2px solid var(--c-blue-dark); }
+.table { width: 100%; border-collapse: collapse; border-top: 2px solid var(--c-ink); }
 .table th, .table td { padding: 15px 18px; text-align: left; vertical-align: top; font-size: 15px; line-height: 1.8; border-bottom: 1px solid var(--c-line); }
-.table th { width: 9em; font-weight: 700; color: var(--c-blue-dark); white-space: nowrap; background: var(--c-soft); }
+.table th { width: 9em; padding-left: 4px; font-weight: 700; color: var(--c-ink); white-space: nowrap; }
 @media (max-width: 639.98px) {
   .table th, .table td { display: block; width: auto; }
   .table th { padding-block: 10px; border-bottom: 0; font-size: 13px; }
@@ -987,11 +985,15 @@ main:focus { outline: none; }
 
 /* 関連サイト（文字入りの画像なので切らずに全体を見せる） */
 .linkcard { display: flex; flex-direction: column; }
-.linkcard__img { display: flex; align-items: center; justify-content: center; height: 170px; padding: 0 20px; background: var(--c-soft); }
+.card.linkcard { border: 0; border-radius: 0; box-shadow: none; background: none; }
+a.card.linkcard:hover { transform: none; box-shadow: none; }
+a.card.linkcard:hover .linkcard__t { color: var(--c-blue); }
+.linkcard__img { flex: 1; display: flex; align-items: flex-end; padding: 0; }
+/* バナーは文字入りなので切らない。高さが違っても下端と題名の位置をそろえる */
 /* 消煙機バナーの元画像が幅260pxなので、2枚とも同じ大きさで揃える */
-.linkcard__img .media { width: 100%; max-width: 260px; border-radius: var(--r-sm); }
+.linkcard__img .media { width: 100%; max-width: 260px; border-radius: var(--r-sm); } /* 消煙機のバナーは元が幅260px。2枚とも同じ幅にそろえて粗く見せない */
 .linkcard__img img { height: auto; }
-.linkcard__t { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 14px 18px; font-weight: 700; color: var(--c-blue-dark); border-top: 1px solid var(--c-line); }
+.linkcard__t { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; padding: 0 0 12px; font-weight: 700; color: var(--c-ink); border-bottom: 1px solid var(--c-ink); }
 
 /* お問い合わせ */
 .contact-ways { align-items: stretch; }

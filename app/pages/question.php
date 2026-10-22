@@ -3,6 +3,7 @@
 render('page-head', [
     'label' => 'FAQ',
     'title' => 'よくある質問',
+    'image' => 'concept-drawing.jpg', 'ratio' => [3, 2],
     'lead' => '当社へのよくある質問と回答をQ&A形式でご紹介します。掲載されていないご質問は、お気軽にお問い合わせください。',
 ]);
 $groups = [
