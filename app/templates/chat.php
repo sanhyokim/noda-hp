@@ -5,13 +5,18 @@ $pagesForLinks = [];
 foreach (site('pages') as $p) {
     $pagesForLinks[url($p['path'])] = $p['name'];
 }
-// 業態・工事の種類で絞った施工事例（AI が事例の一覧から案内する）と、消煙機の専用サイト
+// 業態・工事の種類で絞った施工事例（AI が事例の一覧から案内する）と、消煙機・ダクト清掃の専用サイト
 foreach (case_categories() as $axis => $cats) {
     foreach ($cats as $slug => $name) {
         $pagesForLinks[url('construction_examples/') . '?' . $axis . '=' . $slug] = '施工事例（' . $name . '）';
     }
 }
 $pagesForLinks['https://shoenki.duct-noda.com/'] = '野田の消煙機（資料請求）';
+$pagesForLinks['https://www.cleaning-duct.com/'] = '野田のダクト清掃';
+$pagesForLinks['https://www.cleaning-duct.com/roaster.html'] = '無煙ロースター清掃';
+$pagesForLinks['https://www.cleaning-duct.com/clearfood.html'] = '上引きフード清掃';
+$pagesForLinks['https://www.cleaning-duct.com/duct.html'] = '焼き場フード・ダクト清掃';
+$pagesForLinks['https://www.cleaning-duct.com/exchange.html'] = 'フード・ロースターの販売・取付・交換';
 $starters = ['店内に煙がこもる', '近所から臭いの苦情が来た', '新しくお店を開く予定', '費用の目安を知りたい', '対応エリアを知りたい'];
 
 // しばらくサイトを見ている人に、ボタンの上から1回だけ声をかける（見ているページに合わせた言葉と、そのまま聞ける質問2つ）

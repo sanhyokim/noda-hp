@@ -185,11 +185,11 @@ function chat_system_prompt(): string
 - 丁寧な「です・ます」で、専門用語は使わないか、使う時は短く言い換えてください。
 - 1回の答えは短く、2〜5文（おおむね250字以内）。長い説明は必要な時だけ。見出しや太字などの記号（# や **）は使わず、箇条書きが必要なら「・」で始めてください。
 - 相手の状況がわからない時は、質問を1つだけ返してください（業態、新規か既存店か、困っていること など）。
-- 役に立つページがある時は、下の「ページ一覧」「施工事例の今の一覧」にあるアドレス（例：/flow/）か、消煙機の資料のアドレス（https://shoenki.duct-noda.com/）を、そのまま1つだけ書いてください。それ以外のアドレスは書かないでください。
+- 役に立つページがある時は、下の「ページ一覧」「ホームページに載せている施工事例」にあるアドレス（例：/flow/）か、関連サイトのアドレス（https://shoenki.duct-noda.com/、https://www.cleaning-duct.com/ と、その中の roaster.html・clearfood.html・duct.html・exchange.html）を、そのまま1つだけ書いてください。それ以外のアドレスは書かないでください。
 
 # 守ること
 - 答えの根拠は、下の「会社とサイトの情報」と、飲食店の換気についての一般的で確かな知識だけにしてください。情報にない事実（施工事例・お客様の店名・製品の数値・実績の数・対応の可否など）を作ってはいけません。わからないことは「担当者に確認します」として、問い合わせを勧めてください。
-- 費用・工期・工事日・在庫・保証は、具体的な金額や日数を言わないでください。「建物や厨房機器によって変わるため、無料の現地調査のあとでお見積りします」と伝えてください。他社との価格比較や、他社の批判もしません。
+- 費用・工期・工事日・在庫・保証は、具体的な金額や日数を言わないでください。「建物や厨房機器によって変わるため、無料の現地調査のあとでお見積りします」と伝えてください。ただし、下の「関連サイト」に目安として書かれている数字（ダクト清掃の料金の目安、修理の目安、消煙機の設置日数・電気代の目安など）は、「目安」「税別」であることと、正式な金額は無料の現地調査のあとに見積もることを添えて伝えてかまいません。他社との価格比較や、他社の批判もしません。
 - 原因は断定しないでください。「〜の可能性があります」と伝え、確かめるには現地調査（無料）が確実だと案内してください。煙や厨房の写真を LINE で送ると、おおよその対策を答えられることも伝えてかまいません。
 - 火が出た・焦げ臭い・ダクトから油が垂れているなど危ない時は、まず機器を止めるよう伝え、火事なら 119 番、それ以外はすぐ電話（{$telFree}、受付 {$hours}、{$closed}）するよう案内してください。
 - お名前・電話番号・住所などの個人情報をチャットで聞いたり、受け取ったりしないでください。見積りや現地調査の依頼は、チャットの下にある「この内容で問い合わせる」（お問い合わせフォーム）・電話・LINE を案内してください。
@@ -205,6 +205,7 @@ function chat_system_prompt(): string
 - 電話：{$telFree}（フリーダイヤル）／{$tel}　受付 {$hours}（{$closed}）
 - お問い合わせフォーム：{$contact}（24時間受付）
 - LINE：{$line}（写真を送っての相談も可）
+- ダクト清掃の専用サイト：https://www.cleaning-duct.com/ （無煙ロースター・上引きフード・焼き場のダクト清掃。無料点検の申し込みもできる）
 - 消煙機の価格がわかる資料：https://shoenki.duct-noda.com/ （消煙機の専用サイト。本体価格・工事費用・毎月のメンテナンス内容の資料を無料で請求できる。消煙機の費用を聞かれた時は、金額は言わずにこの資料と現地調査を案内してください）
 
 # ページ一覧
@@ -218,7 +219,7 @@ TXT;
 }
 
 /**
- * 施工事例の今の一覧（業態・工事の種類ごとの件数と新しい事例）。質問のたびにデータベースから作るので、管理画面で事例を足すとすぐ AI の答えに入る。
+ * ホームページに載せている施工事例（業態・工事の種類ごとの新しい事例。件数は渡さない）。質問のたびにデータベースから作るので、管理画面で事例を足すとすぐ AI の答えに入る。
  * 決まりごと（chat_system_prompt）のあとに別のかたまりで渡す。
  */
 function chat_cases_digest(): string
@@ -228,22 +229,18 @@ function chat_cases_digest(): string
         return '';
     }
     try {
-        $total = (int)$pdo->query('SELECT COUNT(*) FROM cases WHERE ' . live_sql())->fetchColumn();
         $st = $pdo->prepare(
             'SELECT c.title, c.location FROM cases c JOIN case_categories cc ON cc.case_id = c.id
              WHERE cc.category_id = ? AND ' . live_sql('c') . ' ORDER BY c.published_at DESC, c.id DESC LIMIT 3'
         );
-        $cnt = $pdo->prepare('SELECT COUNT(*) FROM case_categories cc JOIN cases c ON c.id = cc.case_id WHERE cc.category_id = ? AND ' . live_sql('c'));
         $lines = [];
         foreach ($pdo->query('SELECT id, axis, slug, name FROM categories ORDER BY axis, sort_order') as $cat) {
-            $cnt->execute([$cat['id']]);
-            $n = (int)$cnt->fetchColumn();
-            if ($n === 0) {
-                continue;
-            }
             $st->execute([$cat['id']]);
             $recent = array_map(fn($r) => $r['title'] . ($r['location'] !== '' ? '（' . $r['location'] . '）' : ''), $st->fetchAll());
-            $lines[] = '- ' . ($cat['axis'] === 'biz' ? '業態' : '工事') . '「' . $cat['name'] . '」' . $n . '件：'
+            if (!$recent) {
+                continue;
+            }
+            $lines[] = '- ' . ($cat['axis'] === 'biz' ? '業態' : '工事') . '「' . $cat['name'] . '」：'
                 . url('construction_examples/') . '?' . $cat['axis'] . '=' . $cat['slug'] . "\n  新しい事例：" . implode('／', $recent);
         }
     } catch (\Throwable $e) {
@@ -254,9 +251,11 @@ function chat_cases_digest(): string
         return '';
     }
     $all = url('construction_examples/');
-    return "# 施工事例の今の一覧（" . today()->format('Y年n月j日') . " 時点、公開中 {$total} 件）\n"
+    // 件数は書かない。ホームページに載せていない工事も多く、載っている数は実際の実績より少ないため（Boss 2026-10-22）
+    return "# ホームページに載せている施工事例（" . today()->format('Y年n月j日') . " 時点）\n"
         . "業態や工事の種類が合う事例を見たい方には、下のアドレスをそのまま1つ書いてください（その種類の事例だけが並ぶページ）。すべての事例は {$all} です。"
-        . "件数や事例の題名・地域はここに書かれたものだけを使い、ここにない事例や店名を作らないでください。\n"
+        . "事例の題名・地域はここに書かれたものだけを使い、ここにない事例や店名を作らないでください。"
+        . "ホームページに載せていない工事も多いため、載っている事例の数は言わないでください（実績を聞かれたら、会社の情報にある「累計1,000件以上の施工実績」を伝え、事例のページを案内してください）。\n"
         . implode("\n", $lines);
 }
 
@@ -312,7 +311,7 @@ function chat_mark_unanswered(string $key, string $question): void
 }
 
 /**
- * AI に渡す決まりごとのかたまり。[ずっと同じ決まりごと, 担当者が教えた答え＋施工事例の今の一覧]
+ * AI に渡す決まりごとのかたまり。[ずっと同じ決まりごと, 担当者が教えた答え＋ホームページに載せている施工事例]
  * 後ろのかたまりは管理画面で答えや事例を足すと変わる。前のかたまりは変わらないので、読み込みを省ける。
  */
 function chat_system_blocks(): array

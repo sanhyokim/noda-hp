@@ -46,7 +46,7 @@
   let state = load() || { conv: rid(), messages: [], open: false };
   let busy = false;
 
-  // 答えの中のサイト内アドレス（/flow/ など）と消煙機の専用サイトだけをリンクにする（外のサイトは新しいタブで）
+  // 答えの中のサイト内アドレス（/flow/ など）と消煙機・ダクト清掃の専用サイトだけをリンクにする（外のサイトは新しいタブで）
   const esc = (s) => s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const paths = Object.keys(pages).filter((p) => p.length > 1).sort((a, b) => b.length - a.length).map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
   const linkRe = paths.length ? new RegExp('(?<![\\w/.:@-])(' + paths.join('|') + ')(?![\\w/-])', 'g') : null;
