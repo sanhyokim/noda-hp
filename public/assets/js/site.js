@@ -293,6 +293,38 @@
     });
   }
 
+  /* ---- 施工までの流れ：番号がスクロールについてきて、縦の線が今の番号まで青く伸びる（Boss 2026-10-22） ---- */
+  var tl = document.querySelector('.timeline');
+  if (tl) {
+    var tlItems = Array.prototype.slice.call(tl.querySelectorAll('.timeline__item'));
+    var gh = document.querySelector('.gh');
+    var tlTick = false;
+    var tlUpdate = function () {
+      tlTick = false;
+      var stick = (gh ? Math.max(0, gh.getBoundingClientRect().bottom) : 0) + 20;
+      tl.style.setProperty('--tl-top', stick + 'px');
+      // 画面の上から4割の線まで青く伸ばし、線が届いた番号を塗る（最後の番号の先には伸ばさない）
+      var top = tl.getBoundingClientRect().top;
+      var line = Math.max(stick + 28, window.innerHeight * 0.4);
+      var dots = tlItems.map(function (it) { var d = it.querySelector('.timeline__dot').getBoundingClientRect(); return d.top + d.height / 2; });
+      var fill = Math.max(0, Math.min(line, dots[dots.length - 1]) - top);
+      tl.style.setProperty('--tl-fill', fill + 'px');
+      var now = -1;
+      dots.forEach(function (c, i) { if (c <= line + 1) now = i; });
+      tlItems.forEach(function (it, i) {
+        it.classList.toggle('is-done', i <= now);
+        it.classList.toggle('is-now', i === now);
+      });
+    };
+    var tlQueue = function () {
+      if (!tlTick) { tlTick = true; requestAnimationFrame(tlUpdate); }
+    };
+    tl.classList.add('is-live');
+    window.addEventListener('scroll', tlQueue, { passive: true });
+    window.addEventListener('resize', tlQueue);
+    tlUpdate();
+  }
+
   /* ---- 表示時の動き：各セクション直下の要素と、格子の中身を1回だけ ---- */
   if (reduce.matches || !('IntersectionObserver' in window)) return;
   var groups = [];

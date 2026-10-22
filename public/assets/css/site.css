@@ -835,8 +835,14 @@ main:focus { outline: none; }
 .timeline { position: relative; display: grid; gap: 4px; }
 .timeline::before { content: ""; position: absolute; left: 21px; top: 22px; bottom: 64px; width: 2px; background: var(--c-blue-light); }
 .timeline__item { position: relative; display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 16px; padding-bottom: 16px; }
-.timeline__dot { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--c-white); border: 2px solid var(--c-blue); color: var(--c-blue-dark); font-family: var(--font-num); font-size: 20px; font-weight: 700; box-shadow: 0 0 0 6px var(--c-white); }
-.timeline__item:first-child .timeline__dot, .timeline__item:last-child .timeline__dot { background: var(--c-blue); color: var(--c-white); }
+.timeline__dot { position: relative; z-index: 1; display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 50%; background: var(--c-white); border: 2px solid var(--c-blue); color: var(--c-blue-dark); font-family: var(--font-num); font-size: 20px; font-weight: 700; box-shadow: 0 0 0 6px var(--c-white); }
+.timeline:not(.is-live) .timeline__item:first-child .timeline__dot, .timeline:not(.is-live) .timeline__item:last-child .timeline__dot { background: var(--c-blue); color: var(--c-white); }
+/* 動く時（site.js が .is-live を付ける）：番号はスクロールしても見出しの下に止まってついてきて、縦の線が今の番号まで青く伸びる。通り過ぎた番号は青く塗る */
+.timeline.is-live .timeline__dot { position: sticky; top: var(--tl-top, 96px); align-self: start; transition: background-color .25s, color .25s, transform .25s var(--ease), box-shadow .25s; }
+.timeline.is-live::after { content: ""; position: absolute; left: 21px; top: 22px; width: 2px; height: max(0px, calc(var(--tl-fill, 0px) - 22px)); background: var(--c-blue); }
+.timeline__item.is-done .timeline__dot { background: var(--c-blue); color: var(--c-white); }
+.timeline__item.is-now .timeline__dot { transform: scale(1.12); box-shadow: 0 0 0 6px var(--c-white), 0 0 0 9px rgb(6 94 203 / .18); }
+@media (prefers-reduced-motion: reduce) { .timeline.is-live .timeline__dot, .timeline.is-live::after { transition: none; } .timeline__item.is-now .timeline__dot { transform: none; } }
 .timeline__body { padding: 6px 0 24px; border-bottom: 1px solid var(--c-line); }
 .timeline__label { display: block; font-family: var(--font-num); font-size: 13px; font-weight: 600; letter-spacing: .16em; color: var(--c-blue); }
 .timeline__body h3 { margin-top: 2px; }
@@ -852,6 +858,7 @@ main:focus { outline: none; }
 @media (min-width: 768px) { .timeline__body--img { grid-template-columns: minmax(0, 1fr) 220px; gap: 24px; align-items: start; } }
 @media (min-width: 640px) {
   .timeline::before { left: 27px; }
+  .timeline.is-live::after { left: 27px; top: 28px; height: max(0px, calc(var(--tl-fill, 0px) - 28px)); }
   .timeline__item { grid-template-columns: 56px minmax(0, 1fr); gap: 20px; }
   .timeline__dot { width: 56px; height: 56px; font-size: 24px; }
   .timeline__body { padding: 18px 24px; }
