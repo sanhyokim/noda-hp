@@ -24,6 +24,8 @@ git diff --name-only --diff-filter=AMR "$1" HEAD -- public app migration/fixes m
   cp -p "$f" "$STAGE/$to"
 done
 [ -n "$(ls -A "$STAGE")" ] || { echo "変わったファイルがありません"; exit 1; }
+# 入口の index.php は毎回入れる（サーバーで消えてしまった時も、この zip を広げれば戻るように）
+cp -p public/index.php "$STAGE/index.php"
 
 (cd "$STAGE" && zip -q -r "$OUT/noda-site-1-of-1.zip" .)
 cp tools/install.php "$OUT/install.php"
