@@ -18,7 +18,7 @@ $checks = [
   <?php render('section-head', ['label' => 'ONE STOP', 'title' => '同じ担当者が対応――|安心のアフターフォロー', 'id' => 's1']); ?>
   <div class="rows">
     <div class="row">
-      <div class="row__img row__img--contain"><?= picture('after-onestop.jpg', 800, 680, '打ち合わせ・施工・アフターフォローを同じ担当者が対応します') ?></div>
+      <div class="row__img row__img--figure"><?php render('onestop-figure'); ?></div>
       <div class="row__body">
         <h3 class="row__head">安心の自社一貫対応</h3>
         <p>当社では、打ち合わせからダクト工事、フード取り付け、そしてアフターフォローに至るまで、一連の工程を同一の担当者が責任を持って対応いたします。</p>

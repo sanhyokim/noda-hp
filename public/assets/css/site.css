@@ -892,6 +892,7 @@ main:focus { outline: none; }
 .gallery .media { width: 100%; height: 100%; }
 @media (min-width: 600px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 .row__img--contain { aspect-ratio: auto; background: #000; }
+.row__img--figure { aspect-ratio: auto; background: var(--c-white); border-radius: 0; }
 .row__img--contain img { object-fit: contain; }
 .row__img--square { aspect-ratio: 1; max-width: 420px; }
 .checks { display: grid; gap: 10px; counter-reset: chk; }
@@ -1044,3 +1045,74 @@ main:focus { outline: none; }
 }
 .u-mt { margin-top: 20px; }
 .u-mb { margin-bottom: 20px; }
+
+/* ---- 「同じ担当者が対応します！」の動く図（app/templates/onestop-figure.php）
+   位置は元の絵 1304×1109 に対する %。.is-ready で開始前の形、.is-play で動き出す ---- */
+.onestop { position: relative; width: 100%; aspect-ratio: 1304 / 1109; container-type: inline-size; background: var(--c-white); overflow: hidden; }
+.onestop img { position: absolute; display: block; max-width: none; height: auto; }
+.onestop__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.onestop__loop, .onestop__swoosh { fill: none; stroke: #2A7BBF; stroke-linecap: round; }
+.onestop__loop { stroke-width: 14; }
+.onestop__swoosh { stroke-width: 7; opacity: .8; }
+.onestop__dot { fill: var(--c-orange-light); stroke: var(--c-white); stroke-width: 4; }
+.onestop__circle { position: absolute; width: 31.13%; aspect-ratio: 1; border-radius: 50%; background: linear-gradient(135deg, #10308F 0%, #3B3EE0 100%); container-type: inline-size; box-shadow: 0 1.2cqi 3cqi rgba(16, 48, 143, .22); }
+.onestop__circle--mtg { left: 3.72%; top: 34.72%; }
+.onestop__circle--work { left: 36.66%; top: 0; }
+.onestop__circle--after { left: 68.79%; top: 33.99%; }
+.onestop__circle--mtg .onestop__icon { left: 26.5%; top: 12.3%; width: 46.8%; }
+.onestop__circle--work .onestop__icon { left: 28.8%; top: 14.8%; width: 42.6%; }
+.onestop__circle--after .onestop__icon { left: 25.4%; top: 7.9%; width: 48.8%; }
+.onestop__label { position: absolute; left: 0; right: 0; top: 74.6%; transform: translateY(-50%); font-size: 12.4cqi; line-height: 1.32; font-weight: 700; letter-spacing: .04em; text-align: center; color: var(--c-white); white-space: nowrap; }
+.onestop__person { position: absolute; left: 39.72%; top: 31.38%; width: 26.84%; aspect-ratio: 350 / 614; }
+.onestop__body { left: 0; top: 0; width: 100%; }
+.onestop__hand { position: absolute; left: 21.43%; top: 56.35%; width: 45.43%; aspect-ratio: 159 / 168; transform-origin: 96% 74%; }
+.onestop__hand img { position: static; width: 100%; }
+.onestop__spark { position: absolute; left: 6%; top: -52%; width: 46%; aspect-ratio: 1; pointer-events: none; opacity: 0; }
+.onestop__spark i { position: absolute; left: 50%; bottom: 0; width: 7%; height: 32%; margin-left: -3.5%; border-radius: 99px; background: var(--c-orange-light); transform-origin: 50% 200%; }
+.onestop__spark i:nth-child(1) { transform: rotate(-42deg); }
+.onestop__spark i:nth-child(2) { transform: rotate(0deg); height: 40%; }
+.onestop__spark i:nth-child(3) { transform: rotate(42deg); }
+.onestop__caption { position: absolute; left: 51.6%; top: 88.6%; transform: translate(-50%, -50%) rotate(-4deg); font-size: 4.6cqi; line-height: 1; font-weight: 900; letter-spacing: .04em; color: #1B3FAE; white-space: nowrap; }
+
+/* 開始前の形（JS が付ける .is-ready の間だけ） */
+.onestop.is-ready:not(.is-play) .onestop__loop,
+.onestop.is-ready:not(.is-play) .onestop__swoosh { stroke-dasharray: 100; stroke-dashoffset: 100; }
+.onestop.is-ready:not(.is-play) .onestop__circle,
+.onestop.is-ready:not(.is-play) .onestop__person,
+.onestop.is-ready:not(.is-play) .onestop__caption,
+.onestop.is-ready:not(.is-play) .onestop__dot { opacity: 0; }
+.onestop.is-play .onestop__loop { stroke-dasharray: 100; animation: os-draw 1.3s var(--ease) both; }
+.onestop.is-play .onestop__swoosh { stroke-dasharray: 100; animation: os-draw .7s var(--ease) .9s both; }
+.onestop.is-play .onestop__dot { animation: os-fade .4s ease 1.3s both; }
+.onestop.is-play .onestop__circle { animation: os-pop .7s cubic-bezier(.34, 1.56, .64, 1) both, os-float 6s ease-in-out 1.6s infinite; }
+.onestop.is-play .onestop__circle--mtg { animation-delay: .25s, 1.6s; }
+.onestop.is-play .onestop__circle--work { animation-delay: .5s, 2.6s; }
+.onestop.is-play .onestop__circle--after { animation-delay: .75s, 3.6s; }
+.onestop.is-play .onestop__person { animation: os-rise .8s var(--ease) 1s both; }
+.onestop.is-play .onestop__caption { animation: os-caption .7s var(--ease) 1.5s both; }
+.onestop.is-play .onestop__hand { animation: os-good 3.4s ease-in-out 1.9s infinite; }
+.onestop.is-play .onestop__spark { animation: os-spark 3.4s ease-out 1.9s infinite; }
+@keyframes os-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes os-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes os-pop { from { opacity: 0; transform: scale(.55); } to { opacity: 1; transform: scale(1); } }
+@keyframes os-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.2%); } }
+@keyframes os-rise { 0% { opacity: 0; transform: translateY(6%); } 35% { opacity: 1; } 100% { opacity: 1; transform: translateY(0); } }
+@keyframes os-caption { from { opacity: 0; transform: translate(-50%, -10%) rotate(-4deg) scale(.9); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-4deg) scale(1); } }
+/* 「おまかせあれ！」：親指をぐっと前へ突き出して、少し弾んで戻る */
+@keyframes os-good {
+  0%, 52%, 100% { transform: none; }
+  10% { transform: translate(-3%, -5%) rotate(-9deg) scale(1.16); }
+  17% { transform: translate(-3%, -5%) rotate(-9deg) scale(1.16); }
+  27% { transform: rotate(2deg) scale(.97); }
+  36% { transform: rotate(-1deg) scale(1.02); }
+  44% { transform: none; }
+}
+@keyframes os-spark {
+  0%, 6% { opacity: 0; transform: scale(.6); }
+  12% { opacity: 1; transform: scale(1); }
+  24%, 100% { opacity: 0; transform: scale(1.25); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .onestop *, .onestop .onestop__dot { animation: none !important; }
+  .onestop__dot { display: none; }
+}

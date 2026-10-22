@@ -137,7 +137,7 @@ $marquee = [
       <p>換気扇やダクトのご提案から設計、施工まで、すべて自社で承っています。オーナー様のご希望・ご要望をしっかりうかがってそれを設計に反映し、その設計を施工により忠実に形にする――。自社一貫対応により、ミスなく、作業の無駄なく、責任を持って進行できます。</p>
       <a class="more" href="<?= e(page_url('concept')) ?>">野田のコンセプト<?= icon('arrow', 16) ?></a>
     </div>
-    <div class="intro__img intro__img--contain"><?= picture('after-onestop.jpg', 800, 680, '打ち合わせ・施工・アフターフォローを同じ担当者が対応します') ?></div>
+    <div class="intro__img intro__img--contain"><?php render('onestop-figure'); ?></div>
   </div>
 </section>
 

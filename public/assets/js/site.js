@@ -122,6 +122,19 @@
     });
   }
 
+  /* ---- 「同じ担当者が対応します！」の図：画面に入ったら動き出す ---- */
+  if (!reduce.matches && 'IntersectionObserver' in window) {
+    document.querySelectorAll('[data-onestop]').forEach(function (fig) {
+      fig.classList.add('is-ready');
+      var seen = new IntersectionObserver(function (en) {
+        if (!en[0].isIntersecting) return;
+        fig.classList.add('is-play');
+        seen.disconnect();
+      }, { threshold: 0.35 });
+      seen.observe(fig);
+    });
+  }
+
   /* ---- 表示時の動き：各セクション直下の要素と、格子の中身を1回だけ ---- */
   if (reduce.matches || !('IntersectionObserver' in window)) return;
   var groups = [];
