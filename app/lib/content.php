@@ -229,13 +229,14 @@ function case_counts(string $axis, ?string $other): array
     return array_map('intval', $st->fetchAll(PDO::FETCH_KEY_PAIR));
 }
 
-function find_case(string $slug): ?array
+// $withDraft：管理ページの確認用に下書きも返す
+function find_case(string $slug, bool $withDraft = false): ?array
 {
     $pdo = db();
     if (!$pdo) {
         return null;
     }
-    $st = $pdo->prepare("SELECT * FROM cases WHERE slug = ? AND status = 'published'");
+    $st = $pdo->prepare('SELECT * FROM cases WHERE slug = ? AND ' . ($withDraft ? "status <> 'deleted'" : "status = 'published'"));
     $st->execute([$slug]);
     $row = $st->fetch();
     if (!$row) {
@@ -321,13 +322,13 @@ function feed_page(int $page, int $per = NEWS_PER_PAGE): array
     return ['rows' => $rows, 'total' => $total];
 }
 
-function find_news(string $slug): ?array
+function find_news(string $slug, bool $withDraft = false): ?array
 {
     $pdo = db();
     if (!$pdo) {
         return null;
     }
-    $st = $pdo->prepare("SELECT * FROM news WHERE slug = ? AND status = 'published'");
+    $st = $pdo->prepare('SELECT * FROM news WHERE slug = ? AND ' . ($withDraft ? "status <> 'deleted'" : "status = 'published'"));
     $st->execute([$slug]);
     return $st->fetch() ?: null;
 }

@@ -9,7 +9,7 @@ $first = $images[0] ?? null;
 $path = rawurlencode($case['slug']) . '/';
 $meta = [
     'title' => $case['seo_title'] !== '' ? $case['seo_title'] : $case['title'] . '｜施工事例【株式会社野田】',
-    'description' => $case['seo_description'],
+    'description' => $case['seo_description'] !== '' ? $case['seo_description'] : (auto_description($case['body_html']) ?: $case['title'] . 'の施工事例です。株式会社野田（福岡）の飲食店のフード・ダクト工事。'),
     'path' => $path,
     'og_type' => 'article',
     'trail' => [[page('construction_examples')['name'], page('construction_examples')['path']], [$case['title'], $path]],

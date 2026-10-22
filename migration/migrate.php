@@ -21,8 +21,6 @@ require dirname(__DIR__) . '/app/bootstrap.php';
 require __DIR__ . '/lib.php';
 
 const SOURCE_ORIGIN = 'https://duct-noda.com';
-const MEDIA_LONG = 1600;
-const MEDIA_THUMB_W = 800;
 
 $pdo = db();
 if (!$pdo) {
@@ -301,56 +299,7 @@ function make_case_media(string $orig, int $caseId, string $sourceUrl): ?array
     if (!$im) {
         return null;
     }
-    if (!is_dir($dir)) {
-        mkdir($dir, 0775, true);
-    }
-    $w = imagesx($im);
-    $h = imagesy($im);
-    $scale = min(1, MEDIA_LONG / max($w, $h));
-    $bigIm = $scale < 1 ? imagescale($im, (int)round($w * $scale), (int)round($h * $scale), IMG_BICUBIC) : $im;
-    $tw = min(MEDIA_THUMB_W, $w);
-    $thumbIm = $tw < $w ? imagescale($im, $tw, (int)round($h * $tw / $w), IMG_BICUBIC) : $im;
-    imagejpeg($bigIm, $big, 82);
-    imagewebp($bigIm, "$dir/$name.webp", 80);
-    imagejpeg($thumbIm, $thumb, 80);
-    imagewebp($thumbIm, "$dir/$name-800.webp", 78);
-    $out = ['path' => $rel . "$name.jpg", 'path_thumb' => $rel . "$name-800.jpg", 'width' => imagesx($bigIm), 'height' => imagesy($bigIm)];
-    return $out;
-}
-
-/** 画像を読み込み、写真の向き（EXIF）を直し、透明部分は白で埋める。 */
-function load_image(string $path): ?GdImage
-{
-    $info = @getimagesize($path);
-    if (!$info) {
-        return null;
-    }
-    $im = match ($info[2]) {
-        IMAGETYPE_JPEG => @imagecreatefromjpeg($path),
-        IMAGETYPE_PNG => @imagecreatefrompng($path),
-        IMAGETYPE_WEBP => @imagecreatefromwebp($path),
-        IMAGETYPE_GIF => @imagecreatefromgif($path),
-        default => false,
-    };
-    if (!$im) {
-        return null;
-    }
-    if ($info[2] === IMAGETYPE_JPEG && function_exists('exif_read_data')) {
-        $exif = @exif_read_data($path);
-        $im = match ((int)($exif['Orientation'] ?? 1)) {
-            3 => imagerotate($im, 180, 0),
-            6 => imagerotate($im, -90, 0),
-            8 => imagerotate($im, 90, 0),
-            default => $im,
-        };
-    }
-    if (!imageistruecolor($im) || $info[2] !== IMAGETYPE_JPEG) {
-        $bg = imagecreatetruecolor(imagesx($im), imagesy($im));
-        imagefill($bg, 0, 0, imagecolorallocate($bg, 255, 255, 255));
-        imagecopy($bg, $im, 0, 0, 0, 0, imagesx($im), imagesy($im));
-        $im = $bg;
-    }
-    return $im;
+    return write_case_media($im, 'media/cases/' . $caseId, $name);
 }
 
 /** 使わなくなった生成画像を消す。 */

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 // 移行の変換規則（指示書 3-3・付録B）。migrate.php と試験（tests/migration_test.php）の両方から使う。
 
+require_once dirname(__DIR__) . '/app/lib/html.php'; // 本文の整え方（管理ページと共通）
+
 // 付録B-1・B-2 のカテゴリ
 const MIG_CATEGORIES = [
     'biz' => [
@@ -191,19 +193,7 @@ function extract_images(string $html): array
     return array_values($out);
 }
 
-function load_html(string $html): DOMDocument
-{
-    $doc = new DOMDocument();
-    libxml_use_internal_errors(true);
-    $doc->loadHTML('<?xml encoding="UTF-8"><html><body><div id="root">' . $html . '</div></body></html>', LIBXML_NOERROR | LIBXML_NOWARNING);
-    libxml_clear_errors();
-    return $doc;
-}
 
-/**
- * 本文を許可した要素だけに整える（3-3-3・3-3-4）。画像は取り除く（ギャラリーに移すため）。
- * 残す：p, h2〜h4, ul, ol, li, strong, em, a(href), br。h5/h6→h3、h1→h2、b→strong、i→em。
- */
 // 旧サイトの保存時に絵文字が「????」に化けている（20件ほど）。化けた跡と、絵文字に付いていた結合文字・後ろの空白を消す
 function strip_lost_emoji(string $s): string
 {
@@ -217,115 +207,8 @@ function fix_markdown_bold(string $html): string
     return str_replace('**', '', $html);
 }
 
+// 移行する本文の整形：化けた絵文字を消し、許可した要素だけに整え（app/lib/html.php）、Markdown の太字を直す
 function sanitize_body(string $html): string
 {
-    $html = strip_lost_emoji(preg_replace('/<!--.*?-->/s', '', $html));
-    $doc = load_html($html);
-    $root = $doc->getElementById('root');
-    $out = new DOMDocument('1.0', 'UTF-8');
-    $body = $out->createElement('div');
-    $out->appendChild($body);
-    sanitize_children($root, $body, $out);
-
-    // 段落の外に出た文字は段落で包む
-    $wrapped = $out->createElement('div');
-    $pending = null;
-    foreach (iterator_to_array($body->childNodes) as $n) {
-        $inline = $n instanceof DOMText || in_array($n->nodeName, ['strong', 'em', 'a', 'br'], true);
-        if ($inline) {
-            if ($n instanceof DOMText && trim($n->textContent) === '' && $pending === null) {
-                continue;
-            }
-            $pending ??= $wrapped->appendChild($out->createElement('p'));
-            $pending->appendChild($n);
-        } else {
-            $pending = null;
-            $wrapped->appendChild($n);
-        }
-    }
-
-    // 空の要素・前後の改行を除く
-    $changed = true;
-    while ($changed) {
-        $changed = false;
-        foreach (iterator_to_array((new DOMXPath($out))->query('.//*', $wrapped)) as $el) {
-            if ($el->nodeName === 'br') {
-                continue;
-            }
-            trim_br($el);
-            $text = str_replace(["\u{00A0}", "\u{3000}"], '', $el->textContent);
-            if (trim($text) === '' && !$el->getElementsByTagName('br')->length) {
-                $el->parentNode->removeChild($el);
-                $changed = true;
-            } elseif (trim($text) === '' && in_array($el->nodeName, ['p', 'h2', 'h3', 'h4', 'li', 'strong', 'em', 'a'], true)) {
-                $el->parentNode->removeChild($el);
-                $changed = true;
-            }
-        }
-    }
-
-    $parts = [];
-    foreach ($wrapped->childNodes as $n) {
-        $s = trim($out->saveHTML($n));
-        if ($s !== '') {
-            $parts[] = $s;
-        }
-    }
-    return fix_markdown_bold(implode("\n", $parts));
-}
-
-function trim_br(DOMElement $el): void
-{
-    foreach (['firstChild', 'lastChild'] as $end) {
-        while (($n = $el->$end) && (($n instanceof DOMText && trim(str_replace("\u{00A0}", '', $n->textContent)) === '') || $n->nodeName === 'br')) {
-            $el->removeChild($n);
-        }
-    }
-}
-
-function sanitize_children(DOMNode $from, DOMElement $to, DOMDocument $out): void
-{
-    $rename = ['h1' => 'h2', 'h5' => 'h3', 'h6' => 'h3', 'b' => 'strong', 'i' => 'em'];
-    $keep = ['p', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'strong', 'em', 'a', 'br'];
-    $drop = ['script', 'style', 'noscript', 'img', 'svg', 'iframe', 'figcaption', 'button', 'form', 'input', 'template'];
-    foreach ($from->childNodes as $n) {
-        if ($n instanceof DOMText) {
-            $to->appendChild($out->createTextNode(preg_replace('/[ \t\r\n]+/u', ' ', $n->textContent)));
-            continue;
-        }
-        if (!$n instanceof DOMElement) {
-            continue;
-        }
-        $name = strtolower($n->nodeName);
-        if (in_array($name, $drop, true)) {
-            continue;
-        }
-        $name = $rename[$name] ?? $name;
-        if (!in_array($name, $keep, true)) {
-            sanitize_children($n, $to, $out); // div・span などは外して中身だけ残す
-            continue;
-        }
-        $el = $out->createElement($name);
-        if ($name === 'a') {
-            $href = trim($n->getAttribute('href'));
-            // 画像ファイルへのリンク（ギャラリーの拡大用）は不要
-            if ($href === '' || preg_match('/\.(jpe?g|png|gif|webp)$/i', $href) || preg_match('#^\s*javascript:#i', $href)) {
-                sanitize_children($n, $to, $out);
-                continue;
-            }
-            $el->setAttribute('href', $href);
-        }
-        $to->appendChild($el);
-        if ($name !== 'br') {
-            sanitize_children($n, $el, $out);
-        }
-    }
-}
-
-/** 本文から説明文を作る（先頭 110 字）。 */
-function auto_description(string $bodyHtml): string
-{
-    $text = html_entity_decode(strip_tags(preg_replace('/<(h[2-4])>.*?<\/\1>/su', '', $bodyHtml)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-    $text = trim(preg_replace('/\s+/u', '', $text));
-    return mb_strlen($text) > 110 ? mb_substr($text, 0, 109) . '…' : $text;
+    return fix_markdown_bold(clean_body_html(strip_lost_emoji($html)));
 }

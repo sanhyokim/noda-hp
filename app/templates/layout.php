@@ -2,7 +2,8 @@
 /** @var array $meta  title, description, path, og_image, og_type, trail, jsonld */
 /** @var string $content */
 /** @var string $current */
-$gtm = (string)config('gtm_id', '');
+$adminBar = $meta['admin_bar'] ?? null; // 管理ページからの確認用の表示：[説明, 編集ページの URL]
+$gtm = $adminBar ? '' : (string)config('gtm_id', '');
 $canonical = abs_url($meta['path'] ?? '');
 $ogImage = $meta['og_image'] ?? abs_url('assets/img/og-default.jpg');
 $trail = $meta['trail'] ?? null;
@@ -20,6 +21,9 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','<?= e($gtm) ?>');</script>
 <?php endif; ?>
 <title><?= e($meta['title']) ?></title>
+<?php if ($adminBar): ?>
+<meta name="robots" content="noindex, nofollow">
+<?php endif; ?>
 <meta name="description" content="<?= e($meta['description']) ?>">
 <link rel="canonical" href="<?= e($canonical) ?>">
 <?php foreach (($meta['head_links'] ?? []) as $rel => $href): // 一覧のページ送り（rel="prev/next"） ?>
@@ -56,6 +60,9 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<?= e($gtm) ?>" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
 <?php endif; ?>
 <a class="skip" href="#main">本文へ移動</a>
+<?php if ($adminBar): ?>
+<div class="adminbar" role="status"><span><?= e($adminBar[0]) ?></span><a href="<?= e($adminBar[1]) ?>"><?= icon('arrow', 16, 'adminbar__back') ?>編集に戻る</a></div>
+<?php endif; ?>
 
 <div class="util">
   <div class="frame util__inner">

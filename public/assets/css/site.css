@@ -1334,3 +1334,9 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
   .lb__next { right: 20px; }
   .lb__close { top: 20px; right: 20px; }
 }
+
+/* 管理ページの「保存して確認」で開いた時だけ出る帯（一般の閲覧者には出ない） */
+.adminbar { position: relative; z-index: 90; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 16px; padding: 8px var(--gutter); background: var(--c-ink); color: var(--c-white); font-size: 14px; line-height: 1.5; }
+.adminbar a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border: 1px solid rgba(255, 255, 255, .5); border-radius: var(--r-sm); color: var(--c-white); font-weight: 700; }
+.adminbar a:hover { color: var(--c-white); background: rgba(255, 255, 255, .12); }
+.adminbar__back { transform: scaleX(-1); }

@@ -2,6 +2,7 @@
 /storage/cache/*
 /storage/logs/*
 /storage/contact/*
+/storage/sessions/*
 !/storage/**/.gitkeep
 /images/*
 !/images/.gitkeep
