@@ -936,6 +936,7 @@ main:focus { outline: none; }
 .row__img--figure { aspect-ratio: auto; background: var(--c-white); border-radius: 0; }
 .row__img--contain img { object-fit: contain; }
 .row__img--square { aspect-ratio: 1; max-width: 420px; }
+.row__img--43 { aspect-ratio: 4 / 3; } /* ボス提供の写真（胸に社名の刺しゅう）を切らずに出す */
 .checks { display: grid; gap: 0 32px; border-top: 1px solid var(--c-ink); counter-reset: chk; }
 .checks__item { position: relative; padding: 18px 4px 18px 40px; border-bottom: 1px solid var(--c-line); }
 .checks__item::before { content: ""; position: absolute; left: 4px; top: 21px; width: 20px; height: 20px; border: 2px solid var(--c-ink); border-radius: 2px; }

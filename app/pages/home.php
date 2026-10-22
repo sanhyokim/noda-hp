@@ -1,5 +1,6 @@
 <?php
 // 人物のAI画像は現行サイトと同じ場所に一時的に戻している（Boss 2026-10-22。Boss が1枚ずつ差し替えを依頼する）。ファイル名は ai-*.jpg
+// 差し替え済み：「私たち専門業者へご相談ください」の写真 → top-craftsman.jpg（Boss 提供 2026-10-22）
 // トップページ。区画の順番は Boss と相談して決めた（2026-10-22）：最初の画面と流れる帯の下にお知らせ、その次に施工事例、Instagram は最後。
 $years = years_in_business();
 $feed = top_news();
@@ -108,7 +109,7 @@ $marquee = [
   </ul>
   <p class="problems__answer kw">身に覚えがある場合は、<wbr><strong>ファンやダクトの設計</strong>に<wbr>原因があるかもしれません。</p>
   <div class="row u-mt">
-    <div class="row__img"><?= picture('ai-top-craftsman.jpg', 900, 600, 'ダクトを見上げる職人') ?></div>
+    <div class="row__img row__img--43"><?= picture('top-craftsman.jpg', 900, 678, 'ダクトを見上げる株式会社野田の職人') ?></div>
     <div class="row__body">
       <h3 class="row__head">私たち専門業者へご相談ください</h3>
       <p>給気・排気ダクトは、単に設置すれば良いものではありません。飲食店の規模やレイアウトに応じて、適した種類・大きさ・形状のダクトを選定し、設計する必要があります。そうしなければ、本来の性能を発揮できず、後々トラブルが発生する恐れがあります。</p>
