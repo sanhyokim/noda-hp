@@ -55,7 +55,7 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
 
 <section class="box" id="instagram">
   <h2 class="box__ttl">Instagram の表示</h2>
-  <p class="note">トップページの「Instagram - 私たちの日々の仕事」に、最新の投稿6件を自動で出すための設定です。トークン（Instagram から発行される長い英数字）を貼り付けて「保存して接続を試す」を押してください。手順は別紙「Instagram のつなぎ方」にまとめます。</p>
+  <p class="note">トップページの「Instagram - 私たちの日々の仕事」に、最新の投稿6件を自動で出すための設定です。トークン（Instagram から発行される長い英数字）を貼り付けて「保存して接続を試す」を押してください。手順は別紙「Instagram のつなぎ方」（docs/INSTAGRAM.md）にまとめています。</p>
   <p class="kv"><span>今の状態</span><strong>
 <?php if (!$ig['has_token']): ?>
     未設定（現行サイトの施工写真6枚を代わりに表示中）
