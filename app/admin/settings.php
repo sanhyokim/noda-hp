@@ -81,6 +81,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         flash('ok', $off ? 'AI 相談を止めました。ホームページの右下の「AIに相談」ボタンが消えます。' : 'AI 相談を再開しました。ホームページの右下に「AIに相談」ボタンが出ます。');
         redirect(admin_url('settings/') . '#chat');
     }
+    if ($op === 'chat_key') {
+        if (!empty($_POST['clear'])) {
+            set_setting('chat_api_key', '');
+            flash('ok', 'API キーを消しました。ホームページの右下の「AIに相談」ボタンが消えます。');
+            redirect(admin_url('settings/') . '#chat');
+        }
+        $keyIn = trim((string)($_POST['chat_api_key'] ?? ''));
+        if (!preg_match('/^sk-ant-[A-Za-z0-9_\-]{20,300}$/', $keyIn)) {
+            flash('error', 'キーの形が正しくありません。「sk-ant-」で始まる長い文字を、前後に空白を入れずに貼り付けてください。');
+            redirect(admin_url('settings/') . '#chat');
+        }
+        $r = chat_test_key($keyIn);
+        if (!$r['ok']) {
+            flash('error', '保存していません。' . $r['error']);
+            redirect(admin_url('settings/') . '#chat');
+        }
+        set_setting('chat_api_key', $keyIn);
+        flash('ok', 'API キーを保存し、AI とつながることを確かめました。ホームページの右下に「AIに相談」ボタンが出ます。');
+        redirect(admin_url('settings/') . '#chat');
+    }
     if ($op === 'instagram') {
         $tokenIn = trim((string)($_POST['instagram_token'] ?? ''));
         if (!empty($_POST['clear'])) {
@@ -149,6 +169,7 @@ admin_render('settings', [
     ],
     'chat' => [
         'configured' => chat_configured(),
+        'saved_key' => (string)setting('chat_api_key'),
         'off' => setting('chat_off') === '1',
         'month' => chat_usage(),
         'prev' => chat_usage(date('Ym', strtotime('first day of last month'))),

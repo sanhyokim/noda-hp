@@ -11,7 +11,43 @@ const CHAT_MAX_ASSIST_LEN = 2000;
 
 function chat_config(string $key): mixed
 {
+    // API キーは管理画面の「設定」で貼ったもの（データベース）を先に使う。設定ファイルに書いた場合はそれでも動く
+    if ($key === 'api_key') {
+        $saved = (string)setting_safe('chat_api_key');
+        if ($saved !== '') {
+            return $saved;
+        }
+    }
     return (config('chat', [])[$key]) ?? null;
+}
+
+/**
+ * 管理画面で貼った API キーで、AI に1回だけ短く話しかけて確かめる。戻り値：['ok' => bool, 'error' => 文]
+ */
+function chat_test_key(string $apiKey): array
+{
+    require_once ROOT_DIR . '/vendor/autoload.php';
+    $client = new \Anthropic\Client(
+        apiKey: $apiKey,
+        baseUrl: (string)((config('chat', [])['base_url'] ?? '') ?: 'https://api.anthropic.com'),
+        requestOptions: ['timeout' => 30, 'maxRetries' => 0],
+    );
+    try {
+        $client->messages->create(
+            model: (string)(chat_config('model') ?: 'claude-opus-5-5'),
+            maxTokens: 16,
+            messages: [['role' => 'user', 'content' => '接続の確認です。「OK」とだけ答えてください。']],
+        );
+        return ['ok' => true, 'error' => ''];
+    } catch (\Anthropic\Core\Exceptions\AuthenticationException $e) {
+        return ['ok' => false, 'error' => 'キーが正しくないようです。コピーし直して、前後に空白が入っていないか確かめてください。'];
+    } catch (\Anthropic\Core\Exceptions\PermissionDeniedException | \Anthropic\Core\Exceptions\BadRequestException $e) {
+        error_log('AI チャット キーの確認: ' . $e->getMessage());
+        return ['ok' => false, 'error' => 'キーは受け付けられましたが、使える状態になっていません。Anthropic の管理画面の「Billing」で、カードの登録と入金が済んでいるか確かめてください。'];
+    } catch (\Throwable $e) {
+        error_log('AI チャット キーの確認: ' . get_class($e) . ' ' . $e->getMessage());
+        return ['ok' => false, 'error' => 'AI の会社のサーバーにつながりませんでした。少し時間をおいて、もう一度「保存して試す」を押してください。'];
+    }
 }
 
 /** API キーと SDK がそろっているか（管理ページの「止める・再開」とは別） */

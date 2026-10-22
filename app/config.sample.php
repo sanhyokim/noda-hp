@@ -40,7 +40,7 @@ return [
     ],
 
     // AI チャット（右下の「AIに相談」）。api_key が空なら表示しない。
-    // api_key は Anthropic（Claude）のコンソールで発行したキー。git には入れない。
+    // api_key は Anthropic（Claude）のコンソールで発行したキー。git には入れない。ふつうは管理画面の「設定」に貼る（そちらが優先）。
     'chat' => [
         'api_key' => '',
         'model' => 'claude-opus-5-5',

@@ -24,7 +24,7 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
   <p class="note">ホームページの右下の「AIに相談」ボタンです。お客様の質問に AI が答え、お問い合わせ・LINE・お電話へご案内します。費用や工期は答えず、無料の現地調査へご案内するようにしてあります。</p>
   <p class="kv"><span>今の状態</span><strong>
 <?php if (!$chat['configured']): ?>
-    準備中（AI の利用契約の鍵がまだ入っていないため、ボタンは出ていません）
+    準備中（API キーがまだ入っていないため、ボタンは出ていません）
 <?php elseif ($chat['off']): ?>
     止めています（ボタンは出ていません）
 <?php else: ?>
@@ -48,9 +48,25 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
 <?php endif; ?>
     </form>
   </div>
-<?php else: ?>
-  <p class="note note--sub">使い始めるには、AI の利用契約（Anthropic 社）で発行される「API キー」を、サーバーの設定ファイルに入れます。手順は引き渡しの手順書にまとめます。</p>
 <?php endif; ?>
+  <form method="post" class="form">
+    <?= csrf_field() ?>
+    <input type="hidden" name="op" value="chat_key">
+<?php if ($chat['saved_key'] !== ''): ?>
+    <p class="kv"><span>保存済みのキー</span><strong>sk-ant-…<?= e(substr($chat['saved_key'], -4)) ?></strong></p>
+<?php endif; ?>
+    <div class="field">
+      <label class="field__label" for="chat_api_key"><?= $chat['saved_key'] !== '' ? '新しいキーに入れ替える' : 'API キー' ?> <span class="opt"><?= $chat['saved_key'] !== '' ? '入れ替える時だけ' : '' ?></span></label>
+      <input class="input textarea--mono" type="password" id="chat_api_key" name="chat_api_key" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-ant- で始まる長い英数字">
+    </div>
+    <p class="note note--sub">Anthropic の管理画面（https://console.anthropic.com/）の「API Keys」で作ったキーを貼ってください。保存の前に、AI に1回だけ短く話しかけてつながるか確かめます（費用は1円未満）。キーは他の人に見せないでください。</p>
+    <div class="actions-inline">
+      <button class="abtn abtn--primary" type="submit">保存して試す</button>
+<?php if ($chat['saved_key'] !== ''): ?>
+      <button class="abtn abtn--line" type="submit" name="clear" value="1" data-confirm="API キーを消します。ホームページの右下の「AIに相談」ボタンが消えます。よろしいですか？">キーを消す</button>
+<?php endif; ?>
+    </div>
+  </form>
 </section>
 
 <section class="box" id="instagram">
