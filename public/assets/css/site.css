@@ -462,8 +462,9 @@ main:focus { outline: none; }
 
 /* ---------- お悩み ---------- */
 .problems { display: grid; gap: 0 32px; }
-.problem { display: grid; grid-template-columns: 52px minmax(0, 1fr); gap: 4px 16px; padding: 20px 0; border-top: 1px solid var(--c-ink); }
-.problem__icon { grid-row: span 2; display: inline-flex; align-items: center; justify-content: center; width: 52px; height: 52px; border-radius: var(--r-sm); background: var(--c-blue-bg); color: var(--c-blue-dark); }
+.problem { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 4px 18px; padding: 22px 0; border-top: 1px solid var(--c-ink); }
+.problem__icon { grid-row: span 2; display: block; width: 72px; height: 72px; }
+.problem__art { display: block; width: 100%; height: 100%; }
 .problem__title { font-size: 17px; }
 .problem__text { font-size: 14px; line-height: 1.75; color: var(--c-muted); }
 .problems__answer { position: relative; margin-top: 20px; padding: 14px 20px; border-radius: var(--r-sm); background: var(--c-blue); color: var(--c-white); font-size: 15px; line-height: 1.6; font-weight: 700; text-align: center; }

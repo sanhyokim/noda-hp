@@ -105,7 +105,7 @@ $marquee = [
   <ul class="problems">
     <?php foreach ($problems as [$ic, $t, $d]): ?>
       <li class="problem">
-        <span class="problem__icon"><?= icon($ic, 26) ?></span>
+        <span class="problem__icon"><?php render('problem-art', ['art' => $ic]); ?></span>
         <h3 class="problem__title"><?= e($t) ?></h3>
         <p class="problem__text"><?= e($d) ?></p>
       </li>
