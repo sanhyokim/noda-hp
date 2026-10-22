@@ -5,7 +5,7 @@ render('page-head', [
     'label' => 'FLOW',
     'title' => 'お問い合わせから|施工までの流れ',
     'lead' => 'お問い合わせから工事完了、その後のアフターフォローまで、8つのステップでご案内します。現場調査とお見積りは無料です。',
-    'image' => 'flow-consult.jpg', 'ratio' => [3, 2],
+    'image' => 'flow-survey.jpg', 'ratio' => [3, 2], 'focus' => '50% 30%',
 ]);
 // 各ステップの文章は現行ページ https://duct-noda.com/flow/ の全文（2026-10-21）。
 $steps = [

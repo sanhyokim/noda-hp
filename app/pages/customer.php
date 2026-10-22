@@ -4,7 +4,7 @@ render('page-head', [
     'label' => 'FOR PARTNERS',
     'title' => '設計事務所・|内装施工業者様へ',
     'lead' => '飲食店の換気・排煙の部分を、野田が設計から施工・アフターまで引き受けます。',
-    'image' => 'partner-blueprint.jpg', 'ratio' => [16, 9],
+    'image' => 'concept-team.jpg', 'ratio' => [3, 2], 'focus' => '50% 30%',
 ]);
 $meta['cta_text'] = '図面を添えてお送りください。給排気計算からご提案します。';
 ?>

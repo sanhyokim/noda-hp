@@ -6,7 +6,7 @@ render('page-head', [
     'label' => 'COMMITMENT',
     'title' => '私たちのこだわり',
     'lead' => '当社は創業以来、全国の飲食店オーナー様をサポートしてきました。新規開業店舗には企画提案から施工、アフターメンテナンスまで一貫したサービスを提供しています。',
-    'image' => 'concept-workshop.jpg', 'ratio' => [16, 9],
+    'image' => 'top-craftsman.jpg', 'ratio' => [4, 3], 'focus' => '50% 25%',
 ]);
 $commits = [
     ['自社一貫対応', 'concept-team.jpg', '工事中の厨房で図面と現場を見比べる職人たち', [

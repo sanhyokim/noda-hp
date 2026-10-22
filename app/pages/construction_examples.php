@@ -46,7 +46,7 @@ $rows = [
 render('page-head', [
     'label' => 'WORKS',
     'title' => '施工事例',
-    'image' => 'after-grease.jpg', 'ratio' => [3, 2],
+    'image' => 'svc-newstore.jpg', 'ratio' => [3, 2],
     'lead' => '創業からの施工実績1,000件以上の中から抜粋して掲載しています。業態・工事の種類で絞り込めます。',
 ]);
 $from = ($pageNo - 1) * CASES_PER_PAGE + 1;

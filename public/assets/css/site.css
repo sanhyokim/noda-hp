@@ -623,33 +623,36 @@ main:focus { outline: none; }
   .footer__inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); gap: 64px; padding-block: 56px 44px; }
 }
 
-/* ---------- 下層ページの見出し（写真の上に見出し。トップの最初の画面と同じ、青みのない暗いかぶせ） ---------- */
+/* ---------- 下層ページの見出し ----------
+   写真に暗いかぶせを敷く形をやめ（Boss「いけてない」「少し暗い」2026-10-22）、左に見出し・右に写真を並べる。
+   写真は切りすぎず明るいまま見せる。見出しはサイト共通の「大きな英字＋青い短い線＋日本語」。スマホは写真の下に見出し。 */
 .page-head { padding-top: 14px; }
-.page-head__box { position: relative; isolation: isolate; display: flex; align-items: flex-end; min-height: 220px; overflow: hidden; border-radius: var(--r); background: #1b1f26; color: var(--c-white); }
-.page-head__box--plain { min-height: 0; align-items: center; background: linear-gradient(120deg, #1b1f26 0%, #2a303a 100%); }
-.page-head__text { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px; padding: 26px 22px; }
-.page-head__en { display: inline-flex; align-items: center; gap: 10px; font-family: var(--font-num); font-size: 13px; line-height: 1; font-weight: 600; letter-spacing: .24em; color: var(--c-orange-light); }
-.page-head__en::before { content: ""; width: 24px; height: 1px; background: currentColor; }
-.page-head__title { font-size: 24px; line-height: 1.45; font-weight: 700; letter-spacing: .04em; font-feature-settings: "palt"; text-shadow: 0 2px 16px rgba(0, 0, 0, .35); }
-.page-head__img { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+.page-head__box { position: relative; display: grid; overflow: hidden; border-radius: var(--r); background: var(--c-soft); color: var(--c-ink); }
+.page-head__text { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; min-width: 0; padding: 24px 20px 26px; container-type: inline-size; }
+.page-head__en { font-family: var(--font-num); font-size: clamp(34px, 13cqi, 64px); line-height: .9; font-weight: 700; letter-spacing: .03em; color: var(--c-ink); overflow-wrap: anywhere; }
+.page-head__title { display: flex; align-items: baseline; gap: 12px; font-size: 21px; line-height: 1.5; font-weight: 700; letter-spacing: .06em; font-feature-settings: "palt"; color: var(--c-ink); }
+.page-head__title::before { content: ""; flex: none; width: 28px; height: 2px; background: var(--c-blue); transform: translateY(-.34em); }
+.page-head__img { position: relative; order: -1; aspect-ratio: 16 / 10; overflow: hidden; }
 .page-head__img .media { width: 100%; height: 100%; }
 .page-head__img img { object-position: var(--focus, 50% 50%); animation: settle 1.4s var(--ease) both; }
-.page-head__box:not(.page-head__box--plain)::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(0deg, rgba(14, 18, 26, .86) 0%, rgba(14, 18, 26, .5) 55%, rgba(14, 18, 26, .15) 100%); }
+.page-head__box:not(.page-head__box--plain)::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--c-blue); }
+.page-head__box--plain { background: var(--c-soft); }
+.page-head__box--plain .page-head__text { padding: 30px 20px; }
 .page-head__lead { max-width: 760px; margin-top: 22px; font-size: 16px; line-height: 1.95; color: var(--c-text); }
-@media (min-width: 640px) {
-  .page-head__box { align-items: center; min-height: 240px; }
-  .page-head__box--plain { min-height: 160px; }
-  .page-head__box:not(.page-head__box--plain)::before { background: linear-gradient(90deg, rgba(14, 18, 26, .88) 0%, rgba(14, 18, 26, .7) 42%, rgba(14, 18, 26, .12) 78%); }
-  .page-head__text { max-width: 62%; padding: 36px 40px; }
-  .page-head__box--plain .page-head__text { max-width: none; }
-  .page-head__title { font-size: 28px; }
+@media (min-width: 768px) {
+  .page-head__box:not(.page-head__box--plain) { grid-template-columns: minmax(0, 42fr) minmax(0, 58fr); min-height: 300px; }
+  .page-head__img { order: 0; aspect-ratio: auto; min-height: 300px; }
+  .page-head__img .media { position: absolute; inset: 0; }
+  .page-head__text { padding: 36px 32px 40px 36px; }
+  .page-head__box--plain .page-head__text { padding: 40px 36px; }
+  .page-head__title { font-size: 24px; }
 }
 @media (min-width: 1100px) {
   .page-head { padding-top: 16px; }
-  .page-head__box { min-height: 280px; }
-  .page-head__box--plain { min-height: 180px; }
-  .page-head__text { padding: 44px 48px; }
-  .page-head__title { font-size: 32px; }
+  .page-head__box:not(.page-head__box--plain) { min-height: 340px; }
+  .page-head__img { min-height: 340px; }
+  .page-head__text { padding: 44px 40px 48px 44px; }
+  .page-head__title { font-size: 26px; }
 }
 
 /* ---------- 下層ページ共通 ---------- */
