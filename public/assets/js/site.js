@@ -210,6 +210,81 @@
     if (on && ul.scrollWidth > ul.clientWidth) ul.scrollLeft = on.offsetLeft - 20;
   });
 
+  /* ---- お問い合わせフォーム：送る前に必須項目と添付を確かめる（サーバー側でも同じ確認をする） ---- */
+  var focusMe = document.querySelector('[data-focus]');
+  if (focusMe) {
+    focusMe.scrollIntoView({ block: 'center' });
+    focusMe.focus({ preventScroll: true });
+  }
+  var cform = document.querySelector('form[data-validate]');
+  if (cform) {
+    var msgs = {
+      name: 'お名前を入力してください。', prefecture: '都道府県を選んでください。', phone: '電話番号を入力してください。',
+      email: 'メールアドレスを入力してください。', message: 'ご相談内容を入力してください。', agree: 'プライバシーポリシーへの同意が必要です。'
+    };
+    var setErr = function (el, text) {
+      var box = el.closest('.field');
+      var p = box.querySelector('.field__err');
+      var id = 'err-' + el.name.replace(/\W/g, '');
+      if (!text) {
+        if (p) p.remove();
+        el.removeAttribute('aria-invalid');
+        el.removeAttribute('aria-describedby');
+        return;
+      }
+      if (!p) {
+        p = document.createElement('p');
+        p.className = 'field__err';
+        p.id = id;
+        box.appendChild(p);
+      }
+      p.textContent = text;
+      el.setAttribute('aria-invalid', 'true');
+      el.setAttribute('aria-describedby', p.id);
+    };
+    var check = function (el) {
+      var val = el.type === 'checkbox' ? el.checked : el.value.trim() !== '';
+      var text = '';
+      if (el.required && !val) text = msgs[el.name] || '入力してください。';
+      else if (el.name === 'email' && val && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim())) text = 'メールアドレスの形が正しくありません。もう一度ご確認ください。';
+      else if (el.name === 'phone' && val && el.value.replace(/\D/g, '').length < 10) text = '電話番号は、市外局番から数字で入力してください（例：092-504-5502）。';
+      else if (el.type === 'file' && el.files.length) {
+        var max = +el.dataset.maxSize, ok = /\.(jpe?g|png|hei[cf]|pdf)$/i;
+        if (el.files.length > +el.dataset.maxFiles) text = '添付できるのは' + el.dataset.maxFiles + 'ファイルまでです。';
+        Array.prototype.forEach.call(el.files, function (f) {
+          if (text) return;
+          if (!ok.test(f.name)) text = '「' + f.name + '」は添付できない種類のファイルです。写真（jpg・png・heic）か PDF を選んでください。';
+          else if (f.size > max) text = '「' + f.name + '」は10MBを超えています。10MB以下のファイルにしてください。';
+        });
+      }
+      setErr(el, text);
+      return !text;
+    };
+    var fields = cform.querySelectorAll('input[required], select[required], textarea[required], input[name="email"], input[name="phone"], input[type="file"]');
+    Array.prototype.forEach.call(fields, function (el) {
+      // 一度間違いを出した項目は、直したらすぐ消す
+      el.addEventListener(el.tagName === 'SELECT' || el.type === 'checkbox' || el.type === 'file' ? 'change' : 'input', function () {
+        if (el.getAttribute('aria-invalid') === 'true' || el.type === 'file') check(el);
+      });
+    });
+    cform.addEventListener('submit', function (ev) {
+      var first = null;
+      Array.prototype.forEach.call(fields, function (el) {
+        if (!check(el) && !first) first = el;
+      });
+      if (first) {
+        ev.preventDefault();
+        first.focus();
+        return;
+      }
+      var btn = cform.querySelector('[type="submit"]');
+      if (cform.dataset.sending) { ev.preventDefault(); return; }
+      cform.dataset.sending = '1';
+      btn.setAttribute('aria-disabled', 'true');
+      btn.firstChild.textContent = '送信しています…';
+    });
+  }
+
   /* ---- 表示時の動き：各セクション直下の要素と、格子の中身を1回だけ ---- */
   if (reduce.matches || !('IntersectionObserver' in window)) return;
   var groups = [];

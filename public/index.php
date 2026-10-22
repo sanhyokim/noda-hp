@@ -108,6 +108,11 @@ if ($tpl === null) {
     $tpl = '404';
 }
 
+// お問い合わせフォームの受け付け（送信できたら送信済みの画面へ移る）
+if ($tpl === 'contact') {
+    $form = contact_handle();
+}
+
 ob_start();
 require APP_DIR . '/pages/' . $tpl . '.php';
 $content = (string)ob_get_clean();

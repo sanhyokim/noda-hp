@@ -5,11 +5,14 @@ render('page-head', [
     'lead' => '当社にご興味いただきありがとうございます。お客様の現状をお聞きして最適なご提案をさせていただきます。ご依頼やご相談は、下記のメールフォームもしくはお電話、LINEにてお気軽にご連絡ください。現地調査・お見積りは無料です。「煙の写真」を送っていただくだけでもご相談いただけます。',
     'image' => 'contact-office.jpg', 'ratio' => [3, 2],
 ]);
-$prefs = ['北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県','茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県','新潟県','富山県','石川県','福井県','山梨県','長野県','岐阜県','静岡県','愛知県','三重県','滋賀県','京都府','大阪府','兵庫県','奈良県','和歌山県','鳥取県','島根県','岡山県','広島県','山口県','徳島県','香川県','愛媛県','高知県','福岡県','佐賀県','長崎県','熊本県','大分県','宮崎県','鹿児島県','沖縄県'];
+$form = $form ?? [];
 $old = $form['old'] ?? [];
 $err = $form['errors'] ?? [];
 $v = fn(string $k) => e((string)($old[$k] ?? ''));
 $errMsg = fn(string $k) => isset($err[$k]) ? '<p class="field__err" id="err-' . $k . '">' . e($err[$k]) . '</p>' : '';
+// 間違いのある項目に印を付け、読み上げでも直下の説明につなぐ
+$inv = fn(string $k) => isset($err[$k]) ? ' aria-invalid="true" aria-describedby="err-' . $k . '"' : '';
+$sentView = !empty($form['done']) || !empty($form['failed']);
 ?>
 <div class="section wrap">
   <div class="grid grid--2 contact-ways">
@@ -28,39 +31,52 @@ $errMsg = fn(string $k) => isset($err[$k]) ? '<p class="field__err" id="err-' . 
   </div>
 </div>
 
-<section class="section wrap" aria-labelledby="s3">
-  <?php render('section-head', ['label' => 'MAIL FORM', 'title' => 'メールフォーム', 'id' => 's3', 'lead' => '* は必須項目です。']); ?>
+<section class="section wrap" id="form" aria-labelledby="s3">
+  <?php render('section-head', ['label' => 'MAIL FORM', 'title' => 'メールフォーム', 'id' => 's3', 'lead' => $sentView ? '' : '* は必須項目です。']); ?>
   <?php if (!empty($form['done'])): ?>
-    <div class="notice notice--ok" role="status">お問い合わせを受け付けました。営業日 9:00〜17:00 に担当者よりご連絡します。</div>
+    <div class="notice notice--ok sent" role="status" tabindex="-1" data-focus>
+      <p class="sent__title"><?= icon('check', 22) ?>お問い合わせを受け付けました</p>
+      <p>ありがとうございます。営業日 <?= e(company('hours')) ?> に担当者よりご連絡します（土日・祝日にいただいた場合は翌営業日以降になります）。ご入力のメールアドレスに、受け付けの控えをお送りしました。</p>
+      <p class="sent__sub">控えのメールが届かない場合は、迷惑メールのフォルダもご確認ください。お急ぎの場合はお電話（<a href="<?= e(tel_href(company('tel_free'))) ?>"><?= e(company('tel_free')) ?></a>）でもどうぞ。</p>
+    </div>
   <?php elseif (!empty($form['failed'])): ?>
-    <div class="notice notice--err" role="alert">送信できませんでした。お電話ください（<?= e(company('tel_free')) ?>）。</div>
+    <div class="notice notice--err" role="alert" tabindex="-1" data-focus>送信できませんでした。お手数ですが、お電話ください（<a href="<?= e(tel_href(company('tel_free'))) ?>"><?= e(company('tel_free')) ?></a>・受付 <?= e(company('hours')) ?>）。</div>
+  <?php else: ?>
+  <?php if (!empty($form['reject'])): ?>
+    <div class="notice notice--err" role="alert" tabindex="-1" data-focus><?= e($form['reject']) ?></div>
+  <?php elseif ($err): ?>
+    <div class="notice notice--err" role="alert" tabindex="-1" data-focus>送信できませんでした。赤い字の項目をご確認ください。</div>
   <?php endif; ?>
-  <form class="form" method="post" action="<?= e(page_url('contact')) ?>" enctype="multipart/form-data" novalidate data-validate>
+  <form class="form" method="post" action="<?= e(page_url('contact')) ?>#form" enctype="multipart/form-data" novalidate data-validate>
     <input type="hidden" name="csrf" value="<?= e($form['csrf'] ?? '') ?>">
-    <input type="hidden" name="t" value="<?= time() ?>">
+    <input type="hidden" name="t" value="<?= e($form['t'] ?? '') ?>">
+<?php if (($form['from'] ?? '') === 'chat'): ?>
+    <input type="hidden" name="from" value="chat">
+<?php endif; ?>
     <div class="hp" aria-hidden="true"><label>空欄のままにしてください<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
 
-    <div class="field"><label for="f-name">お名前 <span class="req">*</span></label><input id="f-name" name="name" type="text" required autocomplete="name" value="<?= $v('name') ?>"><?= $errMsg('name') ?></div>
-    <div class="field"><label for="f-company">法人名・店舗名</label><input id="f-company" name="company" type="text" autocomplete="organization" value="<?= $v('company') ?>"></div>
+    <div class="field"><label for="f-name">お名前 <span class="req">*</span></label><input id="f-name" name="name" type="text" required maxlength="100" autocomplete="name" value="<?= $v('name') ?>"<?= $inv('name') ?>><?= $errMsg('name') ?></div>
+    <div class="field"><label for="f-company">法人名・店舗名</label><input id="f-company" name="company" type="text" maxlength="200" autocomplete="organization" value="<?= $v('company') ?>"></div>
     <div class="field"><label for="f-pref">都道府県 <span class="req">*</span></label>
-      <select id="f-pref" name="prefecture" required>
+      <select id="f-pref" name="prefecture" required<?= $inv('prefecture') ?>>
         <option value="">選んでください</option>
-        <?php foreach ($prefs as $p): ?><option<?= ($old['prefecture'] ?? '') === $p ? ' selected' : '' ?>><?= e($p) ?></option><?php endforeach; ?>
+        <?php foreach (CONTACT_PREFS as $p): ?><option<?= ($old['prefecture'] ?? '') === $p ? ' selected' : '' ?>><?= e($p) ?></option><?php endforeach; ?>
       </select><?= $errMsg('prefecture') ?></div>
     <div class="field-row">
-      <div class="field"><label for="f-tel">電話番号 <span class="req">*</span></label><input id="f-tel" name="phone" type="tel" required autocomplete="tel" inputmode="tel" value="<?= $v('phone') ?>"><?= $errMsg('phone') ?></div>
-      <div class="field"><label for="f-mail">メールアドレス <span class="req">*</span></label><input id="f-mail" name="email" type="email" required autocomplete="email" value="<?= $v('email') ?>"><?= $errMsg('email') ?></div>
+      <div class="field"><label for="f-tel">電話番号 <span class="req">*</span></label><input id="f-tel" name="phone" type="tel" required maxlength="30" autocomplete="tel" inputmode="tel" placeholder="例：092-504-5502" value="<?= $v('phone') ?>"<?= $inv('phone') ?>><?= $errMsg('phone') ?></div>
+      <div class="field"><label for="f-mail">メールアドレス <span class="req">*</span></label><input id="f-mail" name="email" type="email" required maxlength="255" autocomplete="email" value="<?= $v('email') ?>"<?= $inv('email') ?>><?= $errMsg('email') ?></div>
     </div>
     <fieldset class="field"><legend>ご希望の連絡方法</legend>
       <div class="radios">
-        <?php foreach (['電話', 'メール'] as $m): ?><label class="radio"><input type="radio" name="contact_method" value="<?= e($m) ?>"<?= ($old['contact_method'] ?? '電話') === $m ? ' checked' : '' ?>><span><?= e($m) ?></span></label><?php endforeach; ?>
+        <?php foreach (CONTACT_METHODS as $key => $label): ?><label class="radio"><input type="radio" name="contact_method" value="<?= e($key) ?>"<?= ($old['contact_method'] ?? 'phone') === $key ? ' checked' : '' ?>><span><?= e($label) ?></span></label><?php endforeach; ?>
       </div>
     </fieldset>
-    <div class="field"><label for="f-msg">ご相談内容 <span class="req">*</span></label><textarea id="f-msg" name="message" rows="7" required><?= $v('message') ?></textarea><?= $errMsg('message') ?></div>
-    <div class="field"><label for="f-file">写真・図面の添付（jpg / png / heic / pdf、1ファイル10MBまで・3ファイルまで）</label><input id="f-file" name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.heic,.pdf,image/jpeg,image/png,image/heic,application/pdf" data-max-files="3" data-max-size="10485760"><?= $errMsg('attachments') ?></div>
-    <div class="field"><label class="check"><input type="checkbox" name="agree" value="1" required<?= !empty($old['agree']) ? ' checked' : '' ?>><span><a href="<?= e(page_url('privacypolicy')) ?>" target="_blank">プライバシーポリシー</a>に同意する <span class="req">*</span></span></label><?= $errMsg('agree') ?></div>
+    <div class="field"><label for="f-msg">ご相談内容 <span class="req">*</span></label><textarea id="f-msg" name="message" rows="7" required maxlength="5000" placeholder="例：焼き鳥店です。煙が客席に流れてくるので相談したいです。（お店の場所・業態・お困りごとなど）"<?= $inv('message') ?>><?= $v('message') ?></textarea><?= $errMsg('message') ?></div>
+    <div class="field"><label for="f-file">写真・図面の添付（jpg / png / heic / pdf、1ファイル10MBまで・3ファイルまで）</label><input id="f-file" name="attachments[]" type="file" multiple accept=".jpg,.jpeg,.png,.heic,.heif,.pdf,image/jpeg,image/png,image/heic,image/heif,application/pdf" data-max-files="3" data-max-size="10485760"<?= $inv('attachments') ?>><?= $errMsg('attachments') ?><?php if ($old): ?><p class="field__help">お手数ですが、添付ファイルはもう一度お選びください。</p><?php endif; ?></div>
+    <div class="field"><label class="check"><input type="checkbox" name="agree" value="1" required<?= !empty($old['agree']) ? ' checked' : '' ?><?= $inv('agree') ?>><span><a href="<?= e(page_url('privacypolicy')) ?>" target="_blank">プライバシーポリシー</a>に同意する <span class="req">*</span></span></label><?= $errMsg('agree') ?></div>
     <div class="form__submit"><button class="btn btn--orange btn--lg" type="submit">この内容で送信する<?= icon('arrow', 20) ?></button></div>
   </form>
+  <?php endif; ?>
 </section>
 
 <section class="section wrap" aria-labelledby="s4">

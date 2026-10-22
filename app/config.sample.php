@@ -23,6 +23,18 @@ return [
     // Google タグマネージャーのコンテナ ID。空にすると読み込みません。
     'gtm_id' => 'GTM-N3DNWHNN',
 
+    // お問い合わせフォームのメール（指示書 4-6）
+    'mail' => [
+        // 届け先（4件すべてに送る。1件目だけドメインが noda-duct.com で正しい）
+        'to' => ['info@noda-duct.com', 'koroyasu@duct-noda.com', 'azuma@duct-noda.com', 'nagamizu@duct-noda.com'],
+        'from' => 'noreply@duct-noda.com',
+        'from_name' => '株式会社野田',
+        // 送り方：'mail'（サーバーの送信機能。普段はこれ）/ 'smtp'（届かない時に切り替える）/ 'log'（試験用。送らずに storage/logs/mail/ に保存）
+        'transport' => 'mail',
+        // transport を 'smtp' にした時だけ使う（コアサーバーのメールアカウントの情報）
+        'smtp' => ['host' => '', 'port' => 587, 'user' => '', 'pass' => '', 'secure' => 'tls'],
+    ],
+
     // AI チャット（右下の「AIに相談」）。api_key が空なら表示しない。
     // api_key は Anthropic（Claude）のコンソールで発行したキー。git には入れない。
     'chat' => [

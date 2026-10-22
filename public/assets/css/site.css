@@ -1036,6 +1036,13 @@ a.card.linkcard:hover .linkcard__t { color: var(--c-blue); }
 .field input[type="file"] { padding: 14px; border: 1px dashed var(--c-blue-light); border-radius: var(--r-sm); background: var(--c-white); font-size: 14px; }
 .field input[type="file"]::file-selector-button { margin-right: 12px; padding: 8px 16px; border: 0; border-radius: var(--r-sm); background: var(--c-blue-bg); color: var(--c-blue-dark); font: inherit; font-weight: 700; cursor: pointer; }
 .field__err { font-size: 14px; font-weight: 700; color: var(--c-orange); }
+.field__help { font-size: 14px; color: var(--c-muted); }
+.notice:focus { outline: none; }
+.notice a { text-decoration: underline; text-underline-offset: 3px; }
+.sent { padding: 24px; font-weight: 500; color: var(--c-text); }
+.sent p + p { margin-top: 10px; }
+.sent__title { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 700; color: var(--c-blue-dark); }
+.sent__sub { font-size: 14px; color: var(--c-muted); }
 .field-row { display: grid; gap: 22px; }
 @media (min-width: 640px) {
   .form { padding: 36px 0 0; }
