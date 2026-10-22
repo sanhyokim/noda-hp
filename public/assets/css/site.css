@@ -949,13 +949,42 @@ main:focus { outline: none; }
 .row__img--contain img { object-fit: contain; }
 .row__img--square { aspect-ratio: 1; max-width: 420px; }
 .row__img--43 { aspect-ratio: 4 / 3; } /* ボス提供の写真（胸に社名の刺しゅう）を切らずに出す */
-.checks { display: grid; gap: 0 32px; border-top: 1px solid var(--c-ink); counter-reset: chk; }
-.checks__item { position: relative; padding: 18px 4px 18px 40px; border-bottom: 1px solid var(--c-line); }
-.checks__item::before { content: ""; position: absolute; left: 4px; top: 21px; width: 20px; height: 20px; border: 2px solid var(--c-ink); border-radius: 2px; }
-.checks__title { font-size: 16px; line-height: 1.6; font-weight: 700; color: var(--c-text); }
-.checks__item p { margin-top: 6px; font-size: 14px; line-height: 1.85; color: var(--c-sub); }
+/* 押せるチェックリストと危険度のメーター（アフターフォロー。Boss 2026-10-22：清掃サイトの Self Check と同じ演出） */
+.selfcheck { display: grid; gap: 24px; }
+.selfcheck__list { border-top: 1px solid var(--c-ink); }
+.selfcheck__item { position: relative; display: grid; grid-template-columns: 30px minmax(0, 1fr); gap: 14px; padding: 18px 6px; border-bottom: 1px solid var(--c-line); cursor: pointer; transition: background-color .25s; }
+.selfcheck__item:hover { background: var(--c-white); }
+.selfcheck__item input { position: absolute; opacity: 0; pointer-events: none; }
+.selfcheck__box { display: grid; place-items: center; width: 28px; height: 28px; margin-top: 1px; border: 2px solid var(--c-ink); border-radius: 3px; background: var(--c-white); transition: background-color .25s, border-color .25s; }
+.selfcheck__box svg { width: 18px; height: 18px; stroke: var(--c-white); stroke-dasharray: 24; stroke-dashoffset: 24; transition: stroke-dashoffset .35s var(--ease); }
+.selfcheck__item input:checked + .selfcheck__box { background: var(--c-orange); border-color: var(--c-orange); }
+.selfcheck__item input:checked + .selfcheck__box svg { stroke-dashoffset: 0; }
+.selfcheck__item input:focus-visible + .selfcheck__box { outline: 3px solid var(--c-blue); outline-offset: 3px; }
+.selfcheck__text b { display: block; font-size: 16px; line-height: 1.6; color: var(--c-ink); }
+.selfcheck__item input:checked ~ .selfcheck__text b { color: var(--c-orange); }
+.selfcheck__text small { display: block; margin-top: 4px; font-size: 14px; line-height: 1.85; color: var(--c-sub); }
+.gauge { display: grid; gap: 14px; padding: 24px 22px; border-radius: var(--r-sm); background: var(--c-ink); color: var(--c-white); }
+.gauge__ttl { font-size: 13px; font-weight: 700; letter-spacing: .12em; color: rgb(255 255 255 / .7); }
+.gauge__dial { position: relative; width: 100%; max-width: 300px; margin-inline: auto; }
+.gauge__dial svg { display: block; width: 100%; height: auto; overflow: visible; }
+.gauge__arc-bg { fill: none; stroke: rgb(255 255 255 / .14); stroke-width: 14; }
+.gauge__arc { fill: none; stroke: var(--c-orange); stroke-width: 14; transition: stroke-dashoffset .8s var(--ease); }
+.gauge__tick { font-family: var(--font-num); font-size: 13px; fill: rgb(255 255 255 / .55); }
+.gauge__needle { transform-origin: 160px 160px; transform: rotate(-90deg); transition: transform .9s cubic-bezier(.3, 1.5, .5, 1); }
+.gauge__needle line { stroke: var(--c-white); stroke-width: 3; stroke-linecap: round; }
+.gauge__needle circle { fill: var(--c-white); }
+.gauge__read { position: absolute; left: 0; right: 0; bottom: -4px; text-align: center; font-family: var(--font-num); font-size: 44px; font-weight: 700; line-height: 1; }
+.gauge__read small { margin-left: 2px; font-size: 18px; opacity: .7; }
+.gauge__dial { padding-bottom: 46px; }
+.gauge__level { font-size: 20px; font-weight: 700; line-height: 1.4; }
+.gauge.is-high .gauge__level { color: #FF9A4D; }
+.gauge__msg { min-height: 5.6em; font-size: 14px; line-height: 1.85; color: rgb(255 255 255 / .82); }
+@media (min-width: 1024px) {
+  .selfcheck { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 36px; align-items: start; }
+  .gauge { position: sticky; top: 140px; }
+}
+@media (prefers-reduced-motion: reduce) { .gauge__arc, .gauge__needle, .selfcheck__box svg { transition: none; } }
 .checks__note { margin-top: 22px; padding: 4px 0 4px 18px; border-left: 3px solid var(--c-orange); font-weight: 700; color: var(--c-ink); }
-@media (min-width: 900px) { .checks { grid-template-columns: repeat(2, minmax(0, 1fr)); } .checks__item:last-child { grid-column: 1 / -1; } }
 
 /* ご挨拶 */
 .greeting { display: grid; gap: 24px; }

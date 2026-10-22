@@ -325,6 +325,31 @@
     tlUpdate();
   }
 
+  /* ---- アフターフォロー：チェックした数でメーターの針と文が変わる（清掃サイトの Self Check と同じ演出） ---- */
+  var gauge = document.querySelector('[data-gauge]');
+  if (gauge) {
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('.selfcheck__item input'));
+    var copy = [
+      ['まずはチェックを', 'お店に当てはまるものを押してください。ひとつでも当てはまれば、点検のタイミングです。'],
+      ['点検をおすすめします', 'ダクトに油が溜まり始めているサインです。無料の点検で、ダクトの内側の状態を確かめましょう。'],
+      ['早めの清掃が必要です', 'ダクトの中に油だまりができている可能性が高い状態です。火災の危険が高まる前に、点検・清掃をご相談ください。'],
+      ['今すぐご相談ください', 'すべてのサインが出ています。ダクト火災の危険が高い状態です。まずはお電話ください。']
+    ];
+    var gUpdate = function () {
+      var n = boxes.filter(function (b) { return b.checked; }).length;
+      var all = boxes.length;
+      gauge.querySelector('[data-gauge-arc]').setAttribute('stroke-dashoffset', (408.4 * (1 - n / all)).toFixed(1));
+      gauge.querySelector('[data-gauge-needle]').style.transform = 'rotate(' + (-90 + 180 * n / all) + 'deg)';
+      gauge.querySelector('[data-gauge-num]').textContent = n;
+      var c = n === 0 ? copy[0] : n <= 2 ? copy[1] : n < all ? copy[2] : copy[3];
+      gauge.querySelector('[data-gauge-level]').textContent = c[0];
+      gauge.querySelector('[data-gauge-msg]').textContent = c[1];
+      gauge.classList.toggle('is-high', n >= 3);
+    };
+    boxes.forEach(function (b) { b.addEventListener('change', gUpdate); });
+    gUpdate();
+  }
+
   /* ---- 表示時の動き：各セクション直下の要素と、格子の中身を1回だけ ---- */
   if (reduce.matches || !('IntersectionObserver' in window)) return;
   var groups = [];

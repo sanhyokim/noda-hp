@@ -40,15 +40,33 @@ $checks = [
 
 <section class="band" aria-labelledby="s2">
   <div class="section wrap">
-    <?php render('section-head', ['label' => 'CHECK', 'title' => 'ダクトの油汚れで火災の危険性も！|あなたのお店は大丈夫？', 'id' => 's2', 'lead' => '下のチェックリストで、ダクト火災の危険度をチェックしてみましょう。']); ?>
-    <ul class="checks">
-      <?php foreach ($checks as [$t, $d]): ?>
-        <li class="checks__item">
-          <h3 class="checks__title"><?= e($t) ?></h3>
-          <p><?= e($d) ?></p>
-        </li>
-      <?php endforeach; ?>
-    </ul>
+    <?php render('section-head', ['label' => 'CHECK', 'title' => 'ダクトの油汚れで火災の危険性も！|あなたのお店は大丈夫？', 'id' => 's2', 'lead' => '当てはまるものを押して、ダクト火災の危険度をチェックしてみましょう。']); ?>
+    <div class="selfcheck">
+      <div class="selfcheck__list" role="group" aria-label="ダクト火災の危険度のチェックリスト">
+        <?php foreach ($checks as $i => [$t, $d]): ?>
+          <label class="selfcheck__item">
+            <input type="checkbox" name="check" value="<?= $i + 1 ?>">
+            <span class="selfcheck__box" aria-hidden="true"><svg viewBox="0 0 18 18"><path d="M3 9.5 7.2 13.5 15 4.5" fill="none" stroke-width="2.4"/></svg></span>
+            <span class="selfcheck__text"><b><?= e($t) ?></b><small><?= e($d) ?></small></span>
+          </label>
+        <?php endforeach; ?>
+      </div>
+      <aside class="gauge" aria-live="polite" data-gauge>
+        <p class="gauge__ttl">ダクト火災の危険度</p>
+        <div class="gauge__dial">
+          <svg viewBox="0 0 320 180" aria-hidden="true">
+            <path class="gauge__arc-bg" d="M30 160 A130 130 0 0 1 290 160"/>
+            <path class="gauge__arc" d="M30 160 A130 130 0 0 1 290 160" stroke-dasharray="408.4" stroke-dashoffset="408.4" data-gauge-arc/>
+            <text class="gauge__tick" x="16" y="178">0</text><text class="gauge__tick" x="296" y="178">5</text>
+            <g class="gauge__needle" data-gauge-needle><line x1="160" y1="160" x2="160" y2="54"/><circle cx="160" cy="160" r="9"/></g>
+          </svg>
+          <p class="gauge__read"><span data-gauge-num>0</span><small>/<?= count($checks) ?></small></p>
+        </div>
+        <p class="gauge__level" data-gauge-level>まずはチェックを</p>
+        <p class="gauge__msg" data-gauge-msg>お店に当てはまるものを押してください。ひとつでも当てはまれば、点検のタイミングです。</p>
+        <a class="btn btn--orange btn--block" href="<?= e(page_url('contact')) ?>">無料で点検を相談する<?= icon('arrow', 18) ?></a>
+      </aside>
+    </div>
     <p class="checks__note">1つでも該当する項目があった場合は、専門家によるメンテナンス・清掃を受けることをおすすめします。</p>
   </div>
 </section>
