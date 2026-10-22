@@ -141,7 +141,7 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
           <p class="aic__sheet-ttl" id="aic-hand-ttl"><?= icon('phone', 18) ?>担当者にくわしく相談する</p>
           <button class="aic__sheet-x" type="button" aria-label="閉じる" data-hand-close><?= icon('close', 20) ?></button>
         </div>
-        <p class="aic__sheet-lead">お店に合った工事のご提案やお見積りは、担当者がお答えします。現地調査とお見積りは無料です。</p>
+        <p class="aic__sheet-lead">お店に合った工事のご提案やお見積りは、担当者がお答えします。<span class="aic__carry">ここまでの会話は担当者に引き継ぐので、同じ説明をくり返さなくて大丈夫です。</span>現地調査とお見積りは無料です。</p>
         <div class="aic__hand-btns">
           <a class="aic__hbtn aic__hbtn--form" href="<?= e(page_url('contact')) ?>?from=chat" data-handoff><?= icon('mail', 18) ?><span data-form-label>この内容で問い合わせる</span></a>
           <button class="aic__hbtn aic__hbtn--call" type="button" data-cb-open><?= icon('phone', 18) ?>電話をもらう</button>
@@ -158,7 +158,7 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
           <textarea id="aic-input" rows="1" maxlength="800" placeholder="ここに質問を入力してください" enterkeyhint="send"></textarea>
           <button class="aic__send" type="submit" aria-label="送る"><?= icon('send', 20) ?><span class="aic__send-text">送る</span></button>
         </div>
-        <p class="aic__note">AI がサイトの情報をもとにお答えします。お名前・電話番号は書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>
+        <p class="aic__note">AI がサイトの情報をもとにお答えします。会話は野田の担当者も確認します。お名前・電話番号は書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>
       </form>
     </div>
   </section>
