@@ -111,6 +111,10 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
   <a class="dock__mail" href="<?= e(page_url('contact')) ?>"><?= icon('mail', 20) ?>メール</a>
 </nav>
 
+<?php if (chat_enabled() && !$adminBar): ?>
+<?php render('chat'); ?>
+<script src="<?= e(asset('js/chat.js')) ?>" defer></script>
+<?php endif; ?>
 <script src="<?= e(asset('js/site.js')) ?>" defer></script>
 </body>
 </html>

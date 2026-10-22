@@ -40,8 +40,16 @@ render('page-head', ['label' => 'PRIVACY POLICY', 'title' => 'プライバシー
       <p>当社のウェブサイトではGoogle Analyticsを使用していますが、これによりお客様等個人を特定できる情報を収集することはありません。また、LINE、Instagram、X等のSNS利用についても、個人情報との関連付けは行っておりません。</p>
     </section>
 
+<?php $chat = function_exists('chat_enabled') && chat_enabled(); // AI 相談を使っている時だけ載せる ?>
+<?php if ($chat): ?>
+    <section class="policy__item" id="ai-chat">
+      <h2>6. AI相談（チャット）の利用</h2>
+      <p>当社のウェブサイトのAI相談（チャット）に入力された内容は、回答を作成するため、外部のAIサービス（Anthropic社のClaude）に送信されます。また、サービスの改善とお問い合わせへの対応のため、入力内容と回答を当社で保存することがあります。AI相談には、お名前・電話番号・住所などの個人情報を入力しないでください。AIの回答は参考情報であり、費用・工期などの正式なご案内は当社の担当者が行います。</p>
+    </section>
+<?php endif; ?>
+
     <section class="policy__item">
-      <h2>6. 本ポリシーの変更</h2>
+      <h2><?= $chat ? 7 : 6 ?>. 本ポリシーの変更</h2>
       <p>本ポリシーの内容は、法令等の変更や必要に応じて予告なく改訂される場合があります。変更後のプライバシーポリシーは、ウェブサイトへの掲載をもって効力を生じるものとします。</p>
     </section>
 

@@ -360,3 +360,19 @@ fieldset.box[aria-invalid="true"] { border-color: var(--c-err); }
 
 /* ---------- ログイン ---------- */
 .login .ttl { font-size: 24px; }
+
+/* ---------- AI 相談の会話の記録 ---------- */
+.kv__sub { display: block; margin-top: 2px; font-size: 14px; color: var(--c-muted); }
+.inq__who--q { font-weight: 500; }
+.inq--chat .inq__pref { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; }
+.talk { display: grid; gap: 10px; padding: 4px 16px 20px; }
+.talk__msg { max-width: 46em; padding: 10px 14px; border-radius: var(--r-sm); overflow-wrap: anywhere; }
+.talk__msg--me { justify-self: end; background: var(--c-blue-bg); }
+.talk__msg--ai { justify-self: start; background: var(--c-soft); }
+.talk__who { display: block; margin-bottom: 2px; font-size: 13px; font-weight: 700; color: var(--c-muted); }
+@media (min-width: 768px) {
+  .inq--chat .inq__sum { grid-template-columns: 9.5em minmax(0, 1fr) auto; }
+  .inq--chat .inq__pref { grid-column: 2; }
+  .inq--chat .inq__chev { grid-column: 3; grid-row: 1 / span 2; }
+  .talk__msg { max-width: 80%; }
+}

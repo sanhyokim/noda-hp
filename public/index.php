@@ -34,6 +34,12 @@ if ($path !== '' && !str_ends_with($path, '/') && !preg_match('/\.[a-z0-9]{2,5}$
     exit;
 }
 
+// AI チャットの受け口
+if ($path === 'api/chat/' || $path === 'api/chat/handoff/') {
+    require APP_DIR . '/chat/endpoint.php';
+    exit;
+}
+
 // 管理ページ（指示書 5）
 if ($path === 'admin/' || str_starts_with($path, 'admin/')) {
     require APP_DIR . '/admin/index.php';

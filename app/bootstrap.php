@@ -34,3 +34,4 @@ require APP_DIR . '/lib/legacy.php';
 require_once APP_DIR . '/lib/html.php';
 require APP_DIR . '/lib/images.php';
 require APP_DIR . '/lib/instagram.php';
+require APP_DIR . '/chat/lib.php';

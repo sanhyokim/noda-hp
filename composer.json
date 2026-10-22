@@ -1,0 +1,14 @@
+{
+    "name": "noda/site",
+    "description": "株式会社野田 公式サイト（AI チャットで Anthropic の公式 SDK を使うためだけに composer を使う）",
+    "type": "project",
+    "require": {
+        "php": ">=8.2",
+        "anthropic-ai/sdk": "^1.1",
+        "guzzlehttp/guzzle": "^7.9"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true
+    }
+}

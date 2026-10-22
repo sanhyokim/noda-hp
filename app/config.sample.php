@@ -23,6 +23,21 @@ return [
     // Google タグマネージャーのコンテナ ID。空にすると読み込みません。
     'gtm_id' => 'GTM-N3DNWHNN',
 
+    // AI チャット（右下の「AIに相談」）。api_key が空なら表示しない。
+    // api_key は Anthropic（Claude）のコンソールで発行したキー。git には入れない。
+    'chat' => [
+        'api_key' => '',
+        'model' => 'claude-opus-5-5',
+        'monthly_limit' => 3000,   // 1か月に答える回数の上限（使いすぎ防止。超えたら電話・フォームへ案内）
+        'per_ip_10min' => 15,      // 同じ人が10分間に送れる回数
+        'per_ip_day' => 60,        // 同じ人が1日に送れる回数
+        'base_url' => 'https://api.anthropic.com',
+        // 管理ページに出す「今月の費用の目安」の計算用（1百万トークンあたりのドル。Anthropic の料金表 2026年10月時点）
+        'price_usd' => ['input' => 4.0, 'output' => 20.0, 'cache_read' => 0.2, 'cache_write' => 5.0],
+        'yen_per_usd' => 155,
+        'log_days' => 365,         // 会話の記録を残す日数（過ぎた分は自動で消す）
+    ],
+
     // 試験用：「今日の日付」を固定したい時だけ 'YYYY-MM-DD' を入れる（例 '2027-01-01'）。普段は null。
     'today_override' => null,
 ];

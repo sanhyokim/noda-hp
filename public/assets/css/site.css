@@ -1341,3 +1341,76 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .adminbar a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 16px; border: 1px solid rgba(255, 255, 255, .5); border-radius: var(--r-sm); color: var(--c-white); font-weight: 700; }
 .adminbar a:hover { color: var(--c-white); background: rgba(255, 255, 255, .12); }
 .adminbar__back { transform: scaleX(-1); }
+
+/* ---------- AI 相談（右下のボタンと会話の窓） ---------- */
+.aic__fab {
+  position: fixed; right: 16px; bottom: calc(var(--dock) + 14px + env(safe-area-inset-bottom)); z-index: 46;
+  display: flex; align-items: center; gap: 10px; min-height: 56px; padding: 0 18px 0 8px; border-radius: 999px;
+  background: var(--c-ink); color: var(--c-white); box-shadow: 0 10px 26px rgba(20, 24, 32, .28);
+  transition: transform .25s var(--ease), background-color .2s;
+}
+.aic__fab:hover { background: #000; color: var(--c-white); transform: translateY(-2px); }
+.aic__fab-icon { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: var(--c-blue); }
+.aic__fab-text { display: grid; font-size: 15px; line-height: 1.25; font-weight: 700; letter-spacing: .06em; text-align: left; }
+.aic__fab-text small { font-size: 11px; font-weight: 500; letter-spacing: .04em; color: rgba(255, 255, 255, .72); }
+@media (min-width: 640px) { .aic__fab { right: 24px; bottom: 24px; } }
+.aic.is-open .aic__fab { visibility: hidden; }
+
+.aic__panel {
+  position: fixed; inset: 0; z-index: 95; display: flex; flex-direction: column;
+  background: var(--c-white); color: var(--c-text);
+}
+.aic__panel[hidden] { display: none; }
+@media (min-width: 640px) {
+  .aic__panel {
+    inset: auto 24px 24px auto; width: 400px; height: min(640px, calc(100dvh - 48px));
+    border: 1px solid var(--c-line); border-radius: var(--r); box-shadow: 0 24px 60px rgba(20, 24, 32, .24); overflow: hidden;
+  }
+}
+@media (max-width: 639.98px) { html.aic-open, html.aic-open body { overflow: hidden; } }
+.aic__head { display: flex; align-items: center; gap: 12px; padding: 12px 8px 12px 16px; padding-top: calc(12px + env(safe-area-inset-top)); background: var(--c-ink); color: var(--c-white); }
+.aic__avatar { display: grid; place-items: center; flex: none; width: 38px; height: 38px; border-radius: 50%; background: var(--c-blue); }
+.aic__heading { flex: 1; min-width: 0; }
+.aic__title { font-size: 16px; line-height: 1.4; font-weight: 700; letter-spacing: .08em; }
+.aic__sub { font-size: 12px; line-height: 1.5; color: rgba(255, 255, 255, .72); }
+.aic__close { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--r-sm); color: var(--c-white); }
+.aic__close:hover { background: rgba(255, 255, 255, .12); }
+
+.aic__log { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; display: flex; flex-direction: column; gap: 12px; padding: 18px 16px; background: var(--c-soft); }
+.aic__msg { max-width: 88%; padding: 10px 14px; border-radius: var(--r); font-size: 15px; line-height: 1.75; overflow-wrap: anywhere; }
+.aic__msg p + p { margin-top: .6em; }
+.aic__msg--ai { align-self: flex-start; background: var(--c-white); border: 1px solid var(--c-line); border-top-left-radius: 0; }
+.aic__msg--ai a { color: var(--c-blue); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.aic__msg--me { align-self: flex-end; background: var(--c-blue); color: var(--c-white); border-top-right-radius: 0; }
+.aic__msg.is-error { border-color: #F1C9CB; background: #FDF5F5; }
+.aic__dots { display: inline-flex; gap: 5px; padding: 6px 2px; }
+.aic__dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--c-muted); animation: aic-dot 1.2s infinite ease-in-out; }
+.aic__dots i:nth-child(2) { animation-delay: .15s; }
+.aic__dots i:nth-child(3) { animation-delay: .3s; }
+@keyframes aic-dot { 0%, 80%, 100% { opacity: .25; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+.aic__starters { display: flex; flex-wrap: wrap; gap: 8px; }
+.aic__starters[hidden] { display: none; }
+.aic__chip { min-height: 40px; padding: 6px 14px; border: 1px solid var(--c-blue); border-radius: 999px; background: var(--c-white); color: var(--c-blue-dark); font-size: 14px; font-weight: 700; line-height: 1.4; }
+.aic__chip:hover { background: var(--c-blue); color: var(--c-white); }
+
+.aic__hand { padding: 10px 12px 12px; border-top: 1px solid var(--c-line); background: var(--c-white); }
+.aic__hand-ttl { margin-bottom: 8px; font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--c-muted); }
+.aic__hand-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.aic__hbtn { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 8px; border-radius: var(--r-sm); font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--c-white); text-align: center; }
+.aic__hbtn:hover { color: var(--c-white); filter: brightness(1.08); }
+.aic__hbtn--form { grid-column: 1 / -1; background: var(--c-orange); font-size: 15px; }
+.aic__hbtn--line { background: var(--c-line-green); }
+.aic__hbtn--tel { background: var(--c-ink); font-family: var(--font-num); font-size: 16px; letter-spacing: .04em; }
+
+.aic__form { display: flex; align-items: flex-end; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--c-line); background: var(--c-white); }
+.aic__form textarea {
+  flex: 1; min-width: 0; min-height: 44px; max-height: 132px; padding: 10px 12px; resize: none;
+  border: 1px solid var(--c-line); border-radius: var(--r-sm); font: inherit; font-size: 16px; line-height: 1.5; color: var(--c-text); background: var(--c-white);
+}
+.aic__form textarea:focus { outline: none; border-color: var(--c-blue); box-shadow: 0 0 0 3px rgba(6, 94, 203, .16); }
+.aic__send { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--c-blue); color: var(--c-white); }
+.aic__send:hover { background: var(--c-blue-dark); }
+.aic__send:disabled { opacity: .45; cursor: default; }
+.aic__note { padding: 0 12px 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); background: var(--c-white); font-size: 11px; line-height: 1.6; color: var(--c-muted); }
+.aic__note a { color: var(--c-muted); text-decoration: underline; }
+@media print { .aic { display: none !important; } }

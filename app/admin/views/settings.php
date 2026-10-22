@@ -4,6 +4,7 @@
 /** @var int $contactCount */
 /** @var ?string $latestContact */
 /** @var array $counts */
+/** @var array $chat */
 $err = fn(string $k): string => isset($errors[$k]) ? '<p class="field__err" id="err-' . $k . '">' . icon('alert', 16) . e($errors[$k]) . '</p>' : '';
 $aria = fn(string $k): string => isset($errors[$k]) ? ' aria-invalid="true" aria-describedby="err-' . $k . '"' : '';
 $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
@@ -16,6 +17,40 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
   <p class="kv"><span>これまでの件数</span><strong><?= number_format($contactCount) ?>件</strong></p>
   <p class="kv"><span>最後に届いた日時</span><strong><?= $latestContact ? e(date('Y年n月j日 H:i', strtotime($latestContact))) : 'まだありません' ?></strong></p>
   <p class="actions-inline"><a class="abtn abtn--line" href="<?= e(admin_url('settings/contacts/')) ?>">受信一覧を見る</a></p>
+</section>
+
+<section class="box" id="chat">
+  <h2 class="box__ttl">AI 相談（チャット）</h2>
+  <p class="note">ホームページの右下の「AIに相談」ボタンです。お客様の質問に AI が答え、お問い合わせ・LINE・お電話へご案内します。費用や工期は答えず、無料の現地調査へご案内するようにしてあります。</p>
+  <p class="kv"><span>今の状態</span><strong>
+<?php if (!$chat['configured']): ?>
+    準備中（AI の利用契約の鍵がまだ入っていないため、ボタンは出ていません）
+<?php elseif ($chat['off']): ?>
+    止めています（ボタンは出ていません）
+<?php else: ?>
+    動いています
+<?php endif; ?>
+  </strong></p>
+<?php if ($chat['configured']): ?>
+  <p class="kv"><span>今月の会話</span><strong><?= number_format($chat['month']['conversations']) ?>件（質問 <?= number_format($chat['month']['requests']) ?>回）<small class="kv__sub">うち、問い合わせ・LINE・電話へ進んだ会話 <?= number_format($chat['handed']) ?>件</small></strong></p>
+  <p class="kv"><span>今月の費用の目安</span><strong>約<?= number_format(chat_cost_yen($chat['month'])) ?>円<small class="kv__sub">先月 約<?= number_format(chat_cost_yen($chat['prev'])) ?>円</small></strong></p>
+  <p class="kv"><span>1か月の回数の上限</span><strong><?= number_format($chat['limit']) ?>回（超えるとその月は電話・フォームへご案内）</strong></p>
+  <p class="note note--sub">費用は使った量からの計算で、実際の請求額とは少しずれることがあります。正確な金額は AI の利用契約の管理画面（Anthropic）で確かめられます。</p>
+  <div class="actions-inline">
+    <a class="abtn abtn--line" href="<?= e(admin_url('settings/chats/')) ?>">会話の記録を見る（<?= number_format($chat['logs']) ?>件）</a>
+    <form method="post">
+      <?= csrf_field() ?>
+      <input type="hidden" name="op" value="chat">
+<?php if ($chat['off']): ?>
+      <button class="abtn abtn--primary" type="submit" name="chat" value="on">AI 相談を再開する</button>
+<?php else: ?>
+      <button class="abtn abtn--line" type="submit" name="chat" value="off" data-confirm="AI 相談を止めます。ホームページの右下のボタンが消えます。よろしいですか？（いつでも再開できます）">AI 相談を止める</button>
+<?php endif; ?>
+    </form>
+  </div>
+<?php else: ?>
+  <p class="note note--sub">使い始めるには、AI の利用契約（Anthropic 社）で発行される「API キー」を、サーバーの設定ファイルに入れます。手順は引き渡しの手順書にまとめます。</p>
+<?php endif; ?>
 </section>
 
 <section class="box" id="instagram">

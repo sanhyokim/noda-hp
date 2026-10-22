@@ -3,6 +3,7 @@
 /storage/logs/*
 /storage/contact/*
 /storage/sessions/*
+/storage/chat-rate/*
 !/storage/**/.gitkeep
 /images/*
 !/images/.gitkeep
@@ -14,3 +15,4 @@
 !/public/wp-content/uploads/.htaccess
 !/public/wp-content/uploads/.gitkeep
 /public/media/cases/
+/vendor/

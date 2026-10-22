@@ -1,8 +1,9 @@
 <?php
 declare(strict_types=1);
 
-// 設定・保守（指示書 5-5）：Instagram のトークンと接続テスト、パスワードの変更、お問い合わせの受信一覧、データの書き出し。
-/** @var string $action index|contacts|export */
+// 設定・保守（指示書 5-5）：Instagram のトークンと接続テスト、AI 相談の利用状況と会話の記録、パスワードの変更、
+// お問い合わせの受信一覧、データの書き出し。
+/** @var string $action index|contacts|chats|export */
 /** @var array $user */
 
 $pdo = db();
@@ -52,10 +53,34 @@ if ($action === 'contacts') {
     exit;
 }
 
+// ---------- AI 相談の会話の記録 ----------
+if ($action === 'chats') {
+    $per = 20;
+    $page = max(1, (int)($_GET['page'] ?? 1));
+    $total = (int)$pdo->query('SELECT COUNT(*) FROM chat_logs')->fetchColumn();
+    $rows = $pdo->query('SELECT * FROM chat_logs ORDER BY started_at DESC, id DESC LIMIT ' . $per . ' OFFSET ' . (($page - 1) * $per))->fetchAll();
+    foreach ($rows as &$r) {
+        $r['messages'] = json_decode($r['messages'], true) ?: [];
+    }
+    unset($r);
+    $pageNames = [];
+    foreach (site('pages') as $p) {
+        $pageNames[url($p['path'])] = $p['name'];
+    }
+    admin_render('chats', ['user' => $user, 'nav' => 'settings', 'title' => 'AI 相談の会話の記録', 'rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => admin_pages($total, $per), 'pageNames' => $pageNames, 'flash' => take_flash()]);
+    exit;
+}
+
 // ---------- 設定 ----------
 $errors = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $op = (string)($_POST['op'] ?? '');
+    if ($op === 'chat') {
+        $off = ($_POST['chat'] ?? '') === 'off';
+        set_setting('chat_off', $off ? '1' : '0');
+        flash('ok', $off ? 'AI 相談を止めました。ホームページの右下の「AIに相談」ボタンが消えます。' : 'AI 相談を再開しました。ホームページの右下に「AIに相談」ボタンが出ます。');
+        redirect(admin_url('settings/') . '#chat');
+    }
     if ($op === 'instagram') {
         $tokenIn = trim((string)($_POST['instagram_token'] ?? ''));
         if (!empty($_POST['clear'])) {
@@ -121,6 +146,15 @@ admin_render('settings', [
         'fetched_at' => (int)setting('instagram_fetched_at', '0'),
         'error' => (string)setting('instagram_last_error', ''),
         'cache' => is_file(STORAGE_DIR . '/cache/instagram.json'),
+    ],
+    'chat' => [
+        'configured' => chat_configured(),
+        'off' => setting('chat_off') === '1',
+        'month' => chat_usage(),
+        'prev' => chat_usage(date('Ym', strtotime('first day of last month'))),
+        'limit' => (int)chat_config('monthly_limit'),
+        'logs' => (int)$pdo->query('SELECT COUNT(*) FROM chat_logs')->fetchColumn(),
+        'handed' => (int)$pdo->query("SELECT COUNT(*) FROM chat_logs WHERE handed_off = 1 AND started_at >= '" . date('Y-m-01') . "'")->fetchColumn(),
     ],
     'contactCount' => $contactCount, 'latestContact' => $latestContact,
     'counts' => [

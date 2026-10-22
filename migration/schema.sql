@@ -109,3 +109,18 @@ CREATE TABLE IF NOT EXISTS contact_logs (
   PRIMARY KEY (id),
   KEY idx_contact_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- AI チャットの記録（会話ごとに1行。管理ページで読める）
+CREATE TABLE IF NOT EXISTS chat_logs (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  conv_key CHAR(32) NOT NULL,
+  started_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  turns INT NOT NULL DEFAULT 0,
+  messages MEDIUMTEXT NOT NULL,
+  page VARCHAR(255) NOT NULL DEFAULT '',
+  handed_off TINYINT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id),
+  UNIQUE KEY uq_chat_conv (conv_key),
+  KEY idx_chat_updated (updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
