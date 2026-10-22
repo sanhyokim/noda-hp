@@ -76,22 +76,6 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
 <?php endforeach; ?>
       </div>
     </div>
-    <div class="aic__hand" data-hand>
-      <button class="aic__hand-toggle" type="button" aria-expanded="false" aria-controls="aic-hand-body" data-hand-toggle>
-        <span class="aic__hand-ico"><?= icon('phone', 16) ?></span>
-        <span class="aic__hand-label">担当者にくわしく相談する</span>
-        <span class="aic__hand-sub">問い合わせ・電話・LINE</span>
-        <?= icon('chev', 18, 'aic__hand-chev') ?>
-      </button>
-      <div class="aic__hand-body" id="aic-hand-body" data-hand-body hidden>
-      <div class="aic__hand-btns">
-        <a class="aic__hbtn aic__hbtn--form" href="<?= e(page_url('contact')) ?>?from=chat" data-handoff><?= icon('mail', 18) ?><span data-form-label>この内容で問い合わせる</span></a>
-        <button class="aic__hbtn aic__hbtn--call" type="button" data-cb-open><?= icon('phone', 18) ?>電話をもらう</button>
-        <a class="aic__hbtn aic__hbtn--line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener" data-handoff data-line><?= line_icon(18) ?>LINEで写真を送る</a>
-      </div>
-      <p class="aic__hand-tel">お急ぎの方は <a href="<?= e(tel_href(company('tel_free'))) ?>" data-handoff><?= e(company('tel_free')) ?></a>（平日 <?= e(company('hours')) ?>）</p>
-      </div>
-    </div>
     <div class="aic__end" data-end hidden>
       <p class="aic__end-ttl">ご相談ありがとうございました</p>
       <p class="aic__end-lead">くわしいことや、お店に合った工事のご提案は、担当者がお答えします。現地調査とお見積りは無料です。</p>
@@ -150,11 +134,32 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
       </div>
       <p class="aic__cb-note"><a href="<?= e(page_url('privacypolicy')) ?>#ai-chat" target="_blank" rel="noopener">個人情報の扱い</a>に同意のうえ送ってください。</p>
     </form>
-    <form class="aic__form" data-form>
-      <label class="u-sr" for="aic-input">相談内容</label>
-      <textarea id="aic-input" rows="1" maxlength="800" placeholder="ここに質問を入力してください" enterkeyhint="send"></textarea>
-      <button class="aic__send" type="submit" aria-label="送る"><?= icon('send', 22) ?></button>
-    </form>
-    <p class="aic__note">AIがサイトの情報をもとにお答えします。費用や工期は担当者からご案内します。会話の欄には、お名前・電話番号を書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>
+    <div class="aic__dock" data-hand>
+      <div class="aic__scrim" data-hand-close hidden></div>
+      <div class="aic__sheet" id="aic-hand-body" data-hand-body role="region" aria-labelledby="aic-hand-ttl" hidden>
+        <div class="aic__sheet-head">
+          <p class="aic__sheet-ttl" id="aic-hand-ttl"><?= icon('phone', 18) ?>担当者にくわしく相談する</p>
+          <button class="aic__sheet-x" type="button" aria-label="閉じる" data-hand-close><?= icon('close', 20) ?></button>
+        </div>
+        <p class="aic__sheet-lead">お店に合った工事のご提案やお見積りは、担当者がお答えします。現地調査とお見積りは無料です。</p>
+        <div class="aic__hand-btns">
+          <a class="aic__hbtn aic__hbtn--form" href="<?= e(page_url('contact')) ?>?from=chat" data-handoff><?= icon('mail', 18) ?><span data-form-label>この内容で問い合わせる</span></a>
+          <button class="aic__hbtn aic__hbtn--call" type="button" data-cb-open><?= icon('phone', 18) ?>電話をもらう</button>
+          <a class="aic__hbtn aic__hbtn--line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener" data-handoff data-line><?= line_icon(18) ?>LINEで写真を送る</a>
+        </div>
+        <p class="aic__hand-tel">お急ぎの方は <a href="<?= e(tel_href(company('tel_free'))) ?>" data-handoff><?= e(company('tel_free')) ?></a>（平日 <?= e(company('hours')) ?>）</p>
+      </div>
+      <form class="aic__form" data-form>
+        <div class="aic__box">
+          <label class="u-sr" for="aic-input">相談内容</label>
+          <textarea id="aic-input" rows="1" maxlength="800" placeholder="ここに質問を入力してください" enterkeyhint="send"></textarea>
+          <div class="aic__tools">
+            <button class="aic__hand-toggle" type="button" aria-expanded="false" aria-controls="aic-hand-body" data-hand-toggle><?= icon('phone', 16) ?>担当者に相談</button>
+            <button class="aic__send" type="submit" aria-label="送る"><?= icon('send', 20) ?><span class="aic__send-text">送る</span></button>
+          </div>
+        </div>
+        <p class="aic__note">AI がサイトの情報をもとにお答えします。お名前・電話番号は書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>
+      </form>
+    </div>
   </section>
 </div>

@@ -35,6 +35,7 @@
   const handToggle = root.querySelector('[data-hand-toggle]');
   const handBody = root.querySelector('[data-hand-body]');
   const formLabel = root.querySelector('[data-form-label]');
+  const scrim = root.querySelector('.aic__scrim');
   const nudge = root.querySelector('[data-nudge]');
   const cb = root.querySelector('[data-cb]');
   const end = root.querySelector('[data-end]');
@@ -180,7 +181,9 @@
   });
   root.querySelector('.aic__close').addEventListener('click', () => setOpen(false));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && state.open && !document.querySelector('.lb[open], dialog[open]')) setOpen(false);
+    if (e.key !== 'Escape' || !state.open || document.querySelector('.lb[open], dialog[open]')) return;
+    if (handOpen) { setHand(false); handToggle.focus(); return; } // 相談の窓が開いている時は、まずそれを閉じる
+    setOpen(false);
   });
   starters.addEventListener('click', (e) => {
     const b = e.target.closest('.aic__chip');
@@ -377,18 +380,17 @@
   let handOpen = false;
   const setHand = (open) => {
     handOpen = open;
-    handBody.hidden = !open;
+    handBody.hidden = scrim.hidden = !open;
     handToggle.setAttribute('aria-expanded', String(open));
     hand.classList.toggle('is-open', open);
     if (open) handToggle.classList.remove('is-hint');
   };
   handToggle.addEventListener('click', () => {
     setHand(!handOpen);
-    if (handOpen) {
-      track('ai_chat_hand_open');
-      log.scrollTop = log.scrollHeight;
-    }
+    if (handOpen) track('ai_chat_hand_open');
   });
+  root.querySelectorAll('[data-hand-close]').forEach((b) => b.addEventListener('click', () => { setHand(false); handToggle.focus(); }));
+  handBody.addEventListener('click', (e) => { if (e.target.closest('[data-cb-open]')) setHand(false); });
   setHand(false);
 
   restore();

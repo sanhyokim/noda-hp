@@ -1436,24 +1436,23 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .aic__wait { margin-left: 8px; font-size: 13px; color: var(--c-muted); }
 .aic__msg.is-done { border-color: var(--c-blue-light); border-left: 3px solid var(--c-blue); }
 
-.aic__hand { border-top: 1px solid var(--c-line); background: var(--c-white); }
-.aic__hand[hidden] { display: none; }
-/* たたんだ時の1行（押すと下の3つのボタンが開く） */
-.aic__hand-toggle { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 0 12px; text-align: left; color: var(--c-ink); }
-.aic__hand-toggle:hover { background: var(--c-soft); }
-.aic__hand-toggle:focus-visible { outline: 2px solid var(--c-blue); outline-offset: -2px; }
-.aic__hand-ico { display: grid; place-items: center; flex: none; width: 26px; height: 26px; border-radius: var(--r-sm); background: var(--c-ink); color: var(--c-white); }
-.aic__hand-label { flex: none; font-size: 13px; font-weight: 700; letter-spacing: .04em; }
-.aic__hand-sub { flex: 1; min-width: 0; font-size: 11px; color: var(--c-muted); white-space: nowrap; }
-.aic__hand-chev { flex: none; color: var(--c-muted); transform: rotate(180deg); transition: transform .2s var(--ease); }
-.aic__hand.is-open .aic__hand-chev { transform: none; }
-.aic__hand-toggle.is-hint .aic__hand-ico { background: var(--c-orange); animation: aic-hint 1.6s var(--ease) 2; }
-.aic__hand-toggle.is-hint .aic__hand-label { color: var(--c-orange); }
-@keyframes aic-hint { 0%, 100% { transform: none; } 30% { transform: scale(1.15); } 60% { transform: none; } }
-@media (prefers-reduced-motion: reduce) { .aic__hand-toggle.is-hint .aic__hand-ico { animation: none; } .aic__hand-chev { transition: none; } }
-@media (max-width: 399.98px) { .aic__hand-sub { visibility: hidden; } } /* 狭い時は文字を切らずに隠す */
-.aic__hand-body { padding: 0 12px 12px; }
-.aic__hand-body[hidden] { display: none; }
+/* 下の場所：会話（灰色）の下に、入力の箱（白）。「担当者に相談」を押すと、入力の箱の上に相談の窓がせり上がる */
+.aic__dock { position: relative; flex: none; z-index: 2; }
+.aic__scrim { position: absolute; left: 0; right: 0; bottom: 100%; height: 200vh; background: rgba(20, 24, 32, .32); }
+.aic__scrim[hidden] { display: none; }
+.aic__sheet {
+  position: absolute; left: 0; right: 0; bottom: 100%; padding: 14px 14px 16px;
+  border-top: 3px solid var(--c-orange); background: var(--c-white); box-shadow: 0 -12px 28px rgba(20, 24, 32, .16);
+  animation: aic-sheet .22s var(--ease);
+}
+.aic__sheet[hidden] { display: none; }
+@keyframes aic-sheet { from { opacity: 0; transform: translateY(12px); } }
+.aic__sheet-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.aic__sheet-ttl { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 700; color: var(--c-ink); }
+.aic__sheet-ttl svg { color: var(--c-orange); }
+.aic__sheet-x { display: grid; place-items: center; width: 40px; height: 40px; margin: -8px -8px -8px 0; color: var(--c-muted); }
+.aic__sheet-x:hover { color: var(--c-ink); }
+.aic__sheet-lead { margin: 4px 0 12px; font-size: 13px; line-height: 1.7; color: var(--c-sub); }
 .aic__hand-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .aic__hbtn { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 8px; border-radius: var(--r-sm); font-size: 13px; font-weight: 700; line-height: 1.3; color: var(--c-white); text-align: center; }
 .aic__hbtn:hover { color: var(--c-white); filter: brightness(1.08); }
@@ -1464,8 +1463,8 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .aic__hand-tel a { font-family: var(--font-num); font-size: 15px; font-weight: 700; letter-spacing: .04em; color: var(--c-ink); }
 
 /* 担当者から電話をもらう（会話の窓の中に重ねる） */
-.aic__panel.is-cb .aic__log, .aic__panel.is-cb .aic__hand, .aic__panel.is-cb .aic__form, .aic__panel.is-cb .aic__note,
-.aic__panel.is-end .aic__log, .aic__panel.is-end .aic__hand, .aic__panel.is-end .aic__form, .aic__panel.is-end .aic__note { display: none; }
+.aic__panel.is-cb .aic__log, .aic__panel.is-cb .aic__dock,
+.aic__panel.is-end .aic__log, .aic__panel.is-end .aic__dock { display: none; }
 .aic__cb, .aic__end { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 16px; padding-bottom: calc(18px + env(safe-area-inset-bottom)); background: var(--c-white); }
 .aic__cb[hidden], .aic__end[hidden] { display: none; }
 
@@ -1533,21 +1532,32 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 @media (min-width: 640px) { .aic__nudge { right: 24px; bottom: calc(24px + 56px + 14px); } }
 @media (prefers-reduced-motion: reduce) { .aic__nudge { transition: none; transform: none; } }
 
-.aic__form { display: flex; align-items: flex-end; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--c-line); background: var(--c-white); }
-.aic__form textarea {
-  flex: 1; min-width: 0; min-height: 44px; max-height: 132px; padding: 9px 12px; resize: none; overflow-y: hidden;
-  border: 1px solid var(--c-line-strong); border-radius: var(--r-sm); font: inherit; font-size: 16px; line-height: 1.5; color: var(--c-text); background: var(--c-white);
+.aic__form { padding: 10px 12px; padding-bottom: calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid var(--c-line); background: var(--c-white); }
+/* 入力の箱：文字を打つ欄と、その下の道具の列（担当者に相談・送る）をひとつの枠に入れる */
+.aic__box { border: 1px solid #B5BCC7; border-radius: var(--r); background: var(--c-white); transition: border-color .15s, box-shadow .15s; }
+.aic__box:focus-within { border-color: var(--c-blue); box-shadow: 0 0 0 3px rgba(6, 94, 203, .16); }
+.aic__panel:not(.has-talk) .aic__box { border: 2px solid var(--c-blue); } /* まだ何も聞いていない時は、どこに打つかひと目でわかるように */
+.aic__box textarea {
+  display: block; width: 100%; min-height: 46px; max-height: 132px; padding: 11px 12px 4px; resize: none; overflow-y: hidden;
+  border: 0; border-radius: var(--r) var(--r) 0 0; font: inherit; font-size: 16px; line-height: 1.6; color: var(--c-text); background: transparent;
 }
-/* まだ何も聞いていない時は、入力欄を青い枠で目立たせる（どこに打てばよいか、ひと目でわかるように） */
-.aic__panel:not(.has-talk) .aic__form { background: var(--c-blue-bg); }
-.aic__panel:not(.has-talk) .aic__form textarea { border: 2px solid var(--c-blue); padding: 8px 11px; }
-.aic__form textarea::placeholder { color: var(--c-muted); opacity: 1; }
-.aic__form textarea:focus { outline: none; border-color: var(--c-blue); box-shadow: 0 0 0 3px rgba(6, 94, 203, .16); }
-.aic__send { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--c-blue); color: var(--c-white); }
+.aic__box textarea:focus { outline: none; }
+.aic__box textarea::placeholder { color: var(--c-muted); opacity: 1; }
+.aic__tools { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 6px 6px 8px; }
+.aic__hand-toggle {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px;
+  border: 1px solid #B5BCC7; border-radius: 999px; font-size: 13px; font-weight: 700; color: var(--c-ink); background: var(--c-white);
+}
+.aic__hand-toggle:hover { border-color: var(--c-ink); }
+.aic__hand-toggle[aria-expanded="true"] { border-color: var(--c-orange); color: var(--c-orange); }
+.aic__hand-toggle.is-hint { border-color: var(--c-orange); color: var(--c-orange); animation: aic-hint 1.6s var(--ease) 1; } /* AI が担当者をすすめた時だけ、オレンジの線で控えめに知らせる */
+.aic__send { display: inline-flex; align-items: center; justify-content: center; gap: 6px; flex: none; min-width: 44px; height: 40px; padding: 0 14px; border-radius: var(--r-sm); background: var(--c-blue); color: var(--c-white); font-size: 14px; font-weight: 700; }
 .aic__send:hover { background: var(--c-blue-dark); }
 .aic__send:disabled { opacity: .45; cursor: default; }
-.aic__note { padding: 0 12px 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); background: var(--c-white); font-size: 11px; line-height: 1.6; color: var(--c-muted); }
+.aic__note { margin-top: 6px; font-size: 11px; line-height: 1.6; color: var(--c-muted); }
 .aic__note a { color: var(--c-muted); text-decoration: underline; white-space: nowrap; }
+@keyframes aic-hint { 0%, 100% { transform: none; } 50% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .aic__sheet, .aic__hand-toggle.is-hint { animation: none; } }
 /* 「動きを減らす」設定の画面（Windows で「アニメーション効果」を切っている時など）でも、動かさずに、ふわっと出る・消えるだけは残す */
 @media (prefers-reduced-motion: reduce) {
   .aic__panel { transform: none !important; transition: opacity .2s linear !important; }
