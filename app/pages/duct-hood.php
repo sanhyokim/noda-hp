@@ -45,6 +45,11 @@ render('page-head', [
     <p><strong>当社のダクトは完全オーダーメイドで、1mm単位まで柔軟に寸法を変更可能です。</strong>新規開業の店舗はもちろん、既存でお悩みの店舗様もぜひご相談ください。</p>
     <p>また、工事完了がゴールではなく、その後もトータルでサポートいたします。保守点検、メンテナンス（修理）、清掃まで、施工後のお困りごとにもワンストップで対応可能です。<a href="<?= e(page_url('afterfollow')) ?>">アフターフォローについて</a></p>
   </div>
+  <ul class="keyfacts">
+    <li><i>ORDER MADE</i><b>完全オーダーメイド</b><span>店舗の構造・規模・レイアウトに合わせて、一店ごとに設計します。</span></li>
+    <li><i>PRECISION</i><b>寸法は<em>1</em>mm単位</b><span>ダクトの寸法は1mm単位まで柔軟に変更できます。</span></li>
+    <li><i>ONE STOP</i><b>施工後もワンストップ</b><span>保守点検・修理・清掃まで、同じ窓口でまとめて対応します。</span></li>
+  </ul>
 </section>
 
 <section class="section wrap" aria-labelledby="s4">

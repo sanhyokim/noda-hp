@@ -21,6 +21,13 @@ function e(?string $s): string
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/** 見出し用：「|」を改行できる位置に、製品の型番（NC-02 など）は途中で折り返さない */
+function heading_html(string $s): string
+{
+    $h = str_replace('|', '<wbr>', e($s));
+    return preg_replace('/[A-Z]{2,}-\d+/', '<span class="nw">$0</span>', $h);
+}
+
 function base_url(): string
 {
     $b = (string)config('base_url', '/');

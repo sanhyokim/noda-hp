@@ -62,11 +62,12 @@ $troubles = [
 
 <section class="section wrap" aria-labelledby="s4">
   <div class="partner">
-    <span class="partner__icon"><?= icon('blueprint', 28) ?></span>
+    <div class="partner__bg" aria-hidden="true"><?= picture('partner-blueprint.jpg', 1080, 608, '') ?></div>
     <div class="partner__text">
-      <p class="label">FOR PARTNERS</p>
-      <h2 class="partner__title" id="s4">設計事務所・内装業者様との連携も可能</h2>
+      <p class="label label--light">FOR PARTNERS</p>
+      <h2 class="partner__title kw" id="s4">設計事務所・<wbr>内装業者様との<wbr>連携も可能</h2>
+      <p>図面の段階から、給排気の計算やフード・ダクトの設計をご一緒します。</p>
     </div>
-    <a class="btn btn--blue" href="<?= e(page_url('customer')) ?>">業者様向けページへ<?= icon('arrow', 18) ?></a>
+    <a class="btn btn--white" href="<?= e(page_url('customer')) ?>">業者様向けページへ<?= icon('arrow', 18) ?></a>
   </div>
 </section>

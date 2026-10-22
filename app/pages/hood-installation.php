@@ -5,7 +5,7 @@ render('page-head', [
     'label' => 'YAKINIKU HOOD',
     'title' => '2つの特許を取得した、|他店に差をつける|上引きフード',
     'lead' => '焼肉店のオーナー様、現在お使いの上引きフードの吸煙力にご満足されていますか？当社では、店内の空気をきれいに保ち、工事費用と冷暖房費を抑えられる、スリムでコンパクトな吸煙力の高い上引きフードをご提案しています。',
-    'image' => 'svc-yakiniku-hood.jpg', 'ratio' => [3, 2],
+    'image' => 'head-yakiniku-hood.jpg', 'ratio' => [3, 2], 'focus' => '50% 8%',
 ]);
 $strengths = [
     ['店内の空気がきれいになる', ['従来型のフードでは取り除けなかった煙をスピーディーに吸収。焼肉店特有の「煙・臭い」の問題を根本から解決します。', '清潔でクリアな空気により、他店との差別化を実現できます。']],
@@ -42,6 +42,16 @@ $strengths = [
   <div class="section wrap">
     <?php render('section-head', ['label' => 'COMPARE', 'title' => '従来型フードとの比較', 'id' => 's2']); ?>
     <figure class="compare"><?= picture('hood-compare.jpg', 710, 220, '従来のフードとNC-02クリアーフードの比較') ?></figure>
+    <table class="vs">
+      <caption class="u-sr">従来型フードとNC-02クリアーフードの違い</caption>
+      <thead><tr><th scope="col"></th><th scope="col">従来型フード</th><th scope="col" class="vs__ours">NC-02クリアーフード</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">排煙量</th><td>500m³/h</td><td class="vs__ours"><b>182m³/h</b>で同等の吸煙力</td></tr>
+        <tr><th scope="row">工事費用</th><td>しちりんフード（比べる基準）</td><td class="vs__ours"><b>約40%</b>削減</td></tr>
+        <tr><th scope="row">冷暖房費</th><td>排煙量が多いぶん、冷暖房費がかさむ</td><td class="vs__ours">排煙量が少ないぶん<b>節約</b>できる</td></tr>
+        <tr><th scope="row">見た目</th><td>大きく、圧迫感がある</td><td class="vs__ours"><b>スリム</b>で視界や会話を妨げない</td></tr>
+      </tbody>
+    </table>
     <div class="prose u-mt">
       <p>従来型フードと比較すると、「NC-02クリアーフード」のスリムなシルエットは一目瞭然です。</p>
       <p>「こんなにスリムで本当に煙を吸えるの？」と疑問に感じる方もいるかもしれません。しかし、実はフードが大きいと、かえって煙の流れを妨げてしまい、吸煙力が低下する原因になるのです。</p>
