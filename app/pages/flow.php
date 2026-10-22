@@ -1,6 +1,6 @@
 <?php
 // 現行サイトの人物AI画像（ai-*.jpg）は、2026-10-22 に Boss が選んだ写真へすべて差し替え済み。
-// 差し替え済み：STEP2「現場調査〜お打ち合わせ」→ flow-survey.jpg（Boss 選定 2026-10-22）、STEP7「工事完了・最終チェック」→ flow-check.jpg（同日）、STEP6「施工開始」→ flow-start.jpg（同日）、STEP8「アフターフォロー」→ flow-aftercare.jpg（同日、16:9 を3:2枠で左右を少し切る）、STEP1「お問い合わせ」→ flow-call.jpg（同日、16:9。のち胸に社名の刺しゅうを入れた版に入れ替え）
+// 差し替え済み：STEP2「現場調査〜お打ち合わせ」→ flow-survey.jpg（Boss 選定 2026-10-22）、STEP7「工事完了・最終チェック」→ flow-check.jpg（同日。のち胸に社名の刺しゅうを入れた版に入れ替え）、STEP6「施工開始」→ flow-start.jpg（同日）、STEP8「アフターフォロー」→ flow-aftercare.jpg（同日、16:9 を3:2枠で左右を少し切る）、STEP1「お問い合わせ」→ flow-call.jpg（同日、16:9。のち胸に社名の刺しゅうを入れた版に入れ替え）
 render('page-head', [
     'label' => 'FLOW',
     'title' => 'お問い合わせから|施工までの流れ',
