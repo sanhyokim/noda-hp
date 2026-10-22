@@ -57,8 +57,23 @@ if ($action === 'contacts') {
 if ($action === 'chats') {
     $per = 20;
     $page = max(1, (int)($_GET['page'] ?? 1));
-    $total = (int)$pdo->query('SELECT COUNT(*) FROM chat_logs')->fetchColumn();
-    $rows = $pdo->query('SELECT * FROM chat_logs ORDER BY started_at DESC, id DESC LIMIT ' . $per . ' OFFSET ' . (($page - 1) * $per))->fetchAll();
+    // 相談番号（LINE・折り返し依頼に書かれる6文字）か、言葉で探す
+    $q = mb_substr(trim((string)($_GET['q'] ?? '')), 0, 50);
+    $where = '';
+    $args = [];
+    if (preg_match('/^[A-Fa-f0-9]{4,32}$/', $q)) {
+        $where = ' WHERE conv_key LIKE ?';
+        $args[] = strtolower($q) . '%';
+    } elseif ($q !== '') {
+        $where = ' WHERE messages LIKE ?';
+        $args[] = '%' . addcslashes(trim(json_encode($q, JSON_UNESCAPED_UNICODE), '"'), '%_\\') . '%';
+    }
+    $st = $pdo->prepare('SELECT COUNT(*) FROM chat_logs' . $where);
+    $st->execute($args);
+    $total = (int)$st->fetchColumn();
+    $st = $pdo->prepare('SELECT * FROM chat_logs' . $where . ' ORDER BY started_at DESC, id DESC LIMIT ' . $per . ' OFFSET ' . (($page - 1) * $per));
+    $st->execute($args);
+    $rows = $st->fetchAll();
     foreach ($rows as &$r) {
         $r['messages'] = json_decode($r['messages'], true) ?: [];
     }
@@ -67,7 +82,7 @@ if ($action === 'chats') {
     foreach (site('pages') as $p) {
         $pageNames[url($p['path'])] = $p['name'];
     }
-    admin_render('chats', ['user' => $user, 'nav' => 'settings', 'title' => 'AI 相談の会話の記録', 'rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => admin_pages($total, $per), 'pageNames' => $pageNames, 'flash' => take_flash()]);
+    admin_render('chats', ['user' => $user, 'nav' => 'settings', 'title' => 'AI 相談の会話の記録', 'rows' => $rows, 'total' => $total, 'page' => $page, 'pages' => admin_pages($total, $per), 'pageNames' => $pageNames, 'q' => $q, 'flash' => take_flash()]);
     exit;
 }
 
@@ -80,6 +95,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         set_setting('chat_off', $off ? '1' : '0');
         flash('ok', $off ? 'AI 相談を止めました。ホームページの右下の「AIに相談」ボタンが消えます。' : 'AI 相談を再開しました。ホームページの右下に「AIに相談」ボタンが出ます。');
         redirect(admin_url('settings/') . '#chat');
+    }
+    if ($op === 'chat_report') {
+        $mode = (string)($_POST['chat_report'] ?? '');
+        if (isset(CHAT_REPORT_MODES[$mode])) {
+            set_setting('chat_report', $mode);
+            flash('ok', '担当者への知らせを「' . CHAT_REPORT_MODES[$mode] . '」にしました。');
+        }
+        redirect(admin_url('settings/') . '#chat-report');
     }
     if ($op === 'chat_key') {
         if (!empty($_POST['clear'])) {
@@ -95,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirect(admin_url('settings/') . '#chat');
         }
         if (!preg_match('/^[A-Za-z0-9._:\/\-]{0,100}$/', $model)) {
-            flash('error', 'モデルの名前の形が正しくありません。例：anthropic/claude-opus-5.5');
+            flash('error', 'モデルの名前の形が正しくありません。例：anthropic/claude-sonnet-5.5');
             redirect(admin_url('settings/') . '#chat');
         }
         $r = chat_test_key($key, $model);
@@ -185,7 +208,16 @@ admin_render('settings', [
         'prev' => chat_usage(date('Ym', strtotime('first day of last month'))),
         'limit' => (int)chat_config('monthly_limit'),
         'logs' => (int)$pdo->query('SELECT COUNT(*) FROM chat_logs')->fetchColumn(),
+        'report' => chat_report_mode(),
         'handed' => (int)$pdo->query("SELECT COUNT(*) FROM chat_logs WHERE handed_off = 1 AND started_at >= '" . date('Y-m-01') . "'")->fetchColumn(),
+        'rated' => (function () use ($pdo): array {
+            try {
+                $r = $pdo->query("SELECT SUM(rating = 1), SUM(rating = 0) FROM chat_logs WHERE started_at >= '" . date('Y-m-01') . "'")->fetch(PDO::FETCH_NUM);
+                return [(int)$r[0], (int)$r[1]];
+            } catch (Throwable $e) {
+                return [0, 0];
+            }
+        })(),
     ],
     'contactCount' => $contactCount, 'latestContact' => $latestContact,
     'counts' => [

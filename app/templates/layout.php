@@ -114,7 +114,7 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 </nav>
 
 <?php if (chat_enabled() && !$adminBar): ?>
-<?php render('chat'); ?>
+<?php render('chat', ['current' => $current ?? '']); ?>
 <script src="<?= e(asset('js/chat.js')) ?>" defer></script>
 <?php endif; ?>
 <script src="<?= e(asset('js/site.js')) ?>" defer></script>

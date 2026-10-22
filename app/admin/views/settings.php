@@ -32,7 +32,7 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
 <?php endif; ?>
   </strong></p>
 <?php if ($chat['configured']): ?>
-  <p class="kv"><span>今月の会話</span><strong><?= number_format($chat['month']['conversations']) ?>件（質問 <?= number_format($chat['month']['requests']) ?>回）<small class="kv__sub">うち、問い合わせ・LINE・電話へ進んだ会話 <?= number_format($chat['handed']) ?>件</small></strong></p>
+  <p class="kv"><span>今月の会話</span><strong><?= number_format($chat['month']['conversations']) ?>件（質問 <?= number_format($chat['month']['requests']) ?>回）<small class="kv__sub">うち、問い合わせ・LINE・電話へ進んだ会話 <?= number_format($chat['handed']) ?>件</small><small class="kv__sub">「役に立ちましたか？」の答え：はい <?= number_format($chat['rated'][0]) ?>件・いいえ <?= number_format($chat['rated'][1]) ?>件</small></strong></p>
   <p class="kv"><span>今月の費用の目安</span><strong>約<?= number_format(chat_cost_yen($chat['month'])) ?>円<small class="kv__sub">先月 約<?= number_format(chat_cost_yen($chat['prev'])) ?>円</small></strong></p>
   <p class="kv"><span>1か月の回数の上限</span><strong><?= number_format($chat['limit']) ?>回（超えるとその月は電話・フォームへご案内）</strong></p>
   <p class="note note--sub">費用は使った量からの計算で、実際の請求額とは少しずれることがあります。正確な金額は AI の利用契約の管理画面（OpenRouter の「Activity」など）で確かめられます。</p>
@@ -48,6 +48,18 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
 <?php endif; ?>
     </form>
   </div>
+  <form method="post" class="form" id="chat-report">
+    <?= csrf_field() ?>
+    <input type="hidden" name="op" value="chat_report">
+    <fieldset class="field field--radios">
+      <legend class="field__label">担当者への知らせ（AI 相談の内容をメールで送る）</legend>
+<?php foreach (CHAT_REPORT_MODES as $k => $label): ?>
+      <label class="check"><input type="radio" name="chat_report" value="<?= e($k) ?>"<?= $chat['report'] === $k ? ' checked' : '' ?>><span><?= e($label) ?></span></label>
+<?php endforeach; ?>
+    </fieldset>
+    <p class="note note--sub">お問い合わせのメールと同じ担当者に届きます。最後のやり取りから30分たった相談を「終わった相談」とみなします。電話の折り返し依頼は、これとは別にすぐ届きます。</p>
+    <div class="actions-inline"><button class="abtn abtn--line" type="submit">知らせの送り方を保存</button></div>
+  </form>
 <?php endif; ?>
   <form method="post" class="form">
     <?= csrf_field() ?>
@@ -61,10 +73,10 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
       <input class="input textarea--mono" type="password" id="chat_api_key" name="chat_api_key" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-or- で始まる長い英数字">
     </div>
     <div class="field">
-      <label class="field__label" for="chat_model">モデル <span class="opt">空欄なら anthropic/claude-opus-5.5</span></label>
-      <input class="input textarea--mono" type="text" id="chat_model" name="chat_model" value="<?= e($chat['model']) ?>" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="anthropic/claude-opus-5.5">
+      <label class="field__label" for="chat_model">モデル <span class="opt">空欄なら anthropic/claude-sonnet-5.5</span></label>
+      <input class="input textarea--mono" type="text" id="chat_model" name="chat_model" value="<?= e($chat['model']) ?>" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="anthropic/claude-sonnet-5.5">
     </div>
-    <p class="note note--sub">キーは OpenRouter（https://openrouter.ai/keys）で作ったものを貼ってください。モデルを替える時は、https://openrouter.ai/models で使いたいモデルを開き、名前（例：anthropic/claude-opus-5.5）をコピーして貼ります。保存の前に、AI に1回だけ短く話しかけてつながるか確かめます（費用は1円未満）。モデルを替えたら、ホームページの「AIに相談」で何回か質問して、答え方を確かめてください。キーは他の人に見せないでください。</p>
+    <p class="note note--sub">キーは OpenRouter（https://openrouter.ai/keys）で作ったものを貼ってください。モデルを替える時は、https://openrouter.ai/models で使いたいモデルを開き、名前（例：anthropic/claude-sonnet-5.5）をコピーして貼ります。保存の前に、AI に1回だけ短く話しかけてつながるか確かめます（費用は1円未満）。モデルを替えたら、ホームページの「AIに相談」で何回か質問して、答え方を確かめてください。キーは他の人に見せないでください。</p>
     <div class="actions-inline">
       <button class="abtn abtn--primary" type="submit">保存して試す</button>
 <?php if ($chat['saved_key'] !== ''): ?>

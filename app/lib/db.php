@@ -19,6 +19,8 @@ function db(): ?PDO
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
             PDO::ATTR_EMULATE_PREPARES => false,
         ]);
+        // 記録の日時（受信日時・会話の日時など）を、サーバーの設定によらず日本時間にそろえる（PHP 側の日時と比べるため）
+        $pdo->exec("SET time_zone = '+09:00'");
     } catch (PDOException $ex) {
         error_log('DB接続失敗: ' . $ex->getMessage());
         $pdo = null;
@@ -63,9 +65,14 @@ function apply_data_fixes(): void
             foreach (array_filter(array_map('trim', explode(";\n", $sql . "\n"))) as $q) {
                 $pdo->exec(rtrim($q, ';'));
             }
-            $pdo->commit();
+            // 表の形を変える文（ALTER TABLE など）はその場で確定され、まとめの取り消しが効かなくなるため、残っている時だけ確定・取り消しする
+            if ($pdo->inTransaction()) {
+                $pdo->commit();
+            }
         } catch (Throwable $e) {
-            $pdo->rollBack();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
             error_log('データの手直しに失敗: ' . $name . ' ' . $e->getMessage());
             return;
         }

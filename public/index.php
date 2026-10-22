@@ -21,6 +21,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 if (site_noindex()) {
     header('X-Robots-Tag: noindex, nofollow'); // 試験用の場所（/new/）を検索エンジンに載せない
 }
+chat_report_tick(); // AI 相談の知らせのメール（5分に1回だけ確かめ、ページを返し終わってから送る）
 
 $path = rawurldecode((string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 $base = base_url();
@@ -38,7 +39,7 @@ if ($path !== '' && !str_ends_with($path, '/') && !preg_match('/\.[a-z0-9]{2,5}$
 }
 
 // AI チャットの受け口
-if ($path === 'api/chat/' || $path === 'api/chat/handoff/') {
+if ($path === 'api/chat/' || $path === 'api/chat/handoff/' || $path === 'api/chat/callback/' || $path === 'api/chat/rate/') {
     require APP_DIR . '/chat/endpoint.php';
     exit;
 }

@@ -28,6 +28,9 @@ done
 # データベースの元
 mkdir -p "$PKG/migration"
 cp migration/schema.sql migration/seed.sql "$PKG/migration/"
+# 置いた後のデータの手直し（管理画面を開いた時に1回だけ流れる）
+mkdir -p "$PKG/migration/fixes"
+cp migration/fixes/*.sql "$PKG/migration/fixes/"
 printf 'Require all denied\n' > "$PKG/migration/.htaccess"
 
 # 部品（開発用は入れない）

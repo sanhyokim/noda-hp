@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-// AI チャットの受け口：POST /api/chat/（答える）・POST /api/chat/handoff/（「この内容で問い合わせる」を押した印）
+// AI チャットの受け口：POST /api/chat/（答える）・POST /api/chat/handoff/（「この内容で問い合わせる」を押した印）・POST /api/chat/callback/（担当者から電話をもらう）・POST /api/chat/rate/（役に立ったか）
 /** @var string $path */
 
 // chat/lib.php は bootstrap で読み込み済み
@@ -37,6 +37,25 @@ if (!$conv) {
 if ($path === 'api/chat/handoff/') {
     db()->prepare('UPDATE chat_logs SET handed_off = 1 WHERE conv_key = ?')->execute([$conv]);
     $send(['ok' => true]);
+}
+
+if ($path === 'api/chat/rate/') {
+    // 「この相談は役に立ちましたか？」の答え（1：はい、0：いいえ）
+    $rating = ($in['rating'] ?? null) === 1 ? 1 : (($in['rating'] ?? null) === 0 ? 0 : null);
+    if ($rating === null) {
+        $send(['error' => 'bad'], 400);
+    }
+    try {
+        db()->prepare('UPDATE chat_logs SET rating = ? WHERE conv_key = ?')->execute([$rating, $conv]);
+    } catch (Throwable $e) {
+        error_log('AI チャット 評価の保存に失敗（管理画面を開くと直ります）: ' . $e->getMessage());
+    }
+    $send(['ok' => true]);
+}
+
+if ($path === 'api/chat/callback/') {
+    $r = chat_callback($conv, (array)($in['callback'] ?? []));
+    $send($r, $r['ok'] ? 200 : ($r['errors'] ? 422 : 400));
 }
 
 $messages = chat_clean_messages($in['messages'] ?? null);

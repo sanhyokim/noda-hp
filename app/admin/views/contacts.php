@@ -3,7 +3,7 @@
 /** @var int $total */
 /** @var int $page */
 /** @var int $pages */
-$methods = ['phone' => '電話', 'email' => 'メール', 'line' => 'LINE'];
+$methods = ['phone' => '電話', 'email' => 'メール', 'line' => 'LINE', 'callback' => '電話（AI 相談からの折り返し依頼）'];
 ?>
 <div class="bar">
   <a class="back" href="<?= e(admin_url('settings/')) ?>"><?= icon('arrow', 18, 'back__icon') ?>設定</a>
@@ -26,7 +26,9 @@ $methods = ['phone' => '電話', 'email' => 'メール', 'line' => 'LINE'];
       </summary>
       <dl class="inq__body">
         <dt>電話番号</dt><dd><a href="<?= e(tel_href($r['phone'])) ?>"><?= e($r['phone']) ?></a></dd>
+<?php if ($r['email'] !== ''): ?>
         <dt>メール</dt><dd><a href="mailto:<?= e($r['email']) ?>"><?= e($r['email']) ?></a></dd>
+<?php endif; ?>
 <?php if ($r['contact_method'] !== ''): ?>
         <dt>希望の連絡方法</dt><dd><?= e($methods[$r['contact_method']] ?? $r['contact_method']) ?></dd>
 <?php endif; ?>

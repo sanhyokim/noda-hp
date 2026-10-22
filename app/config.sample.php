@@ -44,14 +44,14 @@ return [
     // api_key は OpenRouter（sk-or-）か Anthropic（sk-ant-）で発行したキー。git には入れない。ふつうは管理画面の「設定」に貼る（そちらが優先）。
     'chat' => [
         'api_key' => '',
-        'model' => 'claude-opus-5-5',
+        'model' => 'claude-sonnet-5-5',
         'monthly_limit' => 3000,   // 1か月に答える回数の上限（使いすぎ防止。超えたら電話・フォームへ案内）
         'per_ip_10min' => 15,      // 同じ人が10分間に送れる回数
         'per_ip_day' => 60,        // 同じ人が1日に送れる回数
         'base_url' => 'https://api.anthropic.com',          // キーが sk-ant- の時（Anthropic に直接）
         'openrouter_url' => 'https://openrouter.ai/api/v1',  // キーが sk-or- の時（OpenRouter。モデルは管理画面で選ぶ）
         // 管理ページに出す「今月の費用の目安」の計算用（Anthropic に直接の時だけ使う。1百万トークンあたりのドル、2026年10月時点）。OpenRouter は1回ごとの実費が返ってくる
-        'price_usd' => ['input' => 4.0, 'output' => 20.0, 'cache_read' => 0.2, 'cache_write' => 5.0],
+        'price_usd' => ['input' => 2.0, 'output' => 10.0, 'cache_read' => 0.2, 'cache_write' => 2.5],
         'yen_per_usd' => 155,
         'log_days' => 365,         // 会話の記録を残す日数（過ぎた分は自動で消す）
     ],
