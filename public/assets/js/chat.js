@@ -468,6 +468,22 @@
     }
   } catch (_) { /* 何もしない */ }
 
+  // スマホでは窓が画面いっぱいなので、答えの中のサイト内リンクを押したら窓を閉じて、移った先のページを見せる。
+  // 会話は残っているので、移った先でボタンの輪を2回広げて「続きはここから」と知らせる
+  log.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href]');
+    if (!a || a.target === '_blank' || e.ctrlKey || e.metaKey || e.shiftKey || matchMedia('(min-width: 640px)').matches) return;
+    state.open = false;
+    save(state);
+    try { sessionStorage.setItem('noda-chat-back', '1'); } catch (_) { /* 何もしない */ }
+  });
+  try {
+    if (sessionStorage.getItem('noda-chat-back')) {
+      sessionStorage.removeItem('noda-chat-back');
+      setTimeout(() => fab.classList.add('is-ping'), 600);
+    }
+  } catch (_) { /* 何もしない */ }
+
   // 一度も開いていない間は、10秒ごとにボタンを弾ませ、吹き出しを揺らし、輪を広げて気づいてもらう（ページを移っても、開くまで続ける）
   const BKEY = 'noda-chat-opened';
   const opened = () => { try { return !!sessionStorage.getItem(BKEY); } catch (_) { return false; } };
