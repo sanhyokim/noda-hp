@@ -911,9 +911,9 @@ main:focus { outline: none; }
 .row--text .row__head { margin-bottom: 10px; padding-bottom: 0; border-bottom: 0; }
 .rows:has(.row--text) { gap: 18px; }
 .figs { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 16px; }
-.figs figure { width: 228px; max-width: calc(50% - 7px); }
+.figs > li { width: 228px; max-width: calc(50% - 7px); }
 .figs .media { overflow: hidden; border-radius: var(--r-sm); aspect-ratio: 4 / 3; }
-.figs figcaption { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--c-text); }
+.figs figcaption { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--c-text); word-break: keep-all; overflow-wrap: anywhere; }
 .callout { padding: 4px 0 4px 22px; border-left: 3px solid var(--c-orange); }
 .callout h3 { font-size: 17px; color: var(--c-ink); }
 .callout p { margin-top: 6px; font-size: 15px; line-height: 1.9; color: var(--c-sub); }

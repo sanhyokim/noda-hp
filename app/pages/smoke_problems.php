@@ -36,8 +36,8 @@ render('page-head', [
           <p>業界トップクラスの集塵能力を持つ当社の消煙機を用いて、煙や臭いの原因となっているオイルミストを強力に除去します。これにより、店舗や店外の空気環境を大幅に改善し、お客様や従業員の健康被害を未然に防ぐだけでなく、床の滑りや衣服の汚損を防ぎます。</p>
           <p>また、設備機器へのオイルミストの付着を防ぐことで、機器の寿命を延ばし、メンテナンスコストの削減にも寄与します。</p>
           <ul class="figs">
-            <li><figure><?= picture('smoke-esp.jpg', 228, 171, '消臭消煙対策の電気集塵機') ?><figcaption>消臭消煙対策電気集塵機</figcaption></figure></li>
-            <li><figure><?= picture('smoke-water.jpg', 228, 171, '油煙除去ウォーターフィルター') ?><figcaption>油煙除去ウォーターフィルター</figcaption></figure></li>
+            <li><figure><?= picture('smoke-esp.jpg', 228, 171, '消臭消煙対策の電気集塵機') ?><figcaption>消臭消煙対策<wbr>電気集塵機</figcaption></figure></li>
+            <li><figure><?= picture('smoke-water.jpg', 228, 171, '油煙除去ウォーターフィルター') ?><figcaption>油煙除去<wbr>ウォーターフィルター</figcaption></figure></li>
           </ul>
         </div>
       </li>
