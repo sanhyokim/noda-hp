@@ -74,7 +74,7 @@ render('page-head', [
           '特に、消煙機の過去の施工事例や油煙除去率など、具体的な資料を基にご納得いただけるよう努めました。',
           '施工においては、集塵機の設置だけでなく、立ち上げ工事も行い、煙や臭気対策を万全にいたしました。',
       ],
-      'photos' => [['media/cases/23/eb10cdf93078-800.jpg', 480, 640], ['media/cases/23/fdf61821c602-800.jpg', 480, 640]],
+      'photos' => [['hassaku-esp-front.jpg', 480, 640], ['hassaku-esp-close.jpg', 480, 640]],
   ]); ?>
 </section>
 
