@@ -18,7 +18,7 @@ require is_file(__DIR__ . '/../app/bootstrap.php') ? __DIR__ . '/../app/bootstra
 header('X-Content-Type-Options: nosniff');
 header('X-Frame-Options: SAMEORIGIN');
 header('Referrer-Policy: strict-origin-when-cross-origin');
-if (config('noindex')) {
+if (site_noindex()) {
     header('X-Robots-Tag: noindex, nofollow'); // 試験用の場所（/new/）を検索エンジンに載せない
 }
 

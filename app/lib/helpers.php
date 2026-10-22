@@ -28,6 +28,15 @@ function heading_html(string $s): string
     return preg_replace('/[A-Z]{2,}-\d+/', '<span class="nw">$0</span>', $h);
 }
 
+/**
+ * 検索エンジンに載せない状態か。設定の noindex が true でも、サイトの一番上（/）に置いた時は載せる。
+ * /new/ から本番の場所へ移した時に、設定ファイルを書き換え忘れても検索から消えないように（引き渡し手順を短くするため）。
+ */
+function site_noindex(): bool
+{
+    return (bool)config('noindex') && base_url() !== '/';
+}
+
 function base_url(): string
 {
     static $base = null;

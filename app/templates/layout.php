@@ -4,7 +4,7 @@
 /** @var string $current */
 $adminBar = $meta['admin_bar'] ?? null; // 管理ページからの確認用の表示：[説明, 編集ページの URL]
 // 管理者の確認中と、試験用の場所（noindex）ではアクセス解析を数えない
-$gtm = $adminBar || config('noindex') ? '' : (string)config('gtm_id', '');
+$gtm = $adminBar || site_noindex() ? '' : (string)config('gtm_id', '');
 $canonical = abs_url($meta['path'] ?? '');
 $ogImage = $meta['og_image'] ?? abs_url('assets/img/og-default.jpg');
 $trail = $meta['trail'] ?? null;
@@ -22,7 +22,7 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','<?= e($gtm) ?>');</script>
 <?php endif; ?>
 <title><?= e($meta['title']) ?></title>
-<?php if ($adminBar || config('noindex')): ?>
+<?php if ($adminBar || site_noindex()): ?>
 <meta name="robots" content="noindex, nofollow">
 <?php endif; ?>
 <meta name="description" content="<?= e($meta['description']) ?>">
