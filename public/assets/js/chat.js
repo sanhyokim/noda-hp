@@ -73,10 +73,20 @@
     panel.classList.toggle('has-talk', state.messages.length > 0);
   };
 
-  const setOpen = (open, focus = true) => {
+  // 開け閉めは、ボタンの位置からふわっと出て、ふわっと戻る（動きを減らす設定の人には動かさない）
+  let closeTimer = 0;
+  const setOpen = (open, focus = true, instant = false) => {
     state.open = open;
     save(state);
-    panel.hidden = !open;
+    clearTimeout(closeTimer);
+    if (open) {
+      panel.hidden = false;
+      if (instant) panel.classList.add('is-in');
+      else requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('is-in')));
+    } else {
+      panel.classList.remove('is-in');
+      closeTimer = setTimeout(() => { if (!state.open) panel.hidden = true; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 280);
+    }
     fab.setAttribute('aria-expanded', String(open));
     root.classList.toggle('is-open', open);
     document.documentElement.classList.toggle('aic-open', open);
@@ -268,6 +278,9 @@
     nudge.hidden = false;
     requestAnimationFrame(() => requestAnimationFrame(() => nudge.classList.add('is-in')));
     root.classList.add('is-nudged');
+    fab.classList.remove('is-ping');
+    void fab.offsetWidth;
+    fab.classList.add('is-ping');
     track('ai_chat_nudge_show');
     nudgeAuto = setTimeout(() => hideNudge(false), 45000); // 見ないままなら、しばらくして静かに消す
   };
@@ -372,5 +385,12 @@
   setHand(!!state.handOpen);
 
   restore();
-  if (state.open) setOpen(true, false);
+  if (state.open) setOpen(true, false, true);
+  // この訪問で最初に開いたページだけ、ボタンを下から出して、まわりに輪を3回広げて気づいてもらう
+  try {
+    if (!state.open && !sessionStorage.getItem('noda-chat-intro')) {
+      sessionStorage.setItem('noda-chat-intro', '1');
+      root.classList.add('is-intro');
+    }
+  } catch (_) { /* 何もしない */ }
 })();
