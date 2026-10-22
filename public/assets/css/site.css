@@ -1120,7 +1120,8 @@ a.card.linkcard:hover .linkcard__t { color: var(--c-blue); }
 /* ---------- 表示の速さ ---------- */
 /* 画面の外にある段とフッターは、近づくまで組み立てを省く（文字の書体が届くたびの組み直しが軽くなる）。
    高さは一度表示した値を覚える（auto）。最初の段と、ページ内の位置へ直接飛んでくるページ（会社概要の20周年・施工事例の一覧）は除く */
-body:not(.page-company):not(.page-construction_examples) main .section:not(:first-child), .footer { content-visibility: auto; contain-intrinsic-size: auto 900px; }
+/* 施工までの流れ：番号の外側の輪がはみ出すので、この区切りは表示を省かない（省くと区切りの外が切れる） */
+body:not(.page-company):not(.page-construction_examples) main .section:not(:first-child):not(:has(.timeline)), .footer { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 
 /* ---------- 動き ---------- */
 @keyframes drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
