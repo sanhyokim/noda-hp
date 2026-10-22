@@ -4,6 +4,7 @@ $cases = latest_cases(12);
 render('page-head', [
     'label' => 'WORKS',
     'title' => '施工事例',
+    'image' => 'after-grease.jpg', 'ratio' => [3, 2],
     'lead' => '焼肉店・焼き鳥店・居酒屋・ラーメン店など、これまでに手がけた飲食店の換気扇・排煙ダクト工事をご紹介します。',
 ]);
 ?>

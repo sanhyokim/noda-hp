@@ -65,12 +65,12 @@ $errMsg = fn(string $k) => isset($err[$k]) ? '<p class="field__err" id="err-' . 
 
 <section class="section wrap" aria-labelledby="s4">
   <div class="partner">
-    <span class="partner__icon"><?= icon('clock', 28) ?></span>
+    <div class="partner__bg" aria-hidden="true"><?= picture('flow-consult.jpg', 1080, 720, '') ?></div>
     <div class="partner__text">
-      <p class="label">AFTER CONTACT</p>
-      <h2 class="partner__title" id="s4">お問い合わせ後の流れ</h2>
+      <p class="label label--light">AFTER CONTACT</p>
+      <h2 class="partner__title kw" id="s4">お問い合わせ後の流れ</h2>
       <p>現地調査（無料）からご提案・お見積り、施工、アフターフォローまで。</p>
     </div>
-    <a class="btn btn--blue" href="<?= e(page_url('flow')) ?>">施工までの流れを見る<?= icon('arrow', 18) ?></a>
+    <a class="btn btn--white" href="<?= e(page_url('flow')) ?>">施工までの流れを見る<?= icon('arrow', 18) ?></a>
   </div>
 </section>

@@ -561,10 +561,8 @@ main:focus { outline: none; }
 .partner__title { font-size: 21px; line-height: 1.5; font-weight: 700; font-feature-settings: "palt"; }
 .partner__text p:last-child { margin-top: 8px; font-size: 15px; color: var(--c-blue-bg); }
 .partner .btn { justify-self: start; }
-.partner__icon { display: inline-flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: var(--r-sm); background: rgba(255, 255, 255, .1); color: var(--c-blue-light); }
 @media (min-width: 640px) {
   .partner { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 32px; padding: 40px; }
-  .partner:has(.partner__icon) { grid-template-columns: 56px minmax(0, 1fr) auto; gap: 24px; }
   .partner__title { font-size: 24px; }
 }
 
@@ -715,6 +713,14 @@ main:focus { outline: none; }
 .tags { display: flex; flex-wrap: wrap; gap: 8px; }
 .tags li { padding: 8px 16px; background: var(--c-white); border: 1px solid var(--c-blue-light); border-radius: var(--r-sm); font-size: 15px; font-weight: 700; color: var(--c-blue-dark); }
 .tags .tags__more { background: transparent; border-color: transparent; color: var(--c-muted); font-weight: 500; padding-inline: 4px; }
+/* 対応業態：トップの流れる帯と同じ丸い写真＋業態名を、線で区切った格子に */
+.bizgrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 20px; border-top: 1px solid var(--c-ink); }
+.bizgrid li { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--c-line); font-size: 15px; font-weight: 700; color: var(--c-ink); }
+.bizgrid .media { flex: none; width: 48px; height: 48px; overflow: hidden; border-radius: 50%; }
+.bizgrid .media img { width: 100%; height: 100%; object-fit: cover; }
+.bizgrid .bizgrid__more { border-bottom: 0; font-weight: 500; color: var(--c-muted); }
+@media (min-width: 640px) { .bizgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1100px) { .bizgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 /* お客様の声 */
 /* お客様インタビュー */
@@ -1012,7 +1018,7 @@ a.card.linkcard:hover .linkcard__t { color: var(--c-blue); }
 .notice--ok { background: var(--c-blue-bg); }
 .notice--err { background: var(--c-white); color: var(--c-orange); box-shadow: inset 0 0 0 2px var(--c-orange); }
 
-.form { display: grid; gap: 22px; padding: 24px 20px; background: var(--c-soft); border-radius: var(--r); }
+.form { display: grid; gap: 22px; padding: 28px 0 0; border-top: 2px solid var(--c-ink); }
 .field { display: flex; flex-direction: column; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
 .field > label, .field legend { font-size: 15px; font-weight: 700; }
 .field legend { margin-bottom: 8px; padding: 0; }
@@ -1031,7 +1037,7 @@ a.card.linkcard:hover .linkcard__t { color: var(--c-blue); }
 .field__err { font-size: 14px; font-weight: 700; color: var(--c-orange); }
 .field-row { display: grid; gap: 22px; }
 @media (min-width: 640px) {
-  .form { padding: 36px 40px; }
+  .form { padding: 36px 0 0; }
   .field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
 }
 .radios { display: flex; flex-wrap: wrap; gap: 10px; }

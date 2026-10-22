@@ -14,7 +14,10 @@ $services = [
     ['new_stores', 'svc-newstore.jpg', '新規店舗の開業をお考えの方へ', ['飲食店の新規開業では、換気扇・排煙ダクトの設計を後回しにすると近隣トラブルや営業への支障につながります。図面の段階から給排気のバランスを計算し、開業後の煙・臭い・吸い込み不良を防ぎます。'], [], '新規開業のご相談について'],
     ['afterfollow', 'top-afterfollow.jpg', 'ダクト工事後のアフターフォロー', ['工事完了がゴールではなく、保守点検、メンテナンス（修理）、清掃まで、施工後のお困りごとにもワンストップで対応します。打ち合わせからアフターフォローまで、同じ担当者が責任を持って対応いたします。'], [], 'アフターフォローについて'],
 ];
-$bizList = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うなぎ店', '鉄板焼き店', 'カフェ', 'パン屋', '旅館', 'チェーン店', '施設', 'セントラルキッチン', 'コインランドリー'];
+$bizList = [
+    ['焼肉店', 'yakiniku'], ['焼き鳥店', 'yakitori'], ['居酒屋', 'izakaya'], ['ラーメン店', 'ramen'], ['うなぎ店', 'unagi'], ['鉄板焼き店', 'teppan'], ['カフェ', 'cafe'],
+    ['パン屋', 'bakery'], ['旅館', 'ryokan'], ['チェーン店', 'chain'], ['施設', 'facility'], ['セントラルキッチン', 'central'], ['コインランドリー', 'laundry'],
+];
 ?>
 <section class="section wrap" aria-labelledby="s1">
   <?php render('section-head', ['label' => 'OUR SERVICES', 'title' => '株式会社野田の|各種ダクト工事サービス', 'id' => 's1', 'lead' => '厨房換気扇・排煙ダクト工事に特化した福岡の専門業者「株式会社野田」では、店舗や飲食店向けのダクトの設計、施工、アフターフォローまでをワンストップで承っております。当社が提供する各種ダクト工事サービスをご紹介します。']); ?>
@@ -37,9 +40,9 @@ $bizList = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
   <div class="section wrap">
     <?php render('section-head', ['label' => 'INDUSTRIES', 'title' => '対応している業態', 'id' => 's2']); ?>
     <p class="prose u-mb">居酒屋、ラーメン屋、焼鳥屋、焼肉店をはじめ、油煙・煙の多いあらゆる業態の厨房に対応しています。</p>
-    <ul class="tags">
-      <?php foreach ($bizList as $b): ?><li><?= e($b) ?></li><?php endforeach; ?>
-      <li class="tags__more">など</li>
+    <ul class="bizgrid">
+      <?php foreach ($bizList as [$b, $img]): ?><li><?= picture('biz-' . $img . '.jpg', 160, 160, '') ?><span><?= e($b) ?></span></li><?php endforeach; ?>
+      <li class="bizgrid__more">など</li>
     </ul>
   </div>
 </section>
