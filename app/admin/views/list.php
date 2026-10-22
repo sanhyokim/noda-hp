@@ -51,7 +51,8 @@ $tabs = ['' => 'すべて', 'published' => '公開中', 'draft' => '下書き'];
 <?php endif; ?>
       <span class="row__body">
         <span class="row__meta">
-          <span class="badge badge--<?= e($r['status']) ?>"><?= $r['status'] === 'published' ? '公開中' : '下書き' ?></span>
+<?php $scheduled = $r['status'] === 'published' && $r['published_at'] > today()->format('Y-m-d'); ?>
+          <span class="badge badge--<?= $scheduled ? 'scheduled' : e($r['status']) ?>"><?= $scheduled ? '予約' : ($r['status'] === 'published' ? '公開中' : '下書き') ?></span>
 <?php if (!empty($r['needs_review'])): ?>
           <span class="badge badge--review">要確認</span>
 <?php endif; ?>

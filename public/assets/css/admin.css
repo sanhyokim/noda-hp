@@ -176,6 +176,7 @@ svg { flex: none; }
 }
 .badge { display: inline-flex; align-items: center; padding: 0 8px; min-height: 24px; border: 1px solid currentColor; border-radius: var(--r-sm); font-size: 13px; font-weight: 700; line-height: 1; letter-spacing: .04em; white-space: nowrap; }
 .badge--published { color: var(--c-ok); }
+.badge--scheduled { color: var(--c-blue); background: var(--c-blue-bg); }
 .badge--draft { color: var(--c-muted); background: var(--c-soft); border-color: var(--c-line-strong); }
 .badge--review { color: var(--c-orange); }
 .empty { padding: 40px 20px; border: 1px dashed var(--c-line-strong); border-radius: var(--r); background: var(--c-white); text-align: center; color: var(--c-sub); }

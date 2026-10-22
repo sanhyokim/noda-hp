@@ -81,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $pdo->prepare('INSERT INTO news (slug, title, body_html, published_at, status) VALUES (?, ?, ?, ?, ?)')->execute($vals);
             $newsId = (int)$pdo->lastInsertId();
         }
-        flash('ok', $form['status'] === 'published' ? '保存しました。公開ページに反映されています。' : '下書きとして保存しました（公開ページにはまだ出ません）。');
+        flash('ok', admin_saved_message($form['status'], $form['published_at']));
         if (($_POST['do'] ?? '') === 'preview') {
             redirect(url('news/' . rawurlencode($slug) . '/') . '?preview=1');
         }

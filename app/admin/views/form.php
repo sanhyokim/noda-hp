@@ -103,6 +103,7 @@ $axes = ['biz' => ['業態', 'お店の種類。1つ以上選んでください�
       <div class="field" id="f-published_at">
         <label class="field__label" for="published_at">投稿日 <span class="req">必須</span></label>
         <input class="input input--date" type="date" id="published_at" name="published_at" value="<?= e($form['published_at']) ?>" required<?= $aria('published_at') ?>>
+        <p class="field__help">今日より先の日付にすると予約投稿になり、その日から公開ページに出ます。</p>
         <?= $err('published_at') ?>
       </div>
 <?php if ($isCase): ?>

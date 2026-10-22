@@ -7,7 +7,7 @@ foreach (site('pages') as $p) {
 }
 if ($pdo = db()) {
     foreach (['cases' => '', 'news' => 'news/'] as $table => $prefix) {
-        foreach ($pdo->query("SELECT slug, updated_at FROM $table WHERE status = 'published' ORDER BY published_at DESC, id DESC") as $r) {
+        foreach ($pdo->query("SELECT slug, updated_at FROM $table WHERE " . live_sql() . " ORDER BY published_at DESC, id DESC") as $r) {
             $urls[] = [abs_url($prefix . rawurlencode($r['slug']) . '/'), substr($r['updated_at'], 0, 10)];
         }
     }

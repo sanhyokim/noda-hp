@@ -220,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $pdo->prepare('UPDATE cases SET thumbnail_image_id = ? WHERE id = ?')->execute([$mainId, $caseId]);
         $pdo->commit();
 
-        flash('ok', $in['status'] === 'published' ? '保存しました。公開ページに反映されています。' : '下書きとして保存しました（公開ページにはまだ出ません）。');
+        flash('ok', admin_saved_message($in['status'], $in['published_at']));
         if (($_POST['do'] ?? '') === 'preview') {
             // 「保存して確認」：公開ページの見た目で開く（上に「編集に戻る」の帯が出る）
             redirect(url(rawurlencode($slug) . '/') . '?preview=1');

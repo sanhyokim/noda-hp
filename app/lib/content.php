@@ -1,6 +1,16 @@
 <?php
 declare(strict_types=1);
 
+/**
+ * 公開ページに出してよい投稿の条件。公開中で、投稿日が今日まで（未来の日付は予約投稿として、その日から出す）。
+ * $a は表の別名（例：'c'）。
+ */
+function live_sql(string $a = ''): string
+{
+    $p = $a !== '' ? $a . '.' : '';
+    return "{$p}status = 'published' AND {$p}published_at <= '" . today()->format('Y-m-d') . "'";
+}
+
 function dummy_data(): array
 {
     static $d = null;
@@ -19,7 +29,7 @@ function latest_cases(int $limit): array
     $st = $pdo->prepare(
         "SELECT c.id, c.slug, c.title, c.published_at, c.location, i.path_thumb AS image, i.width AS image_w, i.height AS image_h
          FROM cases c LEFT JOIN case_images i ON i.id = c.thumbnail_image_id
-         WHERE c.status = 'published' ORDER BY c.published_at DESC, c.id DESC LIMIT :n"
+         WHERE " . live_sql('c') . " ORDER BY c.published_at DESC, c.id DESC LIMIT :n"
     );
     $st->bindValue(':n', $limit, PDO::PARAM_INT);
     $st->execute();
@@ -62,9 +72,9 @@ function latest_feed(int $limit): array
         }
     } else {
         $st = $pdo->prepare(
-            "(SELECT 'case' AS type, slug, title, published_at, id FROM cases WHERE status='published' ORDER BY published_at DESC, id DESC LIMIT :a)
+            "(SELECT 'case' AS type, slug, title, published_at, id FROM cases WHERE " . live_sql() . " ORDER BY published_at DESC, id DESC LIMIT :a)
              UNION ALL
-             (SELECT 'news' AS type, slug, title, published_at, id FROM news WHERE status='published' ORDER BY published_at DESC, id DESC LIMIT :b)"
+             (SELECT 'news' AS type, slug, title, published_at, id FROM news WHERE " . live_sql() . " ORDER BY published_at DESC, id DESC LIMIT :b)"
         );
         $st->bindValue(':a', $limit, PDO::PARAM_INT);
         $st->bindValue(':b', $limit, PDO::PARAM_INT);
@@ -125,7 +135,7 @@ function cases_in_categories(array $names, int $limit = 3): array
          JOIN case_categories cc ON cc.case_id = c.id
          JOIN categories cat ON cat.id = cc.category_id AND cat.name IN ($in)
          LEFT JOIN case_images i ON i.id = c.thumbnail_image_id
-         WHERE c.status = 'published' ORDER BY c.published_at DESC, c.id DESC LIMIT " . (int)$limit
+         WHERE " . live_sql('c') . " ORDER BY c.published_at DESC, c.id DESC LIMIT " . (int)$limit
     );
     $st->execute(array_values($names));
     return attach_categories($st->fetchAll());
@@ -177,13 +187,13 @@ function case_list(?string $biz, ?string $work, int $page, int $per = CASES_PER_
         return ['rows' => [], 'total' => 0];
     }
     [$join, $args] = case_filter_sql($biz, $work);
-    $st = $pdo->prepare("SELECT COUNT(*) FROM cases c $join WHERE c.status = 'published'");
+    $st = $pdo->prepare("SELECT COUNT(*) FROM cases c $join WHERE " . live_sql('c'));
     $st->execute($args);
     $total = (int)$st->fetchColumn();
     $st = $pdo->prepare(
         "SELECT c.id, c.slug, c.title, c.published_at, c.location, i.path_thumb AS image, i.width AS image_w, i.height AS image_h
          FROM cases c $join LEFT JOIN case_images i ON i.id = c.thumbnail_image_id
-         WHERE c.status = 'published' ORDER BY c.published_at DESC, c.id DESC
+         WHERE " . live_sql('c') . " ORDER BY c.published_at DESC, c.id DESC
          LIMIT " . (int)$per . ' OFFSET ' . (int)(($page - 1) * $per)
     );
     $st->execute($args);
@@ -201,7 +211,7 @@ function case_counts(string $axis, ?string $other): array
     $st = $pdo->prepare(
         "SELECT cat.slug, COUNT(DISTINCT c.id) FROM cases c $join
          JOIN case_categories cc ON cc.case_id = c.id JOIN categories cat ON cat.id = cc.category_id AND cat.axis = ?
-         WHERE c.status = 'published' GROUP BY cat.slug"
+         WHERE " . live_sql('c') . " GROUP BY cat.slug"
     );
     $st->execute(array_merge($args, [$axis]));
     return array_map('intval', $st->fetchAll(PDO::FETCH_KEY_PAIR));
@@ -214,7 +224,7 @@ function find_case(string $slug, bool $withDraft = false): ?array
     if (!$pdo) {
         return null;
     }
-    $st = $pdo->prepare('SELECT * FROM cases WHERE slug = ? AND ' . ($withDraft ? "status <> 'deleted'" : "status = 'published'"));
+    $st = $pdo->prepare('SELECT * FROM cases WHERE slug = ? AND ' . ($withDraft ? "status <> 'deleted'" : live_sql()));
     $st->execute([$slug]);
     $row = $st->fetch();
     if (!$row) {
@@ -236,7 +246,7 @@ function redirected_case_slug(string $old): ?string
     if (!$pdo) {
         return null;
     }
-    $st = $pdo->prepare("SELECT c.slug FROM slug_redirects r JOIN cases c ON c.slug = r.new_slug AND c.status = 'published' WHERE r.old_slug = ?");
+    $st = $pdo->prepare("SELECT c.slug FROM slug_redirects r JOIN cases c ON c.slug = r.new_slug AND " . live_sql('c') . " WHERE r.old_slug = ?");
     $st->execute([$old]);
     return $st->fetchColumn() ?: null;
 }
@@ -256,7 +266,7 @@ function related_cases(string $axis, string $slug, array $exclude, int $limit = 
     $st = db()->prepare(
         "SELECT c.id, c.slug, c.title, c.published_at, c.location, i.path_thumb AS image, i.width AS image_w, i.height AS image_h
          FROM cases c $join LEFT JOIN case_images i ON i.id = c.thumbnail_image_id
-         WHERE c.status = 'published'$not ORDER BY c.published_at DESC, c.id DESC LIMIT " . (int)$limit
+         WHERE " . live_sql('c') . "$not ORDER BY c.published_at DESC, c.id DESC LIMIT " . (int)$limit
     );
     $st->execute($args);
     return attach_categories($st->fetchAll());
@@ -265,7 +275,7 @@ function related_cases(string $axis, string $slug, array $exclude, int $limit = 
 // 新しい順に並べた時の前後。['newer' => row|null, 'older' => row|null]
 function adjacent_cases(array $case): array
 {
-    $sel = "SELECT c.slug, c.title, i.path_thumb AS image, i.width AS image_w, i.height AS image_h FROM cases c LEFT JOIN case_images i ON i.id = c.thumbnail_image_id WHERE c.status = 'published' AND ";
+    $sel = "SELECT c.slug, c.title, i.path_thumb AS image, i.width AS image_w, i.height AS image_h FROM cases c LEFT JOIN case_images i ON i.id = c.thumbnail_image_id WHERE " . live_sql('c') . " AND ";
     $newer = db()->prepare($sel . '(c.published_at > :d OR (c.published_at = :d2 AND c.id > :id)) ORDER BY c.published_at ASC, c.id ASC LIMIT 1');
     $older = db()->prepare($sel . '(c.published_at < :d OR (c.published_at = :d2 AND c.id < :id)) ORDER BY c.published_at DESC, c.id DESC LIMIT 1');
     $out = [];
@@ -283,12 +293,12 @@ function feed_page(int $page, int $per = NEWS_PER_PAGE): array
     if (!$pdo) {
         return ['rows' => array_slice(latest_feed(1000), ($page - 1) * $per, $per), 'total' => count(latest_feed(1000))];
     }
-    $total = (int)$pdo->query("SELECT (SELECT COUNT(*) FROM cases WHERE status='published') + (SELECT COUNT(*) FROM news WHERE status='published')")->fetchColumn();
+    $total = (int)$pdo->query("SELECT (SELECT COUNT(*) FROM cases WHERE " . live_sql() . ") + (SELECT COUNT(*) FROM news WHERE " . live_sql() . ")")->fetchColumn();
     $st = $pdo->query(
         "SELECT * FROM (
-           SELECT 'case' AS type, slug, title, published_at, id FROM cases WHERE status='published'
+           SELECT 'case' AS type, slug, title, published_at, id FROM cases WHERE " . live_sql() . "
            UNION ALL
-           SELECT 'news' AS type, slug, title, published_at, id FROM news WHERE status='published'
+           SELECT 'news' AS type, slug, title, published_at, id FROM news WHERE " . live_sql() . "
          ) f ORDER BY published_at DESC, type ASC, id DESC LIMIT " . (int)$per . ' OFFSET ' . (int)(($page - 1) * $per)
     );
     $rows = array_map(fn($r) => [
@@ -306,7 +316,7 @@ function find_news(string $slug, bool $withDraft = false): ?array
     if (!$pdo) {
         return null;
     }
-    $st = $pdo->prepare('SELECT * FROM news WHERE slug = ? AND ' . ($withDraft ? "status <> 'deleted'" : "status = 'published'"));
+    $st = $pdo->prepare('SELECT * FROM news WHERE slug = ? AND ' . ($withDraft ? "status <> 'deleted'" : live_sql()));
     $st->execute([$slug]);
     return $st->fetch() ?: null;
 }

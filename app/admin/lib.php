@@ -194,3 +194,15 @@ function admin_pages(int $total, int $per): int
 {
     return max(1, (int)ceil($total / $per));
 }
+
+/** 保存した時のお知らせ。投稿日が未来なら予約投稿として、その日から出ると伝える */
+function admin_saved_message(string $status, string $date): string
+{
+    if ($status !== 'published') {
+        return '下書きとして保存しました（公開ページにはまだ出ません）。';
+    }
+    if ($date > today()->format('Y-m-d')) {
+        return '予約投稿として保存しました。投稿日の ' . date('Y年n月j日', strtotime($date)) . ' になると、公開ページに出ます。';
+    }
+    return '保存しました。公開ページに反映されています。';
+}
