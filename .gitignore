@@ -16,3 +16,5 @@
 !/public/wp-content/uploads/.gitkeep
 /public/media/cases/
 /vendor/
+# サーバーに上げる一式（sh tools/build-package.sh で作る）
+/dist/

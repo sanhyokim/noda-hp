@@ -1176,8 +1176,8 @@ body:not(.page-company):not(.page-construction_examples) main .section:not(:firs
 /* ==========================================================
    段階4：施工事例の一覧（絞り込み・ページ送り）と詳しいページ
    ========================================================== */
-.works-list { scroll-margin-top: calc(var(--bar) + 8px); }
-@media (min-width: 1100px) { .works-list { scroll-margin-top: 110px; } }
+.works-list, #form { scroll-margin-top: calc(var(--bar) + 8px); }
+@media (min-width: 1100px) { .works-list, #form { scroll-margin-top: 110px; } }
 
 /* 絞り込み：墨の太線の下に「業態」「工事の種類」の2行。選んでいるものは青地に白 */
 .filter { border-top: 2px solid var(--c-ink); }

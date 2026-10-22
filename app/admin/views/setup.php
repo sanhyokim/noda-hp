@@ -5,7 +5,7 @@ $err = fn(string $k): string => isset($errors[$k]) ? '<p class="field__err" id="
 $aria = fn(string $k): string => isset($errors[$k]) ? ' aria-invalid="true" aria-describedby="err-' . $k . '"' : '';
 ?>
 <section class="panel panel--narrow">
-  <h1 class="ttl">最初の設定</h1>
+  <h1 class="ttl">最初の設定（2/2）</h1>
   <p class="note">管理画面に入るための ID とパスワードを決めてください。この画面は一度しか使えません。</p>
   <form method="post" class="form" novalidate>
     <?= csrf_field() ?>

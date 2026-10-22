@@ -12,6 +12,10 @@ AddDefaultCharset UTF-8
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # 公開フォルダ内に app/ などを置いた場合の保護（コアサーバーではこの形で置く。各フォルダにも「すべて拒否」の .htaccess あり）
+  RewriteRule ^(app|storage|vendor|migration)(/|$) - [F,L]
+  RewriteRule ^(composer\.(json|lock)|README.*)$ - [F,L]
+
   # HTTPS へ寄せる
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
@@ -42,9 +46,4 @@ AddDefaultCharset UTF-8
 
 <IfModule mod_deflate.c>
   AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml application/xml
-</IfModule>
-
-# 公開フォルダ内に app/ を置いた場合の保護
-<IfModule mod_rewrite.c>
-  RewriteRule ^(app|storage)(/|$) - [F,L]
 </IfModule>

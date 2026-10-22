@@ -24,6 +24,11 @@ if ($sub === 'setup.php') {
     exit;
 }
 
+// 置いたばかりで設定ファイルが無い時は、最初の設定へ
+if (!is_file(APP_DIR . '/config.php') && is_file(APP_DIR . '/admin/setup.php')) {
+    redirect(admin_url('setup.php'));
+}
+
 if (!db()) {
     http_response_code(503);
     admin_render('error', ['title' => 'データベースにつながりません', 'message' => 'app/config.php のデータベースの設定を確認してください。']);

@@ -30,8 +30,16 @@ function heading_html(string $s): string
 
 function base_url(): string
 {
-    $b = (string)config('base_url', '/');
-    return '/' . trim($b, '/') . (trim($b, '/') === '' ? '' : '/');
+    static $base = null;
+    if ($base === null) {
+        $b = (string)config('base_url', 'auto');
+        if ($b === 'auto') {
+            // 置いた場所から決める（/new/index.php なら /new/）。設定ファイルを作る前の最初の設定画面でも正しく動くように
+            $b = PHP_SAPI === 'cli-server' || PHP_SAPI === 'cli' ? '/' : str_replace('\\', '/', dirname((string)($_SERVER['SCRIPT_NAME'] ?? '/index.php')));
+        }
+        $base = '/' . trim($b, '/') . (trim($b, '/') === '' ? '' : '/');
+    }
+    return $base;
 }
 
 // サイト内のリンク。BASE_URL を付ける。url('concept/') → /new/concept/

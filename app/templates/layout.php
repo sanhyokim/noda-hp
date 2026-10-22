@@ -3,7 +3,8 @@
 /** @var string $content */
 /** @var string $current */
 $adminBar = $meta['admin_bar'] ?? null; // 管理ページからの確認用の表示：[説明, 編集ページの URL]
-$gtm = $adminBar ? '' : (string)config('gtm_id', '');
+// 管理者の確認中と、試験用の場所（noindex）ではアクセス解析を数えない
+$gtm = $adminBar || config('noindex') ? '' : (string)config('gtm_id', '');
 $canonical = abs_url($meta['path'] ?? '');
 $ogImage = $meta['og_image'] ?? abs_url('assets/img/og-default.jpg');
 $trail = $meta['trail'] ?? null;
