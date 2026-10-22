@@ -17,8 +17,18 @@ function picture(string $src, int $w, int $h, string $alt = '', array $opt = [])
             . '<span class="ph__name">' . e($label) . '</span></span>';
     }
 
-    $v = '?v=' . filemtime($file);
-    $img = '<img src="' . e(url($rel) . $v) . '" width="' . $w . '" height="' . $h . '" alt="' . e($alt) . '"';
+    [$jpgUrl, $webpUrl] = img_urls($src);
+    // $opt['small'] = 同じ写真の幅800pxの版（施工事例の -800.jpg）。あればスマホではそちらを読む
+    $srcset = $sizes = '';
+    if (!empty($opt['small']) && is_file(PUBLIC_DIR . '/' . ltrim($opt['small'], '/'))) {
+        [$sJpg, $sWebp] = img_urls($opt['small']);
+        $sizes = ' sizes="' . e($opt['sizes'] ?? '100vw') . '"';
+        $srcset = ' srcset="' . e($sJpg . ' 800w, ' . $jpgUrl . ' ' . $w . 'w') . '"';
+        if ($webpUrl !== null && $sWebp !== null) {
+            $webpUrl = $sWebp . ' 800w, ' . $webpUrl . ' ' . $w . 'w';
+        }
+    }
+    $img = '<img src="' . e($jpgUrl) . '"' . $srcset . $sizes . ' width="' . $w . '" height="' . $h . '" alt="' . e($alt) . '"';
     if (!empty($opt['priority'])) {
         $img .= ' fetchpriority="high" decoding="async"';
     } else {
@@ -26,12 +36,19 @@ function picture(string $src, int $w, int $h, string $alt = '', array $opt = [])
     }
     $img .= '>';
 
-    $webpRel = preg_replace('/\.(jpe?g|png)$/i', '.webp', $rel);
-    $source = '';
-    if ($webpRel !== $rel && is_file(PUBLIC_DIR . '/' . $webpRel)) {
-        $source = '<source type="image/webp" srcset="' . e(url($webpRel) . '?v=' . filemtime(PUBLIC_DIR . '/' . $webpRel)) . '">';
-    }
+    $source = $webpUrl !== null ? '<source type="image/webp" srcset="' . e($webpUrl) . '"' . $sizes . '>' : '';
     return '<picture class="' . e($class) . '">' . $source . $img . '</picture>';
+}
+
+/** picture() と同じアドレス [元の写真, WebP（無ければ null）]。CSS の背景に同じ写真を使う時、二重に読み込まないように */
+function img_urls(string $src): array
+{
+    $rel = str_contains($src, '/') ? ltrim($src, '/') : 'assets/img/' . $src;
+    $file = PUBLIC_DIR . '/' . $rel;
+    $jpg = url($rel) . (is_file($file) ? '?v=' . filemtime($file) : '');
+    $webpRel = preg_replace('/\.(jpe?g|png)$/i', '.webp', $rel);
+    $webp = $webpRel !== $rel && is_file(PUBLIC_DIR . '/' . $webpRel) ? url($webpRel) . '?v=' . filemtime(PUBLIC_DIR . '/' . $webpRel) : null;
+    return [$jpg, $webp];
 }
 
 function image_exists(string $name): bool

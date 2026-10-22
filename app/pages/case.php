@@ -60,8 +60,9 @@ $adj = adjacent_cases($case);
   <?php if ($first): ?>
     <figure class="cd__kv wrap">
       <button class="cd__kv-btn" type="button" data-lb-open="0" aria-label="写真を拡大する（<?= count($images) ?>枚）">
-        <span class="cd__kv-bg" aria-hidden="true" style="background-image:url('<?= e(url($first['path_thumb'])) ?>')"></span>
-        <?= picture($first['path'], (int)$first['width'], (int)$first['height'], $alt(0), ['priority' => true, 'class' => 'cd__kv-img']) ?>
+        <?php [$kvJpg, $kvWebp] = img_urls($first['path_thumb']); // 後ろにぼかして敷くのは代表写真の幅800pxの版（スマホでは手前の写真と同じアドレスなので読み込みは1回） ?>
+        <span class="cd__kv-bg" aria-hidden="true" style="background-image:url('<?= e($kvJpg) ?>')<?php if ($kvWebp): ?>;background-image:image-set(url('<?= e($kvWebp) ?>') type('image/webp'), url('<?= e($kvJpg) ?>') type('image/jpeg'))<?php endif; ?>"></span>
+        <?= picture($first['path'], (int)$first['width'], (int)$first['height'], $alt(0), ['priority' => true, 'class' => 'cd__kv-img', 'small' => $first['path_thumb'], 'sizes' => '(min-width: 1100px) 900px, 100vw']) ?>
         <span class="cd__kv-count"><?= icon('image', 16) ?><?= count($images) ?>枚の写真を見る</span>
       </button>
     </figure>

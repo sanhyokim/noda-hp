@@ -48,8 +48,9 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <link rel="stylesheet" href="<?= e($fonts) ?>" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="<?= e($fonts) ?>"></noscript>
 <link rel="stylesheet" href="<?= e(asset('css/site.css')) ?>">
-<?php foreach (($meta['preload'] ?? []) as $pre): // 最初の画面の背景写真など、CSS から読む画像を先に取りに行く ?>
-<link rel="preload" as="image" type="image/webp" href="<?= e(url('assets/img/' . $pre)) ?>" fetchpriority="high"><?php /* CSS の url() と同じアドレスにする（?v= を付けると別物として2回読み込まれる） */ ?>
+<?php foreach (($meta['preload'] ?? []) as $pre): // 最初の画面の背景写真など、CSS から読む画像を先に取りに行く（assets/img のファイル名か、サイト内のパス） ?>
+<?php $preUrl = str_contains($pre, '/') ? url($pre) : url('assets/img/' . $pre); ?>
+<link rel="preload" as="image"<?= str_ends_with($pre, '.webp') ? ' type="image/webp"' : '' ?> href="<?= e($preUrl) ?>" fetchpriority="high"><?php /* CSS の url() と同じアドレスにする（?v= を付けると別物として2回読み込まれる） */ ?>
 <?php endforeach; ?>
 <?= json_ld($graph) ?>
 

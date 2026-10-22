@@ -4,6 +4,14 @@
   var doc = document.documentElement;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+  /* ---- 最初の画面の写真：最初の表示が終わってから付ける（CSS の .hero.is-on） ---- */
+  var hero = document.querySelector('.hero');
+  if (hero) {
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { hero.classList.add('is-on'); });
+    });
+  }
+
   /* ---- スマホメニュー（1100px 未満） ---- */
   var openBtn = document.querySelector('.topbar__menu');
   var closeBtn = document.querySelector('.sidebar__close');

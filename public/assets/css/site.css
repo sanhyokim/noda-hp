@@ -370,6 +370,9 @@ main:focus { outline: none; }
 /* 帯1本＝写真を横につないだ 3192×300 の画像。背景位置をずらして流す（1周＝画像1枚分の幅） */
 .hero { --rowh: calc((var(--h) - 12px) / 3); }
 .hero__row { background-repeat: repeat-x; background-size: auto 100%; animation: drift-bg 90s linear infinite; }
+/* 写真は最初の表示（文字）が出た直後に付けて、ふわっと出す。大きな写真の展開待ちで最初の表示が遅れるのを防ぐ（JS の無い時は最初から表示） */
+.hero__row { background-color: #2B3038; transition: opacity .5s var(--ease); }
+.js .hero:not(.is-on) .hero__row { background-image: none; opacity: .85; }
 .hero__row--1 { background-image: url(../img/hero-row1.jpg); background-image: image-set(url(../img/hero-row1.webp) type("image/webp"), url(../img/hero-row1.jpg) type("image/jpeg")); }
 .hero__row--2 { background-image: url(../img/hero-row2.jpg); background-image: image-set(url(../img/hero-row2.webp) type("image/webp"), url(../img/hero-row2.jpg) type("image/jpeg")); animation-duration: 110s; animation-direction: reverse; }
 .hero__row--3 { background-image: url(../img/hero-row3.jpg); background-image: image-set(url(../img/hero-row3.webp) type("image/webp"), url(../img/hero-row3.jpg) type("image/jpeg")); animation-duration: 100s; }
@@ -1072,6 +1075,11 @@ a.card.linkcard:hover .linkcard__t { color: var(--c-blue); }
 /* 404・準備中 */
 .notfound { padding-top: 32px; }
 .notfound .label { margin-top: 24px; }
+
+/* ---------- 表示の速さ ---------- */
+/* 画面の外にある段とフッターは、近づくまで組み立てを省く（文字の書体が届くたびの組み直しが軽くなる）。
+   高さは一度表示した値を覚える（auto）。最初の段と、ページ内の位置へ直接飛んでくるページ（会社概要の20周年・施工事例の一覧）は除く */
+body:not(.page-company):not(.page-construction_examples) main .section:not(:first-child), .footer { content-visibility: auto; contain-intrinsic-size: auto 900px; }
 
 /* ---------- 動き ---------- */
 @keyframes drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
