@@ -1,5 +1,6 @@
 <?php
-// 文章は現行ページ https://duct-noda.com/afterfollow/ の全文（2026-10-21）。AI 生成の人物写真は使わず、実際の施工写真に置き換えた。
+// 人物のAI画像は現行サイトと同じ場所に一時的に戻している（Boss 2026-10-22。Boss が1枚ずつ差し替えを依頼する）。ファイル名は ai-*.jpg
+// 文章は現行ページ https://duct-noda.com/afterfollow/ の全文（2026-10-21）。
 render('page-head', [
     'label' => 'AFTER FOLLOW',
     'title' => 'ダクト工事だけでは|終わらない、|徹底した|アフターフォロー',
@@ -26,7 +27,7 @@ $checks = [
       </div>
     </div>
     <div class="row">
-      <div class="row__img"><?= picture('after-grease.jpg', 900, 600, '厨房フードの内部') ?></div>
+      <div class="row__img"><?= picture('ai-after-hood.jpg', 900, 600, 'フードを点検する担当者') ?></div>
       <div class="row__body">
         <h3 class="row__head">メンテナンス・清掃</h3>
         <p>レンジフードだけ清掃している、または一度も清掃していない店舗もありますが、定期点検・清掃を行っているのはごく一部です。</p>
