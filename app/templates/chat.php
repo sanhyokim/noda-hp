@@ -70,13 +70,20 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
       </div>
     </div>
     <div class="aic__hand" data-hand hidden>
-      <p class="aic__hand-ttl">担当者にくわしく相談する</p>
+      <button class="aic__hand-toggle" type="button" aria-expanded="false" aria-controls="aic-hand-body" data-hand-toggle>
+        <span class="aic__hand-ico"><?= icon('phone', 16) ?></span>
+        <span class="aic__hand-label">担当者にくわしく相談する</span>
+        <span class="aic__hand-sub">問い合わせ・電話・LINE</span>
+        <?= icon('chev', 18, 'aic__hand-chev') ?>
+      </button>
+      <div class="aic__hand-body" id="aic-hand-body" data-hand-body hidden>
       <div class="aic__hand-btns">
         <a class="aic__hbtn aic__hbtn--form" href="<?= e(page_url('contact')) ?>?from=chat" data-handoff><?= icon('mail', 18) ?>この内容で問い合わせる</a>
         <button class="aic__hbtn aic__hbtn--call" type="button" data-cb-open><?= icon('phone', 18) ?>電話をもらう</button>
         <a class="aic__hbtn aic__hbtn--line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener" data-handoff data-line><?= line_icon(18) ?>LINEで写真を送る</a>
       </div>
       <p class="aic__hand-tel">お急ぎの方は <a href="<?= e(tel_href(company('tel_free'))) ?>" data-handoff><?= e(company('tel_free')) ?></a>（平日 <?= e(company('hours')) ?>）</p>
+      </div>
     </div>
     <div class="aic__end" data-end hidden>
       <p class="aic__end-ttl">ご相談ありがとうございました</p>
