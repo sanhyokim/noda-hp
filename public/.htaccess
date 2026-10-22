@@ -23,7 +23,7 @@ AddDefaultCharset UTF-8
   RewriteCond %{QUERY_STRING} (^|&)p=[0-9]+(&|$)
   RewriteRule ^$ - [G,L]
 
-  # 旧URLの転送（/category/ と /construction_examples/page/N/）は段階4で追記する
+  # 旧URLの転送（/category/ と /construction_examples/page/N/）は index.php（app/lib/legacy.php）で行う
 
   # 実在するファイル・フォルダはそのまま、それ以外は index.php へ
   RewriteCond %{REQUEST_FILENAME} !-f

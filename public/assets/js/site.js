@@ -135,13 +135,88 @@
     });
   }
 
+  /* ---- 施工事例の写真：押すと拡大（矢印・左右のスワイプで前後、Esc か背景を押すと閉じる） ---- */
+  var lb = document.getElementById('lightbox');
+  var shots = document.querySelectorAll('[data-lb] [data-lb-index]');
+  if (lb && shots.length) {
+    var lbImg = lb.querySelector('.lb__img'), lbCap = lb.querySelector('.lb__cap');
+    var lbBtns = lb.querySelectorAll('button'), cur = 0, back = null, x0 = null;
+    var show = function (i) {
+      cur = (i + shots.length) % shots.length;
+      var a = shots[cur], th = a.querySelector('img');
+      lbImg.src = a.href;
+      lbImg.width = a.getAttribute('data-w');
+      lbImg.height = a.getAttribute('data-h');
+      lbImg.alt = th ? th.alt : a.textContent;
+      lbCap.textContent = (cur + 1) + ' / ' + shots.length;
+      new Image().src = shots[(cur + 1) % shots.length].href;
+    };
+    var open = function (i) {
+      back = document.activeElement;
+      show(i);
+      lb.hidden = false;
+      doc.classList.add('lb-open');
+      lbBtns[0].focus();
+    };
+    var close = function () {
+      lb.hidden = true;
+      doc.classList.remove('lb-open');
+      lbImg.removeAttribute('src');
+      if (back) back.focus();
+    };
+    lb.classList.toggle('lb--single', shots.length < 2);
+    shots.forEach(function (a, i) {
+      a.addEventListener('click', function (ev) { ev.preventDefault(); open(i); });
+    });
+    document.querySelectorAll('[data-lb-open]').forEach(function (b) {
+      b.addEventListener('click', function () { open(+b.getAttribute('data-lb-open')); });
+    });
+    lbBtns[0].addEventListener('click', close);
+    lbBtns[1].addEventListener('click', function () { show(cur - 1); });
+    lbBtns[2].addEventListener('click', function () { show(cur + 1); });
+    lb.addEventListener('click', function (ev) { if (ev.target === lb || ev.target.classList.contains('lb__fig')) close(); });
+    lb.addEventListener('touchstart', function (ev) { x0 = ev.touches[0].clientX; }, { passive: true });
+    lb.addEventListener('touchend', function (ev) {
+      var dx = ev.changedTouches[0].clientX - x0;
+      if (x0 !== null && Math.abs(dx) > 50) show(cur + (dx < 0 ? 1 : -1));
+      x0 = null;
+    });
+    document.addEventListener('keydown', function (ev) {
+      if (lb.hidden) return;
+      if (ev.key === 'Escape') close();
+      else if (ev.key === 'ArrowLeft') show(cur - 1);
+      else if (ev.key === 'ArrowRight') show(cur + 1);
+      else if (ev.key === 'Tab') {
+        /* 拡大表示の中だけでフォーカスを回す */
+        var list = Array.prototype.filter.call(lbBtns, function (b) { return b.offsetParent; });
+        var k = list.indexOf(document.activeElement);
+        ev.preventDefault();
+        list[(k + (ev.shiftKey ? -1 : 1) + list.length) % list.length].focus();
+      }
+    });
+  }
+
+  /* ---- 施工写真の残りを表示／スマホの絞り込みは選んでいるチップが見える位置まで送る ---- */
+  document.querySelectorAll('[data-photos-more]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      var g = document.querySelector('.photos');
+      g.classList.add('is-all');
+      var first = g.querySelector('.photos__rest a');
+      if (first) first.focus();
+    });
+  });
+  document.querySelectorAll('.filter__chips').forEach(function (ul) {
+    var on = ul.querySelector('.is-on');
+    if (on && ul.scrollWidth > ul.clientWidth) ul.scrollLeft = on.offsetLeft - 20;
+  });
+
   /* ---- 表示時の動き：各セクション直下の要素と、格子の中身を1回だけ ---- */
   if (reduce.matches || !('IntersectionObserver' in window)) return;
   var groups = [];
   document.querySelectorAll('main .section').forEach(function (sec) {
     var kids = [];
     Array.prototype.forEach.call(sec.children, function (el) {
-      if (el.matches('.grid, .svcs, .problems, .reasons, .steps, .ig, .news__list, .commit, .timeline, .numlist, .faq')) {
+      if (el.matches('.grid, .svcs, .problems, .reasons, .steps, .ig, .news__list, .commit, .timeline, .numlist, .faq, .photos')) {
         groups.push(Array.prototype.slice.call(el.children));
       } else {
         kids.push(el);

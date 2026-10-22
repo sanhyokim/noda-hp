@@ -204,9 +204,22 @@ function load_html(string $html): DOMDocument
  * 本文を許可した要素だけに整える（3-3-3・3-3-4）。画像は取り除く（ギャラリーに移すため）。
  * 残す：p, h2〜h4, ul, ol, li, strong, em, a(href), br。h5/h6→h3、h1→h2、b→strong、i→em。
  */
+// 旧サイトの保存時に絵文字が「????」に化けている（20件ほど）。化けた跡と、絵文字に付いていた結合文字・後ろの空白を消す
+function strip_lost_emoji(string $s): string
+{
+    return preg_replace('/\?{2,}(?:\x{200D}[\x{2640}\x{2642}])?\x{FE0F}?[ \x{3000}]?/u', '', $s);
+}
+
+// 本文に Markdown の太字「**語**」がそのまま入っている記事がある（4件）。太字に直し、対にならない ** は消す
+function fix_markdown_bold(string $html): string
+{
+    $html = preg_replace('/\*\*([^*<>\n]+?)\*\*/u', '<strong>$1</strong>', $html);
+    return str_replace('**', '', $html);
+}
+
 function sanitize_body(string $html): string
 {
-    $html = preg_replace('/<!--.*?-->/s', '', $html);
+    $html = strip_lost_emoji(preg_replace('/<!--.*?-->/s', '', $html));
     $doc = load_html($html);
     $root = $doc->getElementById('root');
     $out = new DOMDocument('1.0', 'UTF-8');
@@ -258,7 +271,7 @@ function sanitize_body(string $html): string
             $parts[] = $s;
         }
     }
-    return implode("\n", $parts);
+    return fix_markdown_bold(implode("\n", $parts));
 }
 
 function trim_br(DOMElement $el): void

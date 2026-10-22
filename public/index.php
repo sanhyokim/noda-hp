@@ -34,6 +34,17 @@ if ($path !== '' && !str_ends_with($path, '/') && !preg_match('/\.[a-z0-9]{2,5}$
     exit;
 }
 
+// 旧サイトのアドレス（カテゴリ一覧・一覧の2ページ目以降）からの転送
+if (($to = legacy_redirect($path)) !== null) {
+    header('Location: ' . $to, true, 301);
+    exit;
+}
+
+if ($path === 'sitemap.xml') {
+    require APP_DIR . '/pages/sitemap.php';
+    exit;
+}
+
 $current = null;
 foreach (site('pages') as $key => $p) {
     if ($p['path'] === $path) {
@@ -42,12 +53,8 @@ foreach (site('pages') as $key => $p) {
     }
 }
 
-if ($current === null) {
-    http_response_code(404);
-    $current = '404';
-    $meta = ['title' => 'ページが見つかりません｜株式会社野田', 'description' => 'お探しのページが見つかりません。', 'path' => $path, 'trail' => [['ページが見つかりません', $path]]];
-    $tpl = '404';
-} else {
+$tpl = null;
+if ($current !== null) {
     $p = page($current);
     $meta = ['title' => $p['title'], 'description' => $p['description'], 'path' => $p['path']];
     if ($current === 'home') {
@@ -56,6 +63,26 @@ if ($current === null) {
         $meta['trail'] = [[$p['name'], $p['path']]];
     }
     $tpl = is_file(APP_DIR . '/pages/' . $current . '.php') ? $current : 'stub';
+} elseif (preg_match('#^news/([^/]+)/$#u', $path, $m) && ($news = find_news($m[1]))) {
+    // お知らせの詳しいページ /news/<slug>/
+    $current = 'news';
+    $tpl = 'news-detail';
+} elseif (preg_match('#^([^/]+)/$#u', $path, $m)) {
+    // 施工事例の詳しいページ /<slug>/（旧サイトと同じアドレス）
+    if ($case = find_case($m[1])) {
+        $current = 'construction_examples';
+        $tpl = 'case';
+    } elseif (($to = redirected_case_slug($m[1])) !== null) {
+        header('Location: ' . url(rawurlencode($to) . '/'), true, 301);
+        exit;
+    }
+}
+
+if ($tpl === null) {
+    http_response_code(404);
+    $current = '404';
+    $meta = ['title' => 'ページが見つかりません｜株式会社野田', 'description' => 'お探しのページが見つかりません。', 'path' => $path, 'trail' => [['ページが見つかりません', $path]]];
+    $tpl = '404';
 }
 
 ob_start();

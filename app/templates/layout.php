@@ -22,6 +22,9 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <title><?= e($meta['title']) ?></title>
 <meta name="description" content="<?= e($meta['description']) ?>">
 <link rel="canonical" href="<?= e($canonical) ?>">
+<?php foreach (($meta['head_links'] ?? []) as $rel => $href): // 一覧のページ送り（rel="prev/next"） ?>
+<link rel="<?= e($rel) ?>" href="<?= e(rtrim((string)config('site_origin', ''), '/') . $href) ?>">
+<?php endforeach; ?>
 <meta property="og:title" content="<?= e($meta['title']) ?>">
 <meta property="og:description" content="<?= e($meta['description']) ?>">
 <meta property="og:image" content="<?= e($ogImage) ?>">

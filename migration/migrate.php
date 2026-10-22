@@ -126,7 +126,7 @@ foreach ($targets as $p) {
         $cats = ['biz' => $o['biz'], 'work' => $o['work'], 'needs_review' => !empty($o['review'])];
     }
     $seoTitle = trim($p['aioseo_title']) !== '' ? trim($p['aioseo_title']) : $title . '｜施工事例【株式会社野田】';
-    $seoDesc = trim($p['aioseo_description']) !== '' ? trim($p['aioseo_description']) : auto_description($body);
+    $seoDesc = trim($p['aioseo_description']) !== '' ? strip_lost_emoji(trim($p['aioseo_description'])) : auto_description($body);
     $vals = [
         ':wp_id' => $p['id'], ':slug' => $slug, ':title' => $title, ':body' => $body, ':location' => $location,
         ':published_at' => substr($p['date'], 0, 10), ':seo_title' => $seoTitle, ':seo_description' => $seoDesc,

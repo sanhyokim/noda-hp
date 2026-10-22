@@ -30,3 +30,4 @@ require APP_DIR . '/lib/media.php';
 require APP_DIR . '/lib/db.php';
 require APP_DIR . '/lib/content.php';
 require APP_DIR . '/lib/seo.php';
+require APP_DIR . '/lib/legacy.php';
