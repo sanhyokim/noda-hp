@@ -8,6 +8,7 @@ $meta = [
     'path' => $path,
     'og_type' => 'article',
     'trail' => [[page('news')['name'], page('news')['path']], [$news['title'], $path]],
+    'jsonld' => [article_ld($news['title'], $path, $news['published_at'], (string)($news['updated_at'] ?? ''), [abs_url('assets/img/og-default.jpg')])],
 ];
 ?>
 <article class="cd">
@@ -17,6 +18,7 @@ $meta = [
     <p class="cd__date"><time datetime="<?= e($news['published_at']) ?>"><?= e(format_date($news['published_at'])) ?></time></p>
   </header>
   <div class="section wrap">
+    <h2 class="u-sr">本文</h2>
     <div class="prose cd__body"><?= $news['body_html'] ?></div>
     <p class="cd__back"><a class="btn btn--outline" href="<?= e(page_url('news')) ?>">お知らせの一覧へ</a></p>
   </div>

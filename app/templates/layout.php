@@ -21,7 +21,7 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','<?= e($gtm) ?>');</script>
 <?php endif; ?>
 <title><?= e($meta['title']) ?></title>
-<?php if ($adminBar): ?>
+<?php if ($adminBar || config('noindex')): ?>
 <meta name="robots" content="noindex, nofollow">
 <?php endif; ?>
 <meta name="description" content="<?= e($meta['description']) ?>">
@@ -49,7 +49,7 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <noscript><link rel="stylesheet" href="<?= e($fonts) ?>"></noscript>
 <link rel="stylesheet" href="<?= e(asset('css/site.css')) ?>">
 <?php foreach (($meta['preload'] ?? []) as $pre): // 最初の画面の背景写真など、CSS から読む画像を先に取りに行く ?>
-<link rel="preload" as="image" type="image/webp" href="<?= e(asset('img/' . $pre)) ?>" fetchpriority="high">
+<link rel="preload" as="image" type="image/webp" href="<?= e(url('assets/img/' . $pre)) ?>" fetchpriority="high"><?php /* CSS の url() と同じアドレスにする（?v= を付けると別物として2回読み込まれる） */ ?>
 <?php endforeach; ?>
 <?= json_ld($graph) ?>
 

@@ -64,7 +64,7 @@ $marquee = [
     <?php endfor; ?>
   </div>
 </div>
-<?php $meta['top'] = ob_get_clean(); $meta['preload'] = ['hero-row1.webp', 'hero-row2.webp', 'hero-row3.webp']; ?>
+<?php $meta['top'] = ob_get_clean(); $meta['preload'] = ['hero-row1.webp', 'hero-row2.webp']; ?>
 
 <section class="section wrap" aria-labelledby="news-title">
   <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>

@@ -8,6 +8,9 @@ return [
     // サイトの正式なアドレス（canonical や OGP に使う）。最後の「/」は付けません。
     'site_origin' => 'https://duct-noda.com',
 
+    // 試験用の場所（/new/）では true にして、検索エンジンに載らないようにする。本番では false。
+    'noindex' => false,
+
     // 本番では false（エラーを画面に出さず storage/logs/ に記録する）。
     'debug' => false,
 

@@ -9,8 +9,8 @@
   --c-blue: #065ECB; --c-blue-dark: #0A39B4; --c-blue-light: #A9C4F5;
   --c-blue-bg: #EDF1F7; --c-soft: #F4F5F7; --c-line: #E2E5EA;
   --c-ink: #1B1F26; /* 見出し・左カラムの濃い色（青みのない墨色） */
-  --c-orange: #C9530A; --c-orange-light: #FFB15C;
-  --c-line-green: #06C755; --c-white: #FFFFFF; --c-ig: #1E2A33;
+  --c-orange: #C4500A; --c-orange-light: #FFB15C;
+  --c-line-green: #05893D; --c-white: #FFFFFF; --c-ig: #1E2A33;
   --c-navy: #0B1F5C;
 
   --font: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, system-ui, sans-serif;

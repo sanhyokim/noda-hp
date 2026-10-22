@@ -17,6 +17,7 @@ $meta = [
 if ($first) {
     $meta['og_image'] = abs_url($first['path']);
 }
+$meta['jsonld'] = [article_ld($case['title'], $path, $case['published_at'], (string)($case['updated_at'] ?? ''), array_map(fn($im) => abs_url($im['path']), array_slice($images, 0, 3)))];
 $listUrl = fn(string $axis, string $slug): string => page_url('construction_examples') . '?' . $axis . '=' . rawurlencode($slug) . '#works-list';
 $webp = fn(string $p): string => is_file(PUBLIC_DIR . '/' . preg_replace('/\.(jpe?g|png)$/i', '.webp', $p)) ? preg_replace('/\.(jpe?g|png)$/i', '.webp', $p) : $p;
 $alt = fn(int $i): string => $case['title'] . '（写真' . ($i + 1) . '）';
@@ -67,6 +68,7 @@ $adj = adjacent_cases($case);
   <?php endif; ?>
 
   <div class="section wrap cd__main">
+    <h2 class="u-sr">施工の内容</h2>
     <div class="prose cd__body">
       <?= $case['body_html'] ?>
     </div>
