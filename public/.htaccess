@@ -15,6 +15,8 @@ AddDefaultCharset UTF-8
   # 公開フォルダ内に app/ などを置いた場合の保護（コアサーバーではこの形で置く。各フォルダにも「すべて拒否」の .htaccess あり）
   RewriteRule ^(app|storage|vendor|migration)(/|$) - [F,L]
   RewriteRule ^(composer\.(json|lock)|README.*)$ - [F,L]
+  # 旧 WordPress の wp-content/ は写真の URL を残すためにそのまま置く。中のプログラム（.php）は動かさない
+  RewriteRule ^wp-content/.*\.php$ - [F,L]
 
   # HTTPS へ寄せる
   RewriteCond %{HTTPS} off
