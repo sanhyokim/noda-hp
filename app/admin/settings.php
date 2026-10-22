@@ -88,17 +88,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             redirect(admin_url('settings/') . '#chat');
         }
         $keyIn = trim((string)($_POST['chat_api_key'] ?? ''));
-        if (!preg_match('/^sk-ant-[A-Za-z0-9_\-]{20,300}$/', $keyIn)) {
-            flash('error', 'キーの形が正しくありません。「sk-ant-」で始まる長い文字を、前後に空白を入れずに貼り付けてください。');
+        $key = $keyIn !== '' ? $keyIn : (string)setting('chat_api_key');
+        $model = trim((string)($_POST['chat_model'] ?? ''));
+        if (!preg_match('/^sk-(ant|or)-[A-Za-z0-9_\-]{20,300}$/', $key)) {
+            flash('error', $keyIn === '' ? 'API キーを貼ってください。' : 'キーの形が正しくありません。「sk-or-」（OpenRouter）か「sk-ant-」（Anthropic）で始まる長い文字を、前後に空白を入れずに貼り付けてください。');
             redirect(admin_url('settings/') . '#chat');
         }
-        $r = chat_test_key($keyIn);
+        if (!preg_match('/^[A-Za-z0-9._:\/\-]{0,100}$/', $model)) {
+            flash('error', 'モデルの名前の形が正しくありません。例：anthropic/claude-opus-5.5');
+            redirect(admin_url('settings/') . '#chat');
+        }
+        $r = chat_test_key($key, $model);
         if (!$r['ok']) {
             flash('error', '保存していません。' . $r['error']);
             redirect(admin_url('settings/') . '#chat');
         }
-        set_setting('chat_api_key', $keyIn);
-        flash('ok', 'API キーを保存し、AI とつながることを確かめました。ホームページの右下に「AIに相談」ボタンが出ます。');
+        set_setting('chat_api_key', $key);
+        set_setting('chat_model', $model);
+        flash('ok', 'AI とつながることを確かめて保存しました。使うモデル：' . chat_config('model') . '。ホームページの右下に「AIに相談」ボタンが出ます。');
         redirect(admin_url('settings/') . '#chat');
     }
     if ($op === 'instagram') {
@@ -170,6 +177,9 @@ admin_render('settings', [
     'chat' => [
         'configured' => chat_configured(),
         'saved_key' => (string)setting('chat_api_key'),
+        'model' => (string)setting('chat_model'),
+        'model_now' => chat_configured() ? (string)chat_config('model') : '',
+        'provider' => chat_provider(),
         'off' => setting('chat_off') === '1',
         'month' => chat_usage(),
         'prev' => chat_usage(date('Ym', strtotime('first day of last month'))),

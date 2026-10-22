@@ -35,7 +35,7 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
   <p class="kv"><span>今月の会話</span><strong><?= number_format($chat['month']['conversations']) ?>件（質問 <?= number_format($chat['month']['requests']) ?>回）<small class="kv__sub">うち、問い合わせ・LINE・電話へ進んだ会話 <?= number_format($chat['handed']) ?>件</small></strong></p>
   <p class="kv"><span>今月の費用の目安</span><strong>約<?= number_format(chat_cost_yen($chat['month'])) ?>円<small class="kv__sub">先月 約<?= number_format(chat_cost_yen($chat['prev'])) ?>円</small></strong></p>
   <p class="kv"><span>1か月の回数の上限</span><strong><?= number_format($chat['limit']) ?>回（超えるとその月は電話・フォームへご案内）</strong></p>
-  <p class="note note--sub">費用は使った量からの計算で、実際の請求額とは少しずれることがあります。正確な金額は AI の利用契約の管理画面（Anthropic）で確かめられます。</p>
+  <p class="note note--sub">費用は使った量からの計算で、実際の請求額とは少しずれることがあります。正確な金額は AI の利用契約の管理画面（OpenRouter の「Activity」など）で確かめられます。</p>
   <div class="actions-inline">
     <a class="abtn abtn--line" href="<?= e(admin_url('settings/chats/')) ?>">会話の記録を見る（<?= number_format($chat['logs']) ?>件）</a>
     <form method="post">
@@ -53,13 +53,18 @@ $dt = fn(int $t): string => date('Y年n月j日 H:i', $t);
     <?= csrf_field() ?>
     <input type="hidden" name="op" value="chat_key">
 <?php if ($chat['saved_key'] !== ''): ?>
-    <p class="kv"><span>保存済みのキー</span><strong>sk-ant-…<?= e(substr($chat['saved_key'], -4)) ?></strong></p>
+    <p class="kv"><span>保存済みのキー</span><strong><?= $chat['provider'] === 'openrouter' ? 'OpenRouter' : 'Anthropic' ?>（<?= e(substr($chat['saved_key'], 0, 6)) ?>…<?= e(substr($chat['saved_key'], -4)) ?>）</strong></p>
+    <p class="kv"><span>使っているモデル</span><strong><?= e($chat['model_now']) ?></strong></p>
 <?php endif; ?>
     <div class="field">
       <label class="field__label" for="chat_api_key"><?= $chat['saved_key'] !== '' ? '新しいキーに入れ替える' : 'API キー' ?> <span class="opt"><?= $chat['saved_key'] !== '' ? '入れ替える時だけ' : '' ?></span></label>
-      <input class="input textarea--mono" type="password" id="chat_api_key" name="chat_api_key" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-ant- で始まる長い英数字">
+      <input class="input textarea--mono" type="password" id="chat_api_key" name="chat_api_key" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="sk-or- で始まる長い英数字">
     </div>
-    <p class="note note--sub">Anthropic の管理画面（https://console.anthropic.com/）の「API Keys」で作ったキーを貼ってください。保存の前に、AI に1回だけ短く話しかけてつながるか確かめます（費用は1円未満）。キーは他の人に見せないでください。</p>
+    <div class="field">
+      <label class="field__label" for="chat_model">モデル <span class="opt">空欄なら anthropic/claude-opus-5.5</span></label>
+      <input class="input textarea--mono" type="text" id="chat_model" name="chat_model" value="<?= e($chat['model']) ?>" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="anthropic/claude-opus-5.5">
+    </div>
+    <p class="note note--sub">キーは OpenRouter（https://openrouter.ai/keys）で作ったものを貼ってください。モデルを替える時は、https://openrouter.ai/models で使いたいモデルを開き、名前（例：anthropic/claude-opus-5.5）をコピーして貼ります。保存の前に、AI に1回だけ短く話しかけてつながるか確かめます（費用は1円未満）。モデルを替えたら、ホームページの「AIに相談」で何回か質問して、答え方を確かめてください。キーは他の人に見せないでください。</p>
     <div class="actions-inline">
       <button class="abtn abtn--primary" type="submit">保存して試す</button>
 <?php if ($chat['saved_key'] !== ''): ?>

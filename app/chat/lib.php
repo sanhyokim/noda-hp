@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 // AI チャット（お客様が電話では聞きにくいことを気軽に相談し、問い合わせにつなげる）。
-// 答えは Claude（Anthropic の公式 SDK）で作る。会社とサイトの情報（app/data/chat-knowledge.md）だけを根拠にさせ、
+// 答えは AI で作る。管理画面に貼ったキーが sk-or- なら OpenRouter（モデルを選べる）、sk-ant- なら Anthropic に直接（公式 SDK）。会社とサイトの情報（app/data/chat-knowledge.md）だけを根拠にさせ、
 // 費用・工期は断言せず、無料の現地調査・電話・フォーム・LINE へ案内する。
 
 const CHAT_MAX_TURNS = 20;        // 1つの会話でやり取りできる回数（送る履歴の長さ）
@@ -12,20 +12,95 @@ const CHAT_MAX_ASSIST_LEN = 2000;
 function chat_config(string $key): mixed
 {
     // API キーは管理画面の「設定」で貼ったもの（データベース）を先に使う。設定ファイルに書いた場合はそれでも動く
-    if ($key === 'api_key') {
-        $saved = (string)setting_safe('chat_api_key');
+    if ($key === 'api_key' || $key === 'model') {
+        $saved = (string)setting_safe('chat_' . $key);
         if ($saved !== '') {
             return $saved;
         }
     }
+    if ($key === 'model' && chat_provider() === 'openrouter') {
+        return (string)((config('chat', [])['openrouter_model'] ?? '') ?: CHAT_OPENROUTER_DEFAULT_MODEL);
+    }
     return (config('chat', [])[$key]) ?? null;
 }
 
-/**
- * 管理画面で貼った API キーで、AI に1回だけ短く話しかけて確かめる。戻り値：['ok' => bool, 'error' => 文]
- */
-function chat_test_key(string $apiKey): array
+const CHAT_OPENROUTER_DEFAULT_MODEL = 'anthropic/claude-opus-5.5';
+
+/** キーの形から、つなぐ先を決める（sk-or- は OpenRouter、それ以外は Anthropic に直接） */
+function chat_provider(?string $apiKey = null): string
 {
+    $apiKey ??= (string)setting_safe('chat_api_key') ?: (string)((config('chat', [])['api_key'] ?? ''));
+    return str_starts_with($apiKey, 'sk-or-') ? 'openrouter' : 'anthropic';
+}
+
+/**
+ * OpenRouter に1回送る。戻り値：['status' => HTTP の番号（つながらなければ 0）, 'json' => 答え, 'error' => 文]
+ */
+function chat_openrouter_post(string $apiKey, array $body, int $timeout): array
+{
+    $url = rtrim((string)((config('chat', [])['openrouter_url'] ?? '') ?: 'https://openrouter.ai/api/v1'), '/') . '/chat/completions';
+    $ch = curl_init($url);
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT => $timeout,
+        CURLOPT_CONNECTTIMEOUT => 10,
+        CURLOPT_HTTPHEADER => [
+            'Authorization: Bearer ' . $apiKey,
+            'Content-Type: application/json',
+            'HTTP-Referer: ' . abs_url(),   // OpenRouter の管理画面で、どのサイトからの利用か分かるように
+            'X-Title: Noda HP AI chat',
+        ],
+        CURLOPT_POSTFIELDS => json_encode($body, JSON_UNESCAPED_UNICODE),
+    ]);
+    $raw = curl_exec($ch);
+    $status = $raw === false ? 0 : (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    $err = $raw === false ? curl_error($ch) : '';
+    curl_close($ch);
+    $json = is_string($raw) ? json_decode($raw, true) : null;
+    if (!is_array($json)) {
+        $json = [];
+    }
+    // 途中で失敗した時も 200 で error が入ってくることがある
+    if ($status === 200 && isset($json['error'])) {
+        $status = (int)($json['error']['code'] ?? 500) ?: 500;
+    }
+    return ['status' => $status, 'json' => $json, 'error' => $err !== '' ? $err : (string)($json['error']['message'] ?? '')];
+}
+
+/** OpenRouter の失敗を、管理画面に出す文に */
+function chat_openrouter_error_text(int $status, string $message): string
+{
+    if ($status === 401) {
+        return 'キーが正しくないようです。コピーし直して、前後に空白が入っていないか確かめてください。';
+    }
+    if ($status === 402) {
+        return 'キーは受け付けられましたが、残高が足りません。OpenRouter の「Credits」で入金してください。';
+    }
+    if (($status === 400 || $status === 404) && stripos($message, 'model') !== false) {
+        return 'モデルの名前が見つかりません。https://openrouter.ai/models で使いたいモデルを開き、名前（例：anthropic/claude-opus-5.5）をコピーして貼り直してください。';
+    }
+    if ($status === 0 || $status >= 500 || $status === 429) {
+        return 'AI の会社のサーバーにつながりませんでした。少し時間をおいて、もう一度「保存して試す」を押してください。';
+    }
+    return '使える状態になっていません（' . $status . '：' . mb_substr($message, 0, 120) . '）。';
+}
+
+/**
+ * 管理画面で貼った API キー（とモデル）で、AI に1回だけ短く話しかけて確かめる。戻り値：['ok' => bool, 'error' => 文]
+ */
+function chat_test_key(string $apiKey, string $model = ''): array
+{
+    $ping = [['role' => 'user', 'content' => '接続の確認です。「OK」とだけ答えてください。']];
+    if (chat_provider($apiKey) === 'openrouter') {
+        $r = chat_openrouter_post($apiKey, ['model' => $model !== '' ? $model : CHAT_OPENROUTER_DEFAULT_MODEL, 'max_tokens' => 16, 'messages' => $ping], 30);
+        if ($r['status'] === 200 && isset($r['json']['choices'][0])) {
+            return ['ok' => true, 'error' => ''];
+        }
+        error_log('AI チャット キーの確認（OpenRouter）: ' . $r['status'] . ' ' . $r['error']);
+        return ['ok' => false, 'error' => chat_openrouter_error_text($r['status'], $r['error'])];
+    }
+
     require_once ROOT_DIR . '/vendor/autoload.php';
     $client = new \Anthropic\Client(
         apiKey: $apiKey,
@@ -34,13 +109,15 @@ function chat_test_key(string $apiKey): array
     );
     try {
         $client->messages->create(
-            model: (string)(chat_config('model') ?: 'claude-opus-5-5'),
+            model: $model !== '' ? $model : (string)((config('chat', [])['model'] ?? '') ?: 'claude-opus-5-5'),
             maxTokens: 16,
-            messages: [['role' => 'user', 'content' => '接続の確認です。「OK」とだけ答えてください。']],
+            messages: $ping,
         );
         return ['ok' => true, 'error' => ''];
     } catch (\Anthropic\Core\Exceptions\AuthenticationException $e) {
         return ['ok' => false, 'error' => 'キーが正しくないようです。コピーし直して、前後に空白が入っていないか確かめてください。'];
+    } catch (\Anthropic\Core\Exceptions\NotFoundException $e) {
+        return ['ok' => false, 'error' => 'モデルの名前が見つかりません。空欄に戻すと、決まりのモデルを使います。'];
     } catch (\Anthropic\Core\Exceptions\PermissionDeniedException | \Anthropic\Core\Exceptions\BadRequestException $e) {
         error_log('AI チャット キーの確認: ' . $e->getMessage());
         return ['ok' => false, 'error' => 'キーは受け付けられましたが、使える状態になっていません。Anthropic の管理画面の「Billing」で、カードの登録と入金が済んでいるか確かめてください。'];
@@ -53,7 +130,7 @@ function chat_test_key(string $apiKey): array
 /** API キーと SDK がそろっているか（管理ページの「止める・再開」とは別） */
 function chat_configured(): bool
 {
-    return (string)chat_config('api_key') !== '' && is_file(ROOT_DIR . '/vendor/autoload.php');
+    return (string)chat_config('api_key') !== '' && (chat_provider() === 'openrouter' || is_file(ROOT_DIR . '/vendor/autoload.php'));
 }
 
 /** API キーが入っていて、SDK も入っていて、管理ページで止めていない時だけ使える */
@@ -70,6 +147,7 @@ function chat_cost_yen(array $usage): int
     foreach (['input', 'output', 'cache_read', 'cache_write'] as $k) {
         $usd += (int)($usage[$k] ?? 0) / 1e6 * (float)$p[$k];
     }
+    $usd += (int)($usage['cost_micro'] ?? 0) / 1e6; // OpenRouter は1回ごとの実際の費用（ドル）を返すので、それを足す
     return (int)ceil($usd * (float)(chat_config('yen_per_usd') ?: 155));
 }
 
@@ -244,6 +322,9 @@ function chat_log(string $key, array $messages, string $page, bool $handedOff = 
  */
 function chat_ask(array $messages): array
 {
+    if (chat_provider() === 'openrouter') {
+        return chat_ask_openrouter($messages);
+    }
     require_once ROOT_DIR . '/vendor/autoload.php';
     $client = new \Anthropic\Client(
         apiKey: (string)chat_config('api_key'),
@@ -286,6 +367,46 @@ function chat_ask(array $messages): array
         }
     }
     $text = trim(str_replace(['**', '##'], '', $text));
+    if ($text === '') {
+        return ['ok' => false, 'usage' => $usage, 'reply' => '申し訳ありません、うまくお答えできませんでした。もう一度お試しいただくか、お電話・お問い合わせフォームからご相談ください。'];
+    }
+    return ['ok' => true, 'usage' => $usage, 'reply' => mb_substr($text, 0, CHAT_MAX_ASSIST_LEN)];
+}
+
+/** OpenRouter 経由で答えを作る（戻り値は chat_ask と同じ） */
+function chat_ask_openrouter(array $messages): array
+{
+    $model = (string)chat_config('model');
+    $system = ['role' => 'system', 'content' => chat_system_prompt()];
+    if (str_starts_with($model, 'anthropic/')) {
+        // Claude の時は、毎回同じ決まりごとの読み込みを省く（キャッシュ）
+        $system['content'] = [['type' => 'text', 'text' => chat_system_prompt(), 'cache_control' => ['type' => 'ephemeral']]];
+    }
+    $r = chat_openrouter_post((string)chat_config('api_key'), [
+        'model' => $model,
+        'max_tokens' => 4000,
+        'messages' => array_merge([$system], $messages),
+        'reasoning' => ['effort' => 'low'],
+        'provider' => ['data_collection' => 'deny'], // 相談内容を学習などに使う会社には送らない
+        'usage' => ['include' => true],              // 1回ごとの費用を返してもらう
+    ], 40);
+    if ($r['status'] !== 200) {
+        error_log('AI チャット 失敗（OpenRouter）: ' . $r['status'] . ' ' . $r['error']);
+        $busy = $r['status'] === 429 || $r['status'] >= 500 || $r['status'] === 0;
+        return ['ok' => false, 'reply' => $busy
+            ? 'ただいま AI が混み合っています。少し時間をおいてお試しいただくか、お電話・お問い合わせフォームからご相談ください。'
+            : '申し訳ありません、うまくお答えできませんでした。お電話か、お問い合わせフォーム・LINE からご相談ください。'];
+    }
+    $u = (array)($r['json']['usage'] ?? []);
+    $usage = [
+        'requests' => 1,
+        'cost_micro' => (int)round((float)($u['cost'] ?? 0) * 1e6),
+    ];
+    $choice = (array)($r['json']['choices'][0] ?? []);
+    if (($choice['finish_reason'] ?? '') === 'content_filter') {
+        return ['ok' => true, 'usage' => $usage, 'reply' => 'その内容には、こちらではお答えできません。換気やダクトのご相談でしたら、お気軽にどうぞ。担当者への直接のご相談は、お電話・お問い合わせフォーム・LINE からどうぞ。'];
+    }
+    $text = trim(str_replace(['**', '##'], '', (string)($choice['message']['content'] ?? '')));
     if ($text === '') {
         return ['ok' => false, 'usage' => $usage, 'reply' => '申し訳ありません、うまくお答えできませんでした。もう一度お試しいただくか、お電話・お問い合わせフォームからご相談ください。'];
     }
