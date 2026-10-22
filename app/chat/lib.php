@@ -573,13 +573,10 @@ function chat_callback(string $conv, array $p): array
         return ['ok' => false, 'errors' => $errors, 'message' => '入力を確かめてください。'];
     }
 
-    // 会話はサーバーに残した記録から付ける（画面から送られた内容は使わない）。会話をしていない人からは受けない
+    // 会話はサーバーに残した記録から付ける（画面から送られた内容は使わない）。AI に何も聞かずに電話を頼む人もいる（窓を開いてすぐ）
     $st = db()->prepare('SELECT messages, page FROM chat_logs WHERE conv_key = ?');
     $st->execute([$conv]);
-    $row = $st->fetch();
-    if (!$row) {
-        return ['ok' => false, 'errors' => [], 'message' => '会話の記録が見つかりませんでした。お手数ですが、お電話かお問い合わせフォームからご連絡ください。'];
-    }
+    $row = $st->fetch() ?: ['messages' => '[]', 'page' => ''];
     if (!contact_rate_ok((string)($_SERVER['REMOTE_ADDR'] ?? ''))) {
         return ['ok' => false, 'errors' => [], 'message' => '短い時間に何度も送信されたため、受け付けられませんでした。1分ほどおいてから、もう一度お試しください。'];
     }
@@ -587,6 +584,9 @@ function chat_callback(string $conv, array $p): array
     foreach ((array)json_decode((string)$row['messages'], true) as $m) {
         $talk .= ($m['role'] ?? '') === 'user' ? 'お客様：' : 'AI：';
         $talk .= trim((string)($m['content'] ?? '')) . "\n\n";
+    }
+    if (trim($talk) === '') {
+        $talk = '（AI には何も聞かずに、電話を希望されました）';
     }
     $time = CHAT_CALLBACK_TIMES[$in['time']];
     $code = chat_code($conv);

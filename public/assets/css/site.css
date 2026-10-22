@@ -1431,13 +1431,6 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 .aic__chip--sm { min-height: 36px; padding: 5px 12px; font-size: 13px; }
 
 /* 会話を始める前だけ出す：担当者と直接話したい人へ */
-.aic__direct { margin-top: auto; padding: 14px 16px; border: 1px solid var(--c-line); border-left: 3px solid var(--c-ink); background: var(--c-white); }
-.aic__direct[hidden] { display: none; }
-.aic__direct-ttl { font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--c-muted); }
-.aic__direct-tel { display: inline-flex; align-items: center; gap: 6px; margin-top: 2px; font-family: var(--font-num); font-size: 24px; font-weight: 700; letter-spacing: .04em; color: var(--c-ink); }
-.aic__direct-tel svg { color: var(--c-blue); }
-.aic__direct-note { margin-top: 2px; font-size: 12px; line-height: 1.6; color: var(--c-muted); }
-.aic__direct-note a { color: var(--c-blue-dark); font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
 .aic__divider { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700; letter-spacing: .08em; color: var(--c-muted); }
 .aic__divider::before, .aic__divider::after { content: ""; flex: 1; height: 1px; background: var(--c-line); }
 .aic__wait { margin-left: 8px; font-size: 13px; color: var(--c-muted); }
@@ -1542,18 +1535,23 @@ a.pager__step--next:hover svg { transform: translateX(4px); }
 
 .aic__form { display: flex; align-items: flex-end; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--c-line); background: var(--c-white); }
 .aic__form textarea {
-  flex: 1; min-width: 0; min-height: 44px; max-height: 132px; padding: 10px 12px; resize: none;
-  border: 1px solid var(--c-line); border-radius: var(--r-sm); font: inherit; font-size: 16px; line-height: 1.5; color: var(--c-text); background: var(--c-white);
+  flex: 1; min-width: 0; min-height: 44px; max-height: 132px; padding: 9px 12px; resize: none; overflow-y: hidden;
+  border: 1px solid var(--c-line-strong); border-radius: var(--r-sm); font: inherit; font-size: 16px; line-height: 1.5; color: var(--c-text); background: var(--c-white);
 }
+/* まだ何も聞いていない時は、入力欄を青い枠で目立たせる（どこに打てばよいか、ひと目でわかるように） */
+.aic__panel:not(.has-talk) .aic__form { background: var(--c-blue-bg); }
+.aic__panel:not(.has-talk) .aic__form textarea { border: 2px solid var(--c-blue); padding: 8px 11px; }
+.aic__form textarea::placeholder { color: var(--c-muted); opacity: 1; }
 .aic__form textarea:focus { outline: none; border-color: var(--c-blue); box-shadow: 0 0 0 3px rgba(6, 94, 203, .16); }
 .aic__send { display: grid; place-items: center; flex: none; width: 44px; height: 44px; border-radius: var(--r-sm); background: var(--c-blue); color: var(--c-white); }
 .aic__send:hover { background: var(--c-blue-dark); }
 .aic__send:disabled { opacity: .45; cursor: default; }
 .aic__note { padding: 0 12px 10px; padding-bottom: calc(10px + env(safe-area-inset-bottom)); background: var(--c-white); font-size: 11px; line-height: 1.6; color: var(--c-muted); }
 .aic__note a { color: var(--c-muted); text-decoration: underline; white-space: nowrap; }
+/* 「動きを減らす」設定の画面（Windows で「アニメーション効果」を切っている時など）でも、動かさずに、ふわっと出る・消えるだけは残す */
 @media (prefers-reduced-motion: reduce) {
-  .aic__panel, .aic__fab { transition: none !important; }
-  .aic__panel { transform: none !important; }
+  .aic__panel { transform: none !important; transition: opacity .2s linear !important; }
+  .aic__fab { transform: none !important; transition: opacity .2s linear !important; }
   .aic.is-intro .aic__fab, .aic__fab-icon::after { animation: none !important; }
 }
 @media print { .aic { display: none !important; } }

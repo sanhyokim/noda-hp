@@ -68,20 +68,15 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
       <button class="aic__close" type="button" aria-label="閉じる"><?= icon('close', 22) ?></button>
     </header>
     <div class="aic__log" role="log" aria-live="polite" aria-relevant="additions">
-      <div class="aic__msg aic__msg--ai"><p>こんにちは。<?= e(company('name')) ?>の AI 相談です。飲食店の換気扇・ダクト・煙や臭いのことなど、気になることを何でもお聞きください。</p></div>
+      <div class="aic__msg aic__msg--ai"><p>こんにちは。<?= e(company('name')) ?>の AI 相談です。飲食店の換気扇・ダクト・煙や臭いのことなど、気になることを何でもお聞きください。</p><p>いちばん下の欄に入力するか、よくあるご相談から選んでください。</p></div>
       <div class="aic__starters" data-starters>
         <p class="aic__starters-ttl">よくあるご相談</p>
 <?php foreach ($starters as $s): ?>
         <button type="button" class="aic__chip"><?= e($s) ?></button>
 <?php endforeach; ?>
       </div>
-      <div class="aic__direct" data-direct>
-        <p class="aic__direct-ttl">担当者と直接話したい方</p>
-        <a class="aic__direct-tel" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 18) ?><?= e(company('tel_free')) ?></a>
-        <p class="aic__direct-note">平日 <?= e(company('hours')) ?>（<?= e(company('closed')) ?>）。写真を送ってのご相談は <a href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener">LINE</a> から</p>
-      </div>
     </div>
-    <div class="aic__hand" data-hand hidden>
+    <div class="aic__hand" data-hand>
       <button class="aic__hand-toggle" type="button" aria-expanded="false" aria-controls="aic-hand-body" data-hand-toggle>
         <span class="aic__hand-ico"><?= icon('phone', 16) ?></span>
         <span class="aic__hand-label">担当者にくわしく相談する</span>
@@ -90,7 +85,7 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
       </button>
       <div class="aic__hand-body" id="aic-hand-body" data-hand-body hidden>
       <div class="aic__hand-btns">
-        <a class="aic__hbtn aic__hbtn--form" href="<?= e(page_url('contact')) ?>?from=chat" data-handoff><?= icon('mail', 18) ?>この内容で問い合わせる</a>
+        <a class="aic__hbtn aic__hbtn--form" href="<?= e(page_url('contact')) ?>?from=chat" data-handoff><?= icon('mail', 18) ?><span data-form-label>この内容で問い合わせる</span></a>
         <button class="aic__hbtn aic__hbtn--call" type="button" data-cb-open><?= icon('phone', 18) ?>電話をもらう</button>
         <a class="aic__hbtn aic__hbtn--line" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener" data-handoff data-line><?= line_icon(18) ?>LINEで写真を送る</a>
       </div>
@@ -157,7 +152,7 @@ $mark = '<svg viewBox="96 90 320 332" width="20" height="20" aria-hidden="true" 
     </form>
     <form class="aic__form" data-form>
       <label class="u-sr" for="aic-input">相談内容</label>
-      <textarea id="aic-input" rows="1" maxlength="800" placeholder="例：焼き鳥店で煙が客席に流れてくる" enterkeyhint="send"></textarea>
+      <textarea id="aic-input" rows="1" maxlength="800" placeholder="ここに質問を入力してください" enterkeyhint="send"></textarea>
       <button class="aic__send" type="submit" aria-label="送る"><?= icon('send', 22) ?></button>
     </form>
     <p class="aic__note">AIがサイトの情報をもとにお答えします。費用や工期は担当者からご案内します。会話の欄には、お名前・電話番号を書かないでください。<a href="<?= e(page_url('privacypolicy')) ?>#ai-chat">入力内容の扱い</a></p>

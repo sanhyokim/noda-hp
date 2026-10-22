@@ -32,9 +32,9 @@
   const sendBtn = form.querySelector('.aic__send');
   const starters = root.querySelector('[data-starters]');
   const hand = root.querySelector('[data-hand]');
-  const direct = root.querySelector('[data-direct]');
   const handToggle = root.querySelector('[data-hand-toggle]');
   const handBody = root.querySelector('[data-hand-body]');
+  const formLabel = root.querySelector('[data-form-label]');
   const nudge = root.querySelector('[data-nudge]');
   const cb = root.querySelector('[data-cb]');
   const end = root.querySelector('[data-end]');
@@ -68,9 +68,10 @@
   const restore = () => {
     state.messages.forEach((m) => add(m.role, m.content));
     if (state.cbDone) add('ai', state.cbDone, 'is-done');
-    starters.hidden = direct.hidden = state.messages.length > 0;
-    hand.hidden = endBtn.hidden = state.messages.length < 2;
+    starters.hidden = state.messages.length > 0;
+    endBtn.hidden = state.messages.length < 2;
     panel.classList.toggle('has-talk', state.messages.length > 0);
+    formLabel.textContent = state.messages.length ? 'この内容で問い合わせる' : 'フォームで問い合わせる';
   };
 
   // 開け閉めは、ボタンの位置からふわっと出て、ふわっと戻る（動きを減らす設定の人には動かさない）
@@ -85,7 +86,7 @@
       else requestAnimationFrame(() => requestAnimationFrame(() => panel.classList.add('is-in')));
     } else {
       panel.classList.remove('is-in');
-      closeTimer = setTimeout(() => { if (!state.open) panel.hidden = true; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 280);
+      closeTimer = setTimeout(() => { if (!state.open) panel.hidden = true; }, matchMedia('(prefers-reduced-motion: reduce)').matches ? 200 : 280);
     }
     fab.setAttribute('aria-expanded', String(open));
     root.classList.toggle('is-open', open);
@@ -102,6 +103,7 @@
   const autosize = () => {
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 132) + 'px';
+    input.style.overflowY = input.scrollHeight > 132 ? 'auto' : 'hidden'; // 入りきらない時だけ、スクロールの棒を出す
   };
 
   const send = async (text) => {
@@ -117,7 +119,7 @@
       log.appendChild(div);
       state = { conv: rid(), messages: [], open: true };
     }
-    starters.hidden = direct.hidden = true;
+    starters.hidden = true;
     hideNudge(false);
     add('user', text);
     state.messages.push({ role: 'user', content: text });
@@ -162,8 +164,9 @@
     // 長くなりすぎた会話は、古い分から送らない（サーバー側の上限は 20 往復）
     if (state.messages.length > 36) state.messages = state.messages.slice(-36);
     save(state);
-    hand.hidden = endBtn.hidden = state.messages.length < 2;
+    endBtn.hidden = state.messages.length < 2;
     panel.classList.toggle('has-talk', state.messages.length > 0);
+    formLabel.textContent = state.messages.length ? 'この内容で問い合わせる' : 'フォームで問い合わせる';
     busy = false;
     sendBtn.disabled = false;
     if (matchMedia('(min-width: 640px)').matches) input.focus();
@@ -200,7 +203,9 @@
     if (!a) return;
     if (a.hasAttribute('data-line') && root.dataset.lineOa) {
       const qs = state.messages.filter((m) => m.role === 'user').map((m) => '・' + m.content.replace(/\s+/g, ' ').slice(0, 120));
-      const text = ['【HPのAI相談から】相談番号 ' + code(), '', 'AIに相談した内容：', ...qs.slice(-5), '', '写真を送ります。'].join('\n');
+      const text = qs.length
+        ? ['【HPのAI相談から】相談番号 ' + code(), '', 'AIに相談した内容：', ...qs.slice(-5), '', '写真を送ります。'].join('\n')
+        : '【HPから】写真を送って相談します。';
       a.href = root.dataset.lineOa + encodeURIComponent(text.slice(0, 900));
     }
     track('ai_chat_handoff', { handoff: a.classList.contains('aic__hbtn--form') ? 'form' : a.hasAttribute('data-line') ? 'line' : 'tel' });
