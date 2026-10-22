@@ -101,6 +101,27 @@
     });
   });
 
+  /* ---- 写真の切り替え枠：5.5秒ごとに次の写真へ（画面に見えている間だけ） ---- */
+  if (!reduce.matches) {
+    document.querySelectorAll('[data-slides]').forEach(function (box) {
+      var items = box.querySelectorAll('.slides__item');
+      if (items.length < 2) return;
+      var i = 0, timer = null;
+      var next = function () {
+        items[i].classList.remove('is-on');
+        i = (i + 1) % items.length;
+        items[i].classList.add('is-on');
+      };
+      var start = function () { if (!timer) timer = setInterval(next, 5500); };
+      var stop = function () { clearInterval(timer); timer = null; };
+      if ('IntersectionObserver' in window) {
+        new IntersectionObserver(function (en) { en[0].isIntersecting ? start() : stop(); }).observe(box);
+      } else {
+        start();
+      }
+    });
+  }
+
   /* ---- 表示時の動き：各セクション直下の要素と、格子の中身を1回だけ ---- */
   if (reduce.matches || !('IntersectionObserver' in window)) return;
   var groups = [];

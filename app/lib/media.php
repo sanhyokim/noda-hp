@@ -38,3 +38,15 @@ function image_exists(string $name): bool
 {
     return is_file(PUBLIC_DIR . '/assets/img/' . $name);
 }
+
+// 写真が数秒ごとにふわっと切り替わる枠（Boss「写真が切り替わる動き」2026-10-22）。
+// 1枚目だけ最初から見せ、2枚目以降は site.js が順に重ねる。動きを減らす設定の人には1枚目だけ。
+function slides(array $images, int $w, int $h, string $alt = ''): string
+{
+    $out = '';
+    foreach ($images as $i => $src) {
+        $out .= '<span class="slides__item' . ($i === 0 ? ' is-on' : '') . '"' . ($i ? ' aria-hidden="true"' : '') . '>'
+            . picture($src, $w, $h, $i === 0 ? $alt : '') . '</span>';
+    }
+    return '<span class="slides" data-slides>' . $out . '</span>';
+}

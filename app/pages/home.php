@@ -116,7 +116,7 @@ $marquee = [
   </ul>
   <p class="problems__answer kw">身に覚えがある場合は、<wbr><strong>ファンやダクトの設計</strong>に<wbr>原因があるかもしれません。</p>
   <div class="row u-mt">
-    <div class="row__img"><?= picture('concept-fullorder.jpg', 900, 600, '現場に合わせて組んだダクト') ?></div>
+    <div class="row__img"><?= slides(['concept-fullorder.jpg', 'svc-duct-general.jpg', 'concept-drawing.jpg', 'hood-cause1.jpg'], 900, 600, '現場に合わせて組んだダクト') ?></div>
     <div class="row__body">
       <h3 class="row__head">私たち専門業者へご相談ください</h3>
       <p>給気・排気ダクトは、単に設置すれば良いものではありません。飲食店の規模やレイアウトに応じて、適した種類・大きさ・形状のダクトを選定し、設計する必要があります。そうしなければ、本来の性能を発揮できず、後々トラブルが発生する恐れがあります。</p>
@@ -156,7 +156,7 @@ $marquee = [
         <p class="reason__text">使えば使うほどダクト内部は油やホコリで汚れていき、その汚れが不具合や故障、ひいてはダクト火災の原因になることも。点検・清掃・ファン交換まで、定期的なメンテナンスで長くお付き合いします。</p>
         <a class="more" href="<?= e(page_url('afterfollow')) ?>">アフターフォローについて<?= icon('arrow', 16) ?></a>
       </div>
-      <div class="reason__img"><?= picture('top-afterfollow.jpg', 900, 600, '') ?></div>
+      <div class="reason__img"><?= slides(['top-afterfollow.jpg', 'after-rooftop.jpg', 'after-grease.jpg'], 900, 600, '') ?></div>
     </li>
   </ol>
 </section>

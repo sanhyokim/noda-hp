@@ -28,9 +28,10 @@ $links = ['おすすめの上引きフードはありますか？' => 'hood-inst
 $ld = [];
 $i = 0;
 ?>
+<?php $labels = ['CONSTRUCTION', 'PRICE', 'PRODUCTS & AREA']; ?>
 <?php foreach ($groups as $g => $items): $i++; ?>
   <section class="section wrap" aria-labelledby="g<?= $i ?>">
-    <?php render('section-head', ['label' => sprintf('Q%02d', $i), 'title' => $g, 'id' => 'g' . $i]); ?>
+    <?php render('section-head', ['label' => $labels[$i - 1], 'title' => $g, 'id' => 'g' . $i]); ?>
     <div class="faq">
       <?php foreach ($items as [$q, $a]): $ld[] = ['@type' => 'Question', 'name' => $q, 'acceptedAnswer' => ['@type' => 'Answer', 'text' => $a]]; ?>
         <details class="faq__item" open>

@@ -17,11 +17,8 @@ if (($lastKey ?? '') === 'afterfollow') {
   <?php foreach ($services as $i => [$key, $img, $t, $d]): ?>
     <li>
       <a class="svc" href="<?= e(page_url($key)) ?>">
-        <span class="svc__head">
-          <span class="svc__title kw"><?= str_replace('|', '<wbr>', e($t)) ?></span>
-          <span class="svc__no" aria-hidden="true">CASE <?= sprintf('%02d', $i + 1) ?></span>
-        </span>
-        <span class="svc__img"><?= picture($img, 900, 600, '') ?></span>
+        <span class="svc__img"><?= picture($img, 900, 600, '') ?><span class="svc__no" aria-hidden="true"><?= sprintf('%02d', $i + 1) ?></span></span>
+        <span class="svc__title kw"><?= str_replace('|', '<wbr>', e($t)) ?></span>
         <span class="svc__text"><?= e($d) ?></span>
         <span class="svc__more">詳しくはこちら<?= icon('arrow', 16) ?></span>
       </a>
