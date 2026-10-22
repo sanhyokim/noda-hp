@@ -70,6 +70,27 @@ $marquee = [
 </div>
 <?php $meta['top'] = ob_get_clean(); ?>
 
+<section class="section wrap" aria-labelledby="news-title">
+  <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>
+  <ul class="news__list">
+    <?php foreach ($feed as $f): ?>
+      <li>
+        <a class="news__row" href="<?= e($f['url']) ?>">
+          <time datetime="<?= e($f['published_at']) ?>"><?= e(format_date($f['published_at'])) ?></time>
+          <span class="chip <?= $f['type'] === 'case' ? 'chip--solid' : 'chip--outline' ?>"><?= $f['type'] === 'case' ? '施工事例' : 'お知らせ' ?></span>
+          <span class="news__title"><?= e($f['title']) ?></span>
+          <?= icon('arrow', 16, 'news__arrow') ?>
+        </a>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+  <a class="anniv-band" href="<?= e(page_url('company')) ?>#s20">
+    <span class="anniv-band__mark"><?= picture('anniv-20th.png', 179, 179, '愛し愛されて20周年 20th Anniversary') ?></span>
+    <span class="anniv-band__text"><b class="kw">おかげさまで<wbr>創業20周年を<wbr>迎えました</b>20年で培った技術と信頼を礎に、<wbr>21年目からも皆様の期待を超える価値を。</span>
+    <span class="more">ごあいさつを読む<?= icon('arrow', 16) ?></span>
+  </a>
+</section>
+
 <section class="section wrap" aria-labelledby="works-title">
   <?php render('section-head', ['label' => 'WORKS', 'title' => '最新の施工事例', 'id' => 'works-title', 'link' => ['施工事例をもっと見る', page_url('construction_examples')]]); ?>
   <ul class="grid grid--3 cases">
@@ -161,27 +182,6 @@ $marquee = [
       </li>
     <?php endforeach; ?>
   </ol>
-</section>
-
-<section class="section wrap" aria-labelledby="news-title">
-  <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>
-  <ul class="news__list">
-    <?php foreach ($feed as $f): ?>
-      <li>
-        <a class="news__row" href="<?= e($f['url']) ?>">
-          <time datetime="<?= e($f['published_at']) ?>"><?= e(format_date($f['published_at'])) ?></time>
-          <span class="chip <?= $f['type'] === 'case' ? 'chip--solid' : 'chip--outline' ?>"><?= $f['type'] === 'case' ? '施工事例' : 'お知らせ' ?></span>
-          <span class="news__title"><?= e($f['title']) ?></span>
-          <?= icon('arrow', 16, 'news__arrow') ?>
-        </a>
-      </li>
-    <?php endforeach; ?>
-  </ul>
-  <a class="anniv-band" href="<?= e(page_url('company')) ?>#s20">
-    <span class="anniv-band__mark"><?= picture('anniv-20th.png', 179, 179, '愛し愛されて20周年 20th Anniversary') ?></span>
-    <span class="anniv-band__text"><b class="kw">おかげさまで<wbr>創業20周年を<wbr>迎えました</b>20年で培った技術と信頼を礎に、<wbr>21年目からも皆様の期待を超える価値を。</span>
-    <span class="more">ごあいさつを読む<?= icon('arrow', 16) ?></span>
-  </a>
 </section>
 
 <section class="section wrap" aria-labelledby="partner-title">
