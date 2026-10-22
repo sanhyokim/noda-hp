@@ -41,6 +41,9 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <link rel="stylesheet" href="<?= e($fonts) ?>" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="<?= e($fonts) ?>"></noscript>
 <link rel="stylesheet" href="<?= e(asset('css/site.css')) ?>">
+<?php foreach (($meta['preload'] ?? []) as $pre): // 最初の画面の背景写真など、CSS から読む画像を先に取りに行く ?>
+<link rel="preload" as="image" type="image/webp" href="<?= e(asset('img/' . $pre)) ?>" fetchpriority="high">
+<?php endforeach; ?>
 <?= json_ld($graph) ?>
 
 <script>document.documentElement.classList.add('js')</script>

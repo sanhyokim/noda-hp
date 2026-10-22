@@ -1,5 +1,5 @@
 <?php
-// トップページ。区画の順番は Boss と相談して決めた（2026-10-22）：最初の画面のすぐ下に施工事例、Instagram は最後。
+// トップページ。区画の順番は Boss と相談して決めた（2026-10-22）：最初の画面と流れる帯の下にお知らせ、その次に施工事例、Instagram は最後。
 $years = years_in_business();
 $feed = top_news();
 $cases = latest_cases(6);
@@ -29,14 +29,8 @@ $marquee = [
 <?php ob_start(); // 最初の画面・数字の帯・流れる帯は画面幅いっぱいに出すので、layout の $meta['top'] に渡す ?>
 <section class="hero" aria-labelledby="hero-title">
   <div class="hero__tiles" aria-hidden="true">
-    <?php for ($r = 1; $r <= 3; $r++): ?>
-      <div class="hero__row hero__row--<?= $r ?>">
-        <div class="hero__track">
-          <?= picture('hero-row' . $r . '.jpg', 3192, 300, '', ['priority' => true]) ?>
-          <?= picture('hero-row' . $r . '.jpg', 3192, 300, '', ['priority' => true]) ?>
-        </div>
-      </div>
-    <?php endfor; ?>
+    <?php /* 写真は CSS の背景として横に流す（幅の広い画像を丸ごと動かすとスマホで抜け・停止が起きたため） */ ?>
+    <?php for ($r = 1; $r <= 3; $r++): ?><div class="hero__row hero__row--<?= $r ?>"></div><?php endfor; ?>
   </div>
   <div class="hero__veil" aria-hidden="true"></div>
   <div class="hero__inner frame">
@@ -68,7 +62,7 @@ $marquee = [
     <?php endfor; ?>
   </div>
 </div>
-<?php $meta['top'] = ob_get_clean(); ?>
+<?php $meta['top'] = ob_get_clean(); $meta['preload'] = ['hero-row1.webp', 'hero-row2.webp', 'hero-row3.webp']; ?>
 
 <section class="section wrap" aria-labelledby="news-title">
   <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>
@@ -93,7 +87,7 @@ $marquee = [
 
 <section class="section wrap" aria-labelledby="works-title">
   <?php render('section-head', ['label' => 'WORKS', 'title' => '最新の施工事例', 'id' => 'works-title', 'link' => ['施工事例をもっと見る', page_url('construction_examples')]]); ?>
-  <ul class="grid grid--3 cases">
+  <ul class="grid grid--3 cases cases--top">
     <?php foreach ($cases as $case): ?>
       <li><?php render('case-card', ['case' => $case]); ?></li>
     <?php endforeach; ?>

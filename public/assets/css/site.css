@@ -156,6 +156,8 @@ a.card.case:hover { transform: none; box-shadow: none; }
   .grid--3, .grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (min-width: 1100px) { .grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+/* トップの施工事例：スマホは4件まで（Boss 2026-10-22） */
+@media (max-width: 639px) { .cases--top > li:nth-child(n + 5) { display: none; } }
 
 /* ---------- 一番上の帯（PC） ---------- */
 .util { display: none; }
@@ -357,13 +359,14 @@ main:focus { outline: none; }
 
 /* ---------- 最初の画面：施工写真の帯が3段で流れる ---------- */
 .hero { --h: 480px; position: relative; isolation: isolate; display: flex; align-items: center; height: var(--h); overflow: hidden; background: #f4f5f7; color: var(--c-white); text-align: center; }
-.hero__tiles { position: absolute; inset: 0; z-index: -2; display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 6px; }
-.hero__row { overflow: hidden; }
-.hero__track { display: flex; width: max-content; height: 100%; animation: drift 90s linear infinite; }
-.hero__row--2 .hero__track { animation-duration: 110s; animation-direction: reverse; }
-.hero__row--3 .hero__track { animation-duration: 100s; }
-.hero__track .media { height: 100%; width: auto; flex: none; }
-.hero__track img { width: auto; height: 100%; max-width: none; }
+.hero__tiles { position: absolute; inset: 0; z-index: -2; display: grid; grid-template-rows: repeat(3, var(--rowh)); gap: 6px; }
+/* 帯1本＝写真を横につないだ 3192×300 の画像。背景位置をずらして流す（1周＝画像1枚分の幅） */
+.hero { --rowh: calc((var(--h) - 12px) / 3); }
+.hero__row { background-repeat: repeat-x; background-size: auto 100%; animation: drift-bg 90s linear infinite; }
+.hero__row--1 { background-image: url(../img/hero-row1.jpg); background-image: image-set(url(../img/hero-row1.webp) type("image/webp"), url(../img/hero-row1.jpg) type("image/jpeg")); }
+.hero__row--2 { background-image: url(../img/hero-row2.jpg); background-image: image-set(url(../img/hero-row2.webp) type("image/webp"), url(../img/hero-row2.jpg) type("image/jpeg")); animation-duration: 110s; animation-direction: reverse; }
+.hero__row--3 { background-image: url(../img/hero-row3.jpg); background-image: image-set(url(../img/hero-row3.webp) type("image/webp"), url(../img/hero-row3.jpg) type("image/jpeg")); animation-duration: 100s; }
+@keyframes drift-bg { from { background-position: 0 0; } to { background-position: calc(var(--rowh) * -10.64) 0; } }
 .hero__veil { position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse 52% 46% at 50% 50%, rgba(14, 18, 26, .5) 0%, rgba(14, 18, 26, .3) 55%, rgba(14, 18, 26, 0) 100%), rgba(14, 18, 26, .14); }
 .hero__inner { display: flex; flex-direction: column; align-items: center; }
 .hero__since { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 6px 0; font-size: 17px; text-shadow: 0 1px 3px rgba(0, 0, 0, .5), 0 2px 14px rgba(0, 0, 0, .5); line-height: 1; font-weight: 700; letter-spacing: .1em; }
@@ -1048,13 +1051,13 @@ main:focus { outline: none; }
 
 /* ---- 「同じ担当者が対応します！」の動く図（app/templates/onestop-figure.php）
    位置は元の絵 1304×1109 に対する %。.is-ready で開始前の形、.is-play で動き出す ---- */
-.onestop { position: relative; width: 100%; aspect-ratio: 1304 / 1109; container-type: inline-size; background: var(--c-white); overflow: hidden; }
+.onestop { width: 100%; padding: 3% 1.5% 1%; container-type: inline-size; background: var(--c-white); overflow: hidden; }
+.onestop__stage { position: relative; width: 100%; aspect-ratio: 1304 / 1109; }
 .onestop img { position: absolute; display: block; max-width: none; height: auto; }
 .onestop__ring { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .onestop__loop, .onestop__swoosh { fill: none; stroke: #2A7BBF; stroke-linecap: round; }
 .onestop__loop { stroke-width: 14; }
 .onestop__swoosh { stroke-width: 7; opacity: .8; }
-.onestop__dot { fill: var(--c-orange-light); stroke: var(--c-white); stroke-width: 4; }
 .onestop__circle { position: absolute; width: 31.13%; aspect-ratio: 1; border-radius: 50%; background: linear-gradient(135deg, #10308F 0%, #3B3EE0 100%); container-type: inline-size; box-shadow: 0 1.2cqi 3cqi rgba(16, 48, 143, .22); }
 .onestop__circle--mtg { left: 3.72%; top: 34.72%; }
 .onestop__circle--work { left: 36.66%; top: 0; }
@@ -1072,32 +1075,28 @@ main:focus { outline: none; }
 .onestop__spark i:nth-child(1) { transform: rotate(-42deg); }
 .onestop__spark i:nth-child(2) { transform: rotate(0deg); height: 40%; }
 .onestop__spark i:nth-child(3) { transform: rotate(42deg); }
-.onestop__caption { position: absolute; left: 51.6%; top: 88.6%; transform: translate(-50%, -50%) rotate(-4deg); font-size: 4.6cqi; line-height: 1; font-weight: 900; letter-spacing: .04em; color: #1B3FAE; white-space: nowrap; }
+.onestop__caption { position: absolute; left: 51.8%; top: 92.6%; transform: translate(-50%, -50%); font-size: 4.4cqi; line-height: 1; font-weight: 900; letter-spacing: .04em; color: #1B3FAE; white-space: nowrap; }
 
 /* 開始前の形（JS が付ける .is-ready の間だけ） */
 .onestop.is-ready:not(.is-play) .onestop__loop,
 .onestop.is-ready:not(.is-play) .onestop__swoosh { stroke-dasharray: 100; stroke-dashoffset: 100; }
 .onestop.is-ready:not(.is-play) .onestop__circle,
 .onestop.is-ready:not(.is-play) .onestop__person,
-.onestop.is-ready:not(.is-play) .onestop__caption,
-.onestop.is-ready:not(.is-play) .onestop__dot { opacity: 0; }
+.onestop.is-ready:not(.is-play) .onestop__caption { opacity: 0; }
 .onestop.is-play .onestop__loop { stroke-dasharray: 100; animation: os-draw 1.3s var(--ease) both; }
 .onestop.is-play .onestop__swoosh { stroke-dasharray: 100; animation: os-draw .7s var(--ease) .9s both; }
-.onestop.is-play .onestop__dot { animation: os-fade .4s ease 1.3s both; }
-.onestop.is-play .onestop__circle { animation: os-pop .7s cubic-bezier(.34, 1.56, .64, 1) both, os-float 6s ease-in-out 1.6s infinite; }
-.onestop.is-play .onestop__circle--mtg { animation-delay: .25s, 1.6s; }
-.onestop.is-play .onestop__circle--work { animation-delay: .5s, 2.6s; }
-.onestop.is-play .onestop__circle--after { animation-delay: .75s, 3.6s; }
+.onestop.is-play .onestop__circle { animation: os-pop .7s cubic-bezier(.34, 1.56, .64, 1) both; }
+.onestop.is-play .onestop__circle--mtg { animation-delay: .25s; }
+.onestop.is-play .onestop__circle--work { animation-delay: .5s; }
+.onestop.is-play .onestop__circle--after { animation-delay: .75s; }
 .onestop.is-play .onestop__person { animation: os-rise .8s var(--ease) 1s both; }
 .onestop.is-play .onestop__caption { animation: os-caption .7s var(--ease) 1.5s both; }
 .onestop.is-play .onestop__hand { animation: os-good 3.4s ease-in-out 1.9s infinite; }
 .onestop.is-play .onestop__spark { animation: os-spark 3.4s ease-out 1.9s infinite; }
 @keyframes os-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
-@keyframes os-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes os-pop { from { opacity: 0; transform: scale(.55); } to { opacity: 1; transform: scale(1); } }
-@keyframes os-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.2%); } }
 @keyframes os-rise { 0% { opacity: 0; transform: translateY(6%); } 35% { opacity: 1; } 100% { opacity: 1; transform: translateY(0); } }
-@keyframes os-caption { from { opacity: 0; transform: translate(-50%, -10%) rotate(-4deg) scale(.9); } to { opacity: 1; transform: translate(-50%, -50%) rotate(-4deg) scale(1); } }
+@keyframes os-caption { from { opacity: 0; transform: translate(-50%, 0); } to { opacity: 1; transform: translate(-50%, -50%); } }
 /* 「おまかせあれ！」：親指をぐっと前へ突き出して、少し弾んで戻る */
 @keyframes os-good {
   0%, 52%, 100% { transform: none; }
@@ -1113,6 +1112,5 @@ main:focus { outline: none; }
   24%, 100% { opacity: 0; transform: scale(1.25); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .onestop *, .onestop .onestop__dot { animation: none !important; }
-  .onestop__dot { display: none; }
+  .onestop * { animation: none !important; }
 }
