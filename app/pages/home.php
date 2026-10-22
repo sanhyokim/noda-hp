@@ -3,7 +3,7 @@
 // 差し替え済み：「私たち専門業者へご相談ください」の写真 → top-craftsman.jpg（Boss 提供 2026-10-22、同日 再作成版に入れ替え）
 // トップページ。区画の順番は Boss と相談して決めた（2026-10-22）：最初の画面と流れる帯の下にお知らせ、その次に施工事例、Instagram は最後。
 $years = years_in_business();
-$feed = top_news();
+$feed = latest_feed(5); // 施工事例とお知らせの投稿から、新しい順に5件（管理画面で投稿すると自動で載る）
 $cases = latest_cases(6);
 $ig = instagram_items();
 
