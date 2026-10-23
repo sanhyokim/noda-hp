@@ -34,7 +34,7 @@ $sentView = !empty($form['done']) || !empty($form['failed']);
 <section class="section wrap" id="form" aria-labelledby="s3">
   <?php render('section-head', ['label' => 'MAIL FORM', 'title' => 'メールフォーム', 'id' => 's3', 'lead' => $sentView ? '' : '* は必須項目です。']); ?>
   <?php if (!empty($form['done'])): ?>
-    <div class="notice notice--ok sent" role="status" tabindex="-1" data-focus>
+    <div class="notice notice--ok sent" role="status" tabindex="-1" data-focus data-conv="contact_submit">
       <p class="sent__title"><?= icon('check', 22) ?>お問い合わせを受け付けました</p>
       <p>ありがとうございます。営業日 <?= e(company('hours')) ?> に担当者よりご連絡します（土日・祝日にいただいた場合は翌営業日以降になります）。ご入力のメールアドレスに、受け付けの控えをお送りしました。</p>
       <p class="sent__sub">控えのメールが届かない場合は、迷惑メールのフォルダもご確認ください。お急ぎの場合はお電話（<a href="<?= e(tel_href(company('tel_free'))) ?>"><?= e(company('tel_free')) ?></a>）でもどうぞ。</p>

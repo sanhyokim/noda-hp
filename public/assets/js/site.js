@@ -12,6 +12,26 @@
     });
   }
 
+  /* ---- 広告の成果の計測：電話・LINE を押した時と、問い合わせを送った時に GTM へ知らせる ---- */
+  var track = function (event, extra) {
+    (window.dataLayer = window.dataLayer || []).push(Object.assign({ event: event }, extra || {}));
+  };
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href]');
+    if (!a) return;
+    var href = a.getAttribute('href');
+    if (/^tel:/i.test(href)) track('tel_click', { link_url: href });
+    else if (/^https:\/\/(line\.me|lin\.ee)\//i.test(href)) track('line_click', { link_url: href });
+  });
+  // 送った直後の1回だけ（読み込み直しでは数えない）
+  var sent = document.querySelector('[data-conv="contact_submit"]');
+  if (sent) {
+    var key = 'noda-conv-' + location.search;
+    var done = false;
+    try { done = sessionStorage.getItem(key) === '1'; sessionStorage.setItem(key, '1'); } catch (err) {}
+    if (!done) track('contact_submit');
+  }
+
   /* ---- スマホメニュー（1100px 未満） ---- */
   var openBtn = document.querySelector('.topbar__menu');
   var closeBtn = document.querySelector('.sidebar__close');
