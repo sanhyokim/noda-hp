@@ -61,6 +61,12 @@ if ($path === 'sitemap.xml') {
     exit;
 }
 
+// AI 向けの案内（旧サイトのプラグインが置いていた llms.txt / ai.txt の代わり）
+if ($path === 'llms.txt' || $path === 'ai.txt') {
+    require APP_DIR . '/pages/llms.php';
+    exit;
+}
+
 // 管理ページの「保存して確認」：ログイン中の人だけ、下書きも表示し、上に「編集に戻る」を出す
 $preview = null;
 if (isset($_GET['preview']) && isset($_COOKIE['noda_admin'])) {
