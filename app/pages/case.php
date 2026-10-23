@@ -3,7 +3,7 @@
 // 施工事例の詳しいページ /<slug>/（4-4）。日付は出さない。
 // 指示書では写真は本文の下だが、事例は写真が主役なので、代表写真を題名のすぐ下に大きく出し、
 // 本文の後に全写真の一覧（押すと拡大）を置く。
-$images = case_images((int)$case['id']);
+$images = case_images((int)$case['id'], $case['thumbnail_image_id'] !== null ? (int)$case['thumbnail_image_id'] : null);
 const GALLERY_FIRST = 12; // 写真の一覧で最初に並べる枚数（残りはボタンで表示。拡大表示ではすべて順に見られる）
 $first = $images[0] ?? null;
 $path = rawurlencode($case['slug']) . '/';

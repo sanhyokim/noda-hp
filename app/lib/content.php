@@ -253,10 +253,11 @@ function redirected_case_slug(string $old): ?string
     return $st->fetchColumn() ?: null;
 }
 
-function case_images(int $caseId): array
+// 代表の写真（管理画面で「代表にする」を押したもの）を先頭に、残りは並べた順。詳しいページの一番上の大きな写真は先頭の1枚（Boss 指摘 2026-10-23）
+function case_images(int $caseId, ?int $thumbId = null): array
 {
-    $st = db()->prepare('SELECT path, path_thumb, width, height, alt FROM case_images WHERE case_id = ? ORDER BY sort_order, id');
-    $st->execute([$caseId]);
+    $st = db()->prepare('SELECT path, path_thumb, width, height, alt FROM case_images WHERE case_id = ? ORDER BY (id = ?) DESC, sort_order, id');
+    $st->execute([$caseId, (int)$thumbId]);
     return $st->fetchAll();
 }
 
