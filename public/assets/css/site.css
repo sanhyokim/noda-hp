@@ -13,8 +13,8 @@
   --c-line-green: #05893D; --c-white: #FFFFFF; --c-ig: #1E2A33;
   --c-navy: #0B1F5C;
 
-  --font: "Noto Sans JP", "Hiragino Kaku Gothic ProN", "Hiragino Sans", Meiryo, system-ui, sans-serif;
-  --font-num: "Barlow Condensed", "Noto Sans JP", system-ui, sans-serif;
+  --font: "Noto Sans JP", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans CJK JP", Meiryo, system-ui, sans-serif;
+  --font-num: "Barlow Condensed", "Noto Sans JP", "Hiragino Sans", "Noto Sans CJK JP", system-ui, sans-serif;
   --ease: cubic-bezier(.2, .7, .2, 1);
   --shadow: 0 1px 2px rgba(20, 24, 32, .04);
   --shadow-up: 0 14px 30px rgba(20, 24, 32, .10);

@@ -13,6 +13,10 @@ foreach (($meta['jsonld'] ?? []) as $ld) {
     $graph[] = $ld;
 }
 $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap';
+// 日本語の Web フォント（Noto Sans JP）はパソコンの幅だけで読む。スマホは端末の日本語フォント（iPhone はヒラギノ、Android は Noto Sans CJK）で表示し、
+// 100 個近いフォントの断片を読むたびに起きる組み直しをなくす（スマホの表示の速さのため）。英数字の Barlow Condensed は小さいのでどちらでも読む。
+$fontNum = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap';
+$fontJa = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap';
 ?><!doctype html>
 <html lang="ja">
 <head>
@@ -46,7 +50,8 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700
 <?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="<?= e($fonts) ?>" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="<?= e($fontNum) ?>" media="print" onload="this.media='all'">
+<script>if(matchMedia('(min-width: 1024px)').matches){var l=document.createElement('link');l.rel='stylesheet';l.href=<?= json_encode($fontJa) ?>;document.head.appendChild(l)}</script>
 <noscript><link rel="stylesheet" href="<?= e($fonts) ?>"></noscript>
 <link rel="stylesheet" href="<?= e(asset('css/site.css')) ?>">
 <?php foreach (($meta['preload'] ?? []) as $pre): // 最初の画面の背景写真など、CSS から読む画像を先に取りに行く（assets/img のファイル名か、サイト内のパス） ?>
