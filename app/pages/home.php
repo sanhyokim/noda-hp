@@ -1,12 +1,14 @@
 <?php
-// トップページ。区画の順番・文言は design/top-reference.html と付録A-1 に合わせる。
+// 現行サイトの人物AI画像（ai-*.jpg）は、2026-10-22 に Boss が選んだ写真へすべて差し替え済み。
+// 差し替え済み：「私たち専門業者へご相談ください」の写真 → top-craftsman.jpg（Boss 提供 2026-10-22、同日 再作成版に入れ替え）
+// トップページ。区画の順番は Boss と相談して決めた（2026-10-22）：最初の画面と流れる帯の下にお知らせ、その次に施工事例、Instagram は最後。
 $years = years_in_business();
-$feed = latest_feed(5);
+$feed = latest_feed(5); // 施工事例とお知らせの投稿から、新しい順に5件（管理画面で投稿すると自動で載る）
 $cases = latest_cases(6);
 $ig = instagram_items();
 
 $problems = [
-    ['smoke', '店内に煙がこもる', '焼肉・焼き鳥の煙が客席に流れ、服や髪に臭いが残る。'],
+    ['smoke', '店内に煙がこもる', '服や髪に臭いがつきやすくなった。お客様から煙で目が痛いと言われた。'],
     ['wave', '近隣から臭いの苦情', '排気口の向きや高さ、消煙機の導入で解決できます。'],
     ['fan', '換気扇の音・吸い込み不良', 'ファンの劣化や給気不足が原因のことが多くあります。'],
     ['store', '新規開業の換気設計', '図面の段階からご相談を。設計業者様との連携も可能です。'],
@@ -18,23 +20,28 @@ $steps = [
     ['製作・施工', '自社でフードを製作し、営業に支障が出ない日程で施工。'],
     ['アフターフォロー', '定期点検・清掃・ファン交換まで長くお付き合いします。'],
 ];
-$marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うなぎ店', '鉄板焼き店', 'カフェ', 'パン屋', '旅館・ホテル', 'チェーン店', 'セントラルキッチン', 'コインランドリー'];
+// 業態の帯。写真は移行した施工事例から業態ごとに1枚（2026-10-21）
+$marquee = [
+    ['焼肉店', 'yakiniku'], ['焼き鳥店', 'yakitori'], ['居酒屋', 'izakaya'], ['ラーメン店', 'ramen'],
+    ['うなぎ店', 'unagi'], ['鉄板焼き店', 'teppan'], ['カフェ', 'cafe'], ['パン屋', 'bakery'],
+    ['旅館・ホテル', 'ryokan'], ['チェーン店', 'chain'], ['セントラルキッチン', 'central'], ['コインランドリー', 'laundry'],
+];
 ?>
 
+<?php ob_start(); // 最初の画面・数字の帯・流れる帯は画面幅いっぱいに出すので、layout の $meta['top'] に渡す ?>
 <section class="hero" aria-labelledby="hero-title">
-  <div class="hero__bg"><?= picture('hero-top.jpg', 1600, 900, '', ['priority' => true]) ?></div>
+  <div class="hero__tiles" aria-hidden="true">
+    <?php /* 写真は CSS の背景として横に流す（幅の広い画像を丸ごと動かすとスマホで抜け・停止が起きたため） */ ?>
+    <?php for ($r = 1; $r <= 3; $r++): ?><div class="hero__row hero__row--<?= $r ?>"></div><?php endfor; ?>
+  </div>
   <div class="hero__veil" aria-hidden="true"></div>
-  <div class="hero__inner wrap">
-    <div class="hero__badges rise">
-      <span class="glass"><span class="glass__dot" aria-hidden="true"></span>飲食店専門のフード・ダクト施工会社</span>
-      <span class="glass glass--num"><span class="glass__en">SINCE 2005</span>飲食店の換気一筋<b><?= $years ?></b>年</span>
-    </div>
-    <h1 id="hero-title" class="hero__title kw rise rise--1">飲食店の<wbr>煙・臭い・換気、<br>専門会社が<wbr>設計から<wbr>施工まで。</h1>
-    <span class="hero__rule" aria-hidden="true"></span>
-    <p class="hero__lead rise rise--2">焼肉店・焼き鳥店・居酒屋・ラーメン店。油と煙の多い厨房の換気扇・排煙ダクト工事を、福岡から全国へ。創業2005年、累計1,000件以上の施工実績があります。</p>
+  <div class="hero__inner frame">
+    <p class="hero__since rise"><span>飲食店のフード・ダクトに</span><span>関わり続けて<b><?= $years ?></b>年</span></p>
+    <p class="hero__catch rise rise--1">空気が変われば、<br>店舗が変わる。</p>
+    <h1 id="hero-title" class="hero__title kw rise rise--2">飲食店の<wbr>煙・臭い・換気、<br>専門会社が<wbr>設計から<wbr>施工まで。</h1>
     <div class="hero__actions rise rise--3">
-      <a class="btn btn--orange btn--lg" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 22) ?><span><small>受付 <?= e(company('hours')) ?></small><?= e(company('tel_free')) ?></span></a>
-      <a class="btn btn--glass btn--lg" href="<?= e(page_url('contact')) ?>">無料相談・現地調査を申し込む<?= icon('arrow', 18) ?></a>
+      <a class="btn btn--white btn--lg hero__cta" href="<?= e(page_url('contact')) ?>">無料相談・現地調査を申し込む<?= icon('arrow', 20) ?></a>
+      <a class="btn btn--lg hero__sub" href="<?= e(page_url('construction_examples')) ?>">施工事例を見る<?= icon('arrow', 20) ?></a>
     </div>
   </div>
 </section>
@@ -42,8 +49,8 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
 <section class="stats" aria-label="野田の実績">
   <dl class="stats__grid">
     <div class="stat"><dt class="stat__cap">創業からの施工実績</dt><dd class="stat__num">1,000<small>件以上</small></dd></div>
-    <div class="stat"><dt class="stat__cap">2005年 福岡で創業・飲食店の換気専門</dt><dd class="stat__num"><small class="pre">創業</small><?= $years ?><small>年</small></dd></div>
-    <div class="stat"><dt class="stat__cap">福岡本社・広島出張所から</dt><dd class="stat__num">全国<small>対応</small></dd></div>
+    <div class="stat"><dt class="stat__cap kw">2005年 福岡で創業・<wbr>飲食店の換気専門</dt><dd class="stat__num"><small class="pre">創業</small><?= $years ?><small>年</small></dd></div>
+    <div class="stat"><dt class="stat__cap kw">福岡本社・<wbr>広島出張所から</dt><dd class="stat__num">全国<small>対応</small></dd></div>
     <div class="stat"><dt class="stat__cap">設計・製作・施工・修理</dt><dd class="stat__num">自社一貫</dd></div>
   </dl>
 </section>
@@ -52,18 +59,15 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
   <div class="marquee__track">
     <?php for ($r = 0; $r < 2; $r++): ?>
       <ul class="marquee__list"<?= $r ? ' aria-hidden="true"' : '' ?>>
-        <?php foreach ($marquee as $m): ?><li><?= e($m) ?></li><?php endforeach; ?>
+        <?php foreach ($marquee as [$m, $img]): ?><li><?= picture('biz-' . $img . '.jpg', 160, 160, '') ?><span><?= e($m) ?></span></li><?php endforeach; ?>
       </ul>
     <?php endfor; ?>
   </div>
 </div>
+<?php $meta['top'] = ob_get_clean(); $meta['preload'] = ['hero-row1.webp']; ?>
 
-<section class="section wrap news" aria-labelledby="news-title">
-  <div class="news__head">
-    <p class="label">NEWS</p>
-    <h2 class="h2" id="news-title">お知らせ</h2>
-    <a class="more" href="<?= e(page_url('news')) ?>">一覧を見る<?= icon('arrow', 16) ?></a>
-  </div>
+<section class="section wrap" aria-labelledby="news-title">
+  <?php render('section-head', ['label' => 'NEWS', 'title' => 'お知らせ', 'id' => 'news-title']); ?>
   <ul class="news__list">
     <?php foreach ($feed as $f): ?>
       <li>
@@ -71,105 +75,125 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
           <time datetime="<?= e($f['published_at']) ?>"><?= e(format_date($f['published_at'])) ?></time>
           <span class="chip <?= $f['type'] === 'case' ? 'chip--solid' : 'chip--outline' ?>"><?= $f['type'] === 'case' ? '施工事例' : 'お知らせ' ?></span>
           <span class="news__title"><?= e($f['title']) ?></span>
-          <?= icon('arrow', 18, 'news__arrow') ?>
+          <?= icon('arrow', 16, 'news__arrow') ?>
         </a>
       </li>
     <?php endforeach; ?>
   </ul>
-</section>
-
-<section class="section wrap" aria-labelledby="problems-title">
-  <?php render('section-head', ['label' => 'PROBLEMS', 'title' => 'こんなお悩み、|ありませんか。', 'id' => 'problems-title']); ?>
-  <ul class="grid grid--4 problems">
-    <?php foreach ($problems as [$ic, $t, $d]): ?>
-      <li>
-        <div class="card problem">
-          <span class="problem__icon"><?= icon($ic, 24) ?></span>
-          <h3 class="problem__title"><?= e($t) ?></h3>
-          <p class="problem__text"><?= e($d) ?></p>
-        </div>
-      </li>
-    <?php endforeach; ?>
-  </ul>
-</section>
-
-<section class="band" aria-labelledby="service-title">
-  <div class="section wrap">
-    <?php render('section-head', ['label' => 'SERVICE', 'title' => 'ダクト工事の巧みな技', 'id' => 'service-title', 'lead' => '店舗の規模・業態・建物に合わせて、フードもダクトも一つひとつオーダーメイドで設計します。']); ?>
-    <?php render('service-cards'); ?>
-  </div>
-</section>
-
-<section class="section wrap" aria-labelledby="reason-title">
-  <?php render('section-head', ['label' => 'REASON', 'title' => '野田が選ばれる理由', 'id' => 'reason-title']); ?>
-  <div class="bento">
-    <article class="bento__item bento__item--main">
-      <span class="bento__bg-no" aria-hidden="true">01</span>
-      <span class="bento__no">01</span>
-      <h3 class="bento__title kw">飲食店専門だから、<br>煙・油・熱の<wbr>現場を<wbr>知っている</h3>
-      <p class="bento__text">焼肉・焼き鳥・ラーメンなど油煙の多い厨房を20年以上。一般のダクト業者では難しい「店に合った」給排気の設計ができます。</p>
-    </article>
-    <article class="bento__item bento__item--card">
-      <span class="bento__no">02</span>
-      <h3 class="bento__title kw">提案・設計・製作・施工を<wbr>自社で一貫</h3>
-      <p class="bento__text">外注をはさまないので、要望がそのまま形になり、責任の所在も明確です。</p>
-    </article>
-    <article class="bento__item bento__item--card">
-      <span class="bento__no">03</span>
-      <h3 class="bento__title">すべてオーダーメイド設計</h3>
-      <p class="bento__text">梁・低い天井・ビルの高層階など難しい現場ほど、経験の差が出ます。</p>
-    </article>
-    <article class="bento__item bento__item--wide">
-      <div class="bento__copy">
-        <span class="bento__no">04</span>
-        <h3 class="bento__title kw">工事後も続く<wbr>アフターフォロー</h3>
-        <p class="bento__text">点検・清掃・ファン交換まで。ダクト火災を防ぐ定期メンテナンスをご提案します。</p>
-        <a class="more" href="<?= e(page_url('afterfollow')) ?>">アフターフォローについて<?= icon('arrow', 16) ?></a>
-      </div>
-      <div class="bento__img"><?= picture('top-afterfollow.jpg', 900, 600, '') ?></div>
-    </article>
-  </div>
+  <a class="anniv-band" href="<?= e(page_url('company')) ?>#s20">
+    <span class="anniv-band__mark"><?= picture('anniv-20th.png', 179, 179, '愛し愛されて20周年 20th Anniversary') ?></span>
+    <span class="anniv-band__text"><b class="kw">おかげさまで<wbr>創業20周年を<wbr>迎えました</b>20年で培った技術と信頼を礎に、<wbr>21年目からも皆様の期待を超える価値を。</span>
+    <span class="more">ごあいさつを読む<?= icon('arrow', 16) ?></span>
+  </a>
 </section>
 
 <section class="section wrap" aria-labelledby="works-title">
-  <?php render('section-head', ['label' => 'WORKS', 'title' => '最新の|施工事例', 'id' => 'works-title', 'link' => ['施工事例をもっと見る', page_url('construction_examples')]]); ?>
-  <ul class="grid grid--3 cases">
+  <?php render('section-head', ['label' => 'WORKS', 'title' => '最新の施工事例', 'id' => 'works-title', 'link' => ['施工事例をもっと見る', page_url('construction_examples')]]); ?>
+  <ul class="grid grid--3 cases cases--top">
     <?php foreach ($cases as $case): ?>
       <li><?php render('case-card', ['case' => $case]); ?></li>
     <?php endforeach; ?>
   </ul>
 </section>
 
-<section class="band" aria-labelledby="flow-title">
-  <div class="section wrap">
-    <?php render('section-head', ['label' => 'FLOW', 'title' => 'お問い合わせから|施工までの流れ', 'id' => 'flow-title', 'link' => ['詳しい流れを見る', page_url('flow')]]); ?>
-    <ol class="steps">
-      <?php foreach ($steps as $i => [$t, $d]): ?>
-        <li class="step">
-          <span class="step__dot" aria-hidden="true"><?= $i + 1 ?></span>
-          <span class="step__label">STEP <?= $i + 1 ?></span>
-          <h3 class="step__title"><?= e($t) ?></h3>
-          <p class="step__text"><?= e($d) ?></p>
-        </li>
-      <?php endforeach; ?>
-    </ol>
+<section class="section wrap" aria-labelledby="problems-title">
+  <?php render('section-head', ['label' => 'PROBLEMS', 'title' => 'お店でこんなお悩み、|ありませんか？', 'id' => 'problems-title']); ?>
+  <ul class="problems">
+    <?php foreach ($problems as [$ic, $t, $d]): ?>
+      <li class="problem">
+        <span class="problem__icon"><?php render('problem-art', ['art' => $ic]); ?></span>
+        <h3 class="problem__title"><?= e($t) ?></h3>
+        <p class="problem__text"><?= e($d) ?></p>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+  <p class="problems__answer kw">身に覚えがある場合は、<wbr><strong>ファンやダクトの設計</strong>に<wbr>原因があるかもしれません。</p>
+  <div class="row u-mt">
+    <div class="row__img row__img--43"><?= picture('top-craftsman.jpg', 900, 678, 'ダクトを見上げる株式会社野田の職人') ?></div>
+    <div class="row__body">
+      <h3 class="row__head">私たち専門業者へご相談ください</h3>
+      <p>給気・排気ダクトは、単に設置すれば良いものではありません。飲食店の規模やレイアウトに応じて、適した種類・大きさ・形状のダクトを選定し、設計する必要があります。そうしなければ、本来の性能を発揮できず、後々トラブルが発生する恐れがあります。</p>
+      <p>しかし、ダクトを専門に取り扱っていない業者では、「店舗に適したダクト」の選定は難しく、出店時の選定ミスが原因で、相次ぐ故障の修理に年間数十万円もの費用がかかることもあります。</p>
+      <p>長期間にわたり確実に機能するダクトを実現するために、豊富なダクト設計・施工の経験を持つ当社が、最適な選定から施工までしっかりとサポートいたします。</p>
+    </div>
   </div>
+</section>
+
+<section class="section wrap" aria-labelledby="service-title">
+  <?php render('section-head', ['label' => 'SERVICE', 'title' => 'ダクト工事の巧みな技', 'id' => 'service-title', 'lead' => '店舗の規模・業態・建物に合わせて、フードもダクトも一つひとつオーダーメイドで設計します。']); ?>
+  <?php render('service-cards'); ?>
+</section>
+
+<section class="section wrap" aria-labelledby="intro-title">
+  <?php render('section-head', ['label' => 'ABOUT', 'title' => '飲食店の換気・給排気を|自社一貫でトータルサポート', 'id' => 'intro-title']); ?>
+  <?php // 文章は現行サイトのトップから。お悩み→専門業者へ、の順に読めるよう区画を並べ替えた（2026-10-21） ?>
+  <div class="intro">
+    <div class="intro__text prose">
+      <p>当社は排煙・油煙対策のスペシャリストとして、居酒屋、ラーメン屋、焼鳥屋、焼肉店などの飲食店オーナー様を、新規開店からメンテナンスおよび清掃までトータルでサポートいたします。創業2005年、累計1,000件以上の施工実績があります。</p>
+      <p>換気扇やダクトのご提案から設計、施工まで、すべて自社で承っています。オーナー様のご希望・ご要望をしっかりうかがってそれを設計に反映し、その設計を施工により忠実に形にする――。自社一貫対応により、ミスなく、作業の無駄なく、責任を持って進行できます。</p>
+      <a class="more" href="<?= e(page_url('concept')) ?>">野田のコンセプト<?= icon('arrow', 16) ?></a>
+    </div>
+    <div class="intro__img intro__img--contain"><?php render('onestop-figure'); ?></div>
+  </div>
+</section>
+
+<section class="section wrap" aria-labelledby="reason-title">
+  <?php render('section-head', ['label' => 'REASON', 'title' => '野田が選ばれる理由', 'id' => 'reason-title']); ?>
+  <ol class="reasons">
+    <li class="reason reason--main">
+      <span class="reason__no">01</span>
+      <h3 class="reason__title kw">飲食店専門だから、<wbr>煙・油・熱の<wbr>現場を<wbr>知っている</h3>
+      <p class="reason__text">焼肉・焼き鳥・ラーメンなど油煙の多い厨房を20年以上。一般のダクト業者では難しい「店に合った」給排気の設計ができます。</p>
+    </li>
+    <li class="reason">
+      <span class="reason__no">02</span>
+      <h3 class="reason__title kw">提案・設計・製作・施工を<wbr>自社で一貫</h3>
+      <p class="reason__text">外注をはさまないので、要望がそのまま形になり、責任の所在も明確です。</p>
+    </li>
+    <li class="reason">
+      <span class="reason__no">03</span>
+      <h3 class="reason__title">すべてオーダーメイド設計</h3>
+      <p class="reason__text">梁・低い天井・ビルの高層階など難しい現場ほど、経験の差が出ます。</p>
+    </li>
+    <li class="reason reason--img">
+      <div class="reason__body">
+        <span class="reason__no">04</span>
+        <h3 class="reason__title kw">工事後も続く<wbr>アフターフォロー</h3>
+        <p class="reason__text">使えば使うほどダクト内部は油やホコリで汚れていき、その汚れが不具合や故障、ひいてはダクト火災の原因になることも。点検・清掃・ファン交換まで、定期的なメンテナンスで長くお付き合いします。</p>
+        <a class="more" href="<?= e(page_url('afterfollow')) ?>">アフターフォローについて<?= icon('arrow', 16) ?></a>
+      </div>
+      <div class="reason__img"><?= slides(['top-afterfollow.jpg', 'after-rooftop.jpg', 'after-grease.jpg'], 900, 600, '') ?></div>
+    </li>
+  </ol>
+</section>
+
+<section class="section wrap" aria-labelledby="flow-title">
+  <?php render('section-head', ['label' => 'FLOW', 'title' => 'お問い合わせから|施工までの流れ', 'id' => 'flow-title', 'link' => ['詳しい流れを見る', page_url('flow')]]); ?>
+  <ol class="steps">
+    <?php foreach ($steps as $i => [$t, $d]): ?>
+      <li class="step">
+        <span class="step__label">STEP<b><?= sprintf('%02d', $i + 1) ?></b></span>
+        <h3 class="step__title"><?= e($t) ?></h3>
+        <p class="step__text"><?= e($d) ?></p>
+      </li>
+    <?php endforeach; ?>
+  </ol>
 </section>
 
 <section class="section wrap" aria-labelledby="partner-title">
   <div class="partner">
-    <span class="partner__icon"><?= icon('blueprint', 28) ?></span>
+    <div class="partner__bg" aria-hidden="true"><?= picture('partner-blueprint.jpg', 1080, 608, '') ?></div>
     <div class="partner__text">
-      <p class="label">FOR PARTNERS</p>
-      <h2 class="partner__title" id="partner-title">設計事務所・内装施工業者様へ</h2>
+      <p class="label label--light">FOR PARTNERS</p>
+      <h2 class="partner__title kw" id="partner-title">設計事務所・<wbr>内装施工業者様へ</h2>
       <p>給排気計算、フード・ダクトの設計相談、出店基準をクリアする煙対策プランのご相談を承ります。</p>
     </div>
-    <a class="btn btn--blue" href="<?= e(page_url('customer')) ?>">業者様向けページへ<?= icon('arrow', 18) ?></a>
+    <a class="btn btn--white" href="<?= e(page_url('customer')) ?>">業者様向けページへ<?= icon('arrow', 18) ?></a>
   </div>
 </section>
 
 <section class="section wrap" aria-labelledby="ig-title">
-  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => '私たちの日々の仕事', 'id' => 'ig-title', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
+  <?php render('section-head', ['label' => 'INSTAGRAM', 'title' => '私たちの日々の仕事', 'id' => 'ig-title', 'icon' => 'instagram', 'link' => ['@' . company('instagram_handle') . ' をフォロー', company('instagram_url')]]); ?>
   <ul class="ig">
     <?php foreach ($ig as $item): ?>
       <li>
@@ -184,7 +208,4 @@ $marquee = ['焼肉店', '焼き鳥店', '居酒屋', 'ラーメン店', 'うな
       </li>
     <?php endforeach; ?>
   </ul>
-  <?php if ($ig[0]['fallback']): ?>
-    <p class="ig__cta"><a class="btn btn--outline" href="<?= e(company('instagram_url')) ?>" target="_blank" rel="noopener"><?= icon('instagram', 18) ?>Instagram で見る</a></p>
-  <?php endif; ?>
 </section>

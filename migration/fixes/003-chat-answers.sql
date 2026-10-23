@@ -1,0 +1,11 @@
+-- AI 相談に後から教える「質問と答え」（管理画面の「AI に教える答え」で足す。Boss 2026-10-22）と、
+-- AI が答えられなかった質問の印（会話の記録ごとに、答えられなかった質問を JSON の並びで残す）
+CREATE TABLE IF NOT EXISTS chat_answers (
+  id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  question VARCHAR(500) NOT NULL,
+  answer TEXT NOT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ALTER TABLE chat_logs ADD COLUMN unanswered TEXT NULL DEFAULT NULL AFTER reported

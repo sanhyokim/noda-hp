@@ -9,6 +9,7 @@ return [
         'tel' => '092-504-5502',
         'fax' => '092-504-5518',
         'hours' => '9:00〜17:00',
+        'closed' => '土日祝休み', // ボス確認済み：営業日は月〜金、土日祝は休み（2026-10-21）
         'hq_zip' => '812-0854',
         'hq_address' => '福岡県福岡市博多区東月隈3-5-4',
         'hq_region' => '福岡県',
@@ -148,15 +149,43 @@ return [
         ['key' => 'contact'],
     ],
 
+    // PC 上部の横並びメニュー（現行サイトと同じ並び）。'children' はマウスを乗せると開く。
+    'gnav' => [
+        ['key' => 'home'],
+        ['key' => 'concept'],
+        ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+        ]],
+        ['key' => 'construction_examples'],
+        ['key' => 'flow'],
+        ['key' => 'afterfollow'],
+        ['key' => 'question'],
+        ['key' => 'company', 'children' => ['company', 'customer', 'news', 'privacypolicy']],
+    ],
+
+    // 左カラムの見出し付きメニュー（現行サイトの「ダクト工事の巧みな技」「会社案内」）
+    'side_groups' => [
+        ['title' => 'ダクト工事の巧みな技', 'en' => 'SERVICE', 'keys' => [
+            'new_stores', 'about_duct_work', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+        ]],
+        ['title' => '会社案内', 'en' => 'COMPANY', 'keys' => [
+            'home', 'concept', 'company', 'customer', 'flow', 'afterfollow', 'construction_examples', 'question', 'news', 'contact',
+        ]],
+    ],
+
     // フッターのリンク（横並び）
     'footer' => [
         'concept', 'about_duct_work', 'construction_examples', 'flow', 'afterfollow',
         'question', 'company', 'customer', 'news', 'contact', 'privacypolicy',
     ],
 
-    // 左カラム下のバナー
+    // 左カラム上の動画と施工事例バナー（現行サイトと同じもの。動画は押したときだけ YouTube を読み込む）
+    'side_video' => ['youtube_id' => 'Bd9sD0_vSvU', 'image' => 'side-video.jpg', 'title' => 'この吸引力をご覧ください！（消煙機の動画）'],
+    'side_cases' => ['image' => 'side-cases.jpg', 'w' => 540, 'h' => 425, 'alt' => '全てオーダーメイド設計 施工事例'],
+
+    // 左カラム下のバナー。w・h は元画像の大きさ（文字入りなので比率を変えず、元より大きく引き伸ばさない）
     'banners' => [
-        ['image' => 'banner-shoenki.png', 'alt' => '野田の消煙機', 'url' => 'https://shoenki.duct-noda.com/'],
-        ['image' => 'banner-cleaning.jpg', 'alt' => 'ダクト清掃', 'url' => 'https://www.cleaning-duct.com/'],
+        ['image' => 'banner-shoenki.png', 'w' => 260, 'h' => 112, 'alt' => '野田の消煙機', 'url' => 'https://shoenki.duct-noda.com/'],
+        ['image' => 'banner-cleaning.jpg', 'w' => 1200, 'h' => 600, 'alt' => 'ダクト清掃', 'url' => 'https://www.cleaning-duct.com/'],
     ],
 ];
