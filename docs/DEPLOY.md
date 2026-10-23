@@ -179,8 +179,8 @@
 ### B-5. Google への届け出（10分。切り替えの当日か翌日）
 
 1. Google サーチコンソール（https://search.google.com/search-console ）を開き、duct-noda.com を選ぶ
-2. 左の「サイトマップ」で、`sitemap.xml` を入れて「送信」
-   - 旧サイトのサイトマップ（`wp-sitemap.xml` など）が並んでいたら、その行の「︙」から削除する
+2. 左の「サイトマップ」で、`https://duct-noda.com/sitemap.xml` を入れて「送信」（ドメイン全体で登録しているので、`https://` からの完全なアドレスが必要。`sitemap.xml` だけだと「サイトマップ アドレスが無効です」になる）
+   - 旧サイトのサイトマップ（`page-sitemap.xml`、`post-sitemap.xml` など）が並んでいたら、その行の「︙」から削除する。`https://shoenki.duct-noda.com/` で始まるものは消煙機サイトのものなので残す
 3. 左の「URL 検査」に https://duct-noda.com/ を入れ、「インデックス登録をリクエスト」を押す
 
 検索結果が新しいページに入れ替わるまで、数日〜数週間かかります。その間、旧サイトのアドレスで来た人は、新しいページへ自動で移ります。
