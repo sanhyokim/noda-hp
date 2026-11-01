@@ -86,18 +86,22 @@ $works = cases_with_title_words(['特注', '変形', 'デザインフード', '�
 </section>
 
 <section class="section wrap" aria-labelledby="s2">
-  <?php render('section-head', ['label' => 'WHAT WE MAKE', 'title' => '野田がつくる特注フード', 'id' => 's2']); ?>
+  <?php render('section-head', ['label' => 'WHAT WE MAKE', 'title' => '野田がつくる特注フード', 'id' => 's2', 'lead' => '形・大きさ・色・素材に決まりはありません。これまでにつくってきた特注フードの一例をご紹介します。']); ?>
   <ol class="rows">
-    <?php foreach ($types as $i => [$t, $img, $alt, $ps]): ?>
+    <?php foreach ($types as [$t, $img, $alt, $ps]): ?>
       <li class="row">
         <div class="row__img"><?= picture($img, 900, 600, $alt) ?></div>
         <div class="row__body">
-          <h3 class="row__head"><span class="row__no"><?= sprintf('%02d', $i + 1) ?></span><?= e($t) ?></h3>
+          <h3 class="row__head"><?= e($t) ?></h3>
           <?php foreach ($ps as $p): ?><p><?= e($p) ?></p><?php endforeach; ?>
         </div>
       </li>
     <?php endforeach; ?>
   </ol>
+  <div class="callout u-mt">
+    <h3>ここにない形も、ご相談ください。</h3>
+    <p>「こんなフードはできる？」というイメージや写真があれば、それをもとに形と仕上げをご提案します。</p>
+  </div>
 </section>
 
 <section class="band" aria-labelledby="s4">

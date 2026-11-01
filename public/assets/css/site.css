@@ -1159,6 +1159,7 @@ body:not(.page-company):not(.page-construction_examples) main .section:not(:firs
   .js .reveal { opacity: 1; transform: none; }
 }
 .u-mt { margin-top: 20px; }
+.rows + .callout { margin-top: 48px; }
 .u-mb { margin-bottom: 20px; }
 
 /* ---- 「同じ担当者が対応します！」の動く図（app/templates/onestop-figure.php）
