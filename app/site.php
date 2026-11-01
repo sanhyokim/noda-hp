@@ -71,6 +71,12 @@ return [
             'title' => '焼肉店の上引きフード工事｜特許取得NC-02クリアーフード【株式会社野田】',
             'description' => '自社特許（2件）の上引きフード「NC-02クリアーフード」。少ない排煙量で従来型と同等の吸煙力、工事費は当社従来型比で約40%減、冷暖房費も節約。スリムで客席の視界を妨げません。店の内装に合わせた特注製作も可能。',
         ],
+        'custom-hood' => [
+            'path' => 'custom-hood/',
+            'name' => '特注フード・オーダーメイド製作',
+            'title' => '特注フード・オーダーメイドの厨房フード｜内装に合わせたデザインフード【株式会社野田】',
+            'description' => '他店とは一味違う、記憶に残る特注フード。銅板貼りや金色・黒の特殊塗装、多角形や筒形など内装に合わせたデザインと、煙の量から計算した吸い込みを両立。梁や低い天井に合わせた変形フード、煙の多い業態の大容量フードも1台から設計・製作・取り付けします。',
+        ],
         'smokeless_roster' => [
             'path' => 'smokeless_roster/',
             'name' => '焼肉店 無煙ロースターのダクト工事',
@@ -138,7 +144,7 @@ return [
         ['key' => 'home'],
         ['key' => 'concept'],
         ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
-            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood',
         ]],
         ['key' => 'construction_examples'],
         ['key' => 'flow'],
@@ -154,7 +160,7 @@ return [
         ['key' => 'home'],
         ['key' => 'concept'],
         ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
-            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood',
         ]],
         ['key' => 'construction_examples'],
         ['key' => 'flow'],
@@ -166,7 +172,7 @@ return [
     // 左カラムの見出し付きメニュー（現行サイトの「ダクト工事の巧みな技」「会社案内」）
     'side_groups' => [
         ['title' => 'ダクト工事の巧みな技', 'en' => 'SERVICE', 'keys' => [
-            'new_stores', 'about_duct_work', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+            'new_stores', 'about_duct_work', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood',
         ]],
         ['title' => '会社案内', 'en' => 'COMPANY', 'keys' => [
             'home', 'concept', 'company', 'customer', 'flow', 'afterfollow', 'construction_examples', 'question', 'news', 'contact',

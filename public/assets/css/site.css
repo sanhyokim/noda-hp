@@ -947,6 +947,15 @@ main:focus { outline: none; }
 .gallery li { overflow: hidden; border-radius: var(--r-sm); aspect-ratio: 4 / 3; background: var(--c-line); }
 .gallery .media { width: 100%; height: 100%; }
 @media (min-width: 600px) { .gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* 特注フードの写真（縦長4枚、説明つき。2026-11-01） */
+.hoodgal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 12px; }
+.hoodgal__img { display: block; overflow: hidden; border-radius: var(--r-sm); aspect-ratio: 3 / 4; background: var(--c-line); }
+.hoodgal__img .media { width: 100%; height: 100%; }
+.hoodgal__img img { transition: transform .8s var(--ease); }
+.hoodgal li:hover .hoodgal__img img { transform: scale(1.03); }
+.hoodgal figcaption { margin-top: 10px; padding-top: 8px; border-top: 1px solid var(--c-line); font-size: 13px; line-height: 1.6; font-weight: 700; color: var(--c-ink); text-wrap: pretty; word-break: auto-phrase; }
+@media (min-width: 900px) { .hoodgal { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; } }
+@media (prefers-reduced-motion: reduce) { .hoodgal__img img { transition: none; } }
 .row__img--contain { aspect-ratio: auto; background: #000; }
 .row__img--figure { aspect-ratio: auto; background: var(--c-white); border-radius: 0; }
 .row__img--contain img { object-fit: contain; }

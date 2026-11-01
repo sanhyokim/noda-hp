@@ -143,6 +143,26 @@ function cases_in_categories(array $names, int $limit = 3): array
     return attach_categories($st->fetchAll());
 }
 
+// 題名にどれかの言葉（例：特注、変形）が入った新しい施工事例。特注フードのページで使う（2026-11-01）。
+// 管理画面で題名に「特注」を入れて投稿すれば、自動でここに並ぶ。
+function cases_with_title_words(array $words, int $limit = 6): array
+{
+    $pdo = db();
+    if (!$pdo || !$words) {
+        return [];
+    }
+    $like = implode(' OR ', array_fill(0, count($words), "c.title LIKE CONCAT('%', ?, '%')"));
+    $st = $pdo->prepare(
+        "SELECT c.id, c.slug, c.title, c.published_at, c.location, i.path_thumb AS image, i.width AS image_w, i.height AS image_h
+         FROM cases c
+         LEFT JOIN case_images i ON i.id = c.thumbnail_image_id
+         WHERE " . live_sql('c') . " AND ($like)
+         ORDER BY c.published_at DESC, c.id DESC LIMIT " . (int)$limit
+    );
+    $st->execute(array_values($words));
+    return attach_categories($st->fetchAll());
+}
+
 // ---------- 段階4：施工事例の一覧・詳細、お知らせ ----------
 
 const CASES_PER_PAGE = 12;
