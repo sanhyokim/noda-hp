@@ -77,6 +77,12 @@ return [
             'title' => '特注フード・オーダーメイドの厨房フード｜内装に合わせたデザインフード【株式会社野田】',
             'description' => '他店とは一味違う、記憶に残る特注フード。銅板貼りや金色・黒の特殊塗装、多角形や筒形など内装に合わせたデザインと、煙の量から計算した吸い込みを両立。梁や低い天井に合わせた変形フード、煙の多い業態の大容量フードも1台から設計・製作・取り付けします。',
         ],
+        'coin-laundry' => [
+            'path' => 'coin-laundry/',
+            'name' => 'コインランドリーのダクト工事',
+            'title' => 'コインランドリーの排気ダクト工事｜乾燥機の排気・給気を設計施工【株式会社野田】',
+            'description' => 'コインランドリーの乾燥機の排気ダクト、給気口、排気口の位置まで設計・施工。高温・多湿・糸くずに強いステンレスダクトで、大手チェーン店の基準にも対応。開業日に合わせた短期施工、工務店様からのご依頼も承ります。福岡・九州・中国地方。',
+        ],
         'smokeless_roster' => [
             'path' => 'smokeless_roster/',
             'name' => '焼肉店 無煙ロースターのダクト工事',
@@ -144,7 +150,7 @@ return [
         ['key' => 'home'],
         ['key' => 'concept'],
         ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
-            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood',
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood', 'coin-laundry',
         ]],
         ['key' => 'construction_examples'],
         ['key' => 'flow'],
@@ -160,7 +166,7 @@ return [
         ['key' => 'home'],
         ['key' => 'concept'],
         ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
-            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood',
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood', 'coin-laundry',
         ]],
         ['key' => 'construction_examples'],
         ['key' => 'flow'],
@@ -172,7 +178,7 @@ return [
     // 左カラムの見出し付きメニュー（現行サイトの「ダクト工事の巧みな技」「会社案内」）
     'side_groups' => [
         ['title' => 'ダクト工事の巧みな技', 'en' => 'SERVICE', 'keys' => [
-            'new_stores', 'about_duct_work', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood',
+            'new_stores', 'about_duct_work', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood', 'coin-laundry',
         ]],
         ['title' => '会社案内', 'en' => 'COMPANY', 'keys' => [
             'home', 'concept', 'company', 'customer', 'flow', 'afterfollow', 'construction_examples', 'question', 'news', 'contact',
