@@ -94,26 +94,24 @@ function latest_feed(int $limit): array
 // 各要素：image(公開パス or 外部URL), url, alt, fallback(bool)
 function instagram_items(): array
 {
+    // 自分のサーバーに保存した写真だけを使う（Instagram の写真のアドレスは数日で切れるため）。
+    // 足りない分は施工写真で埋めるので、いつでも6枚そろう。
+    $items = [];
     $file = STORAGE_DIR . '/cache/instagram.json';
     if (is_file($file)) {
         $json = json_decode((string)file_get_contents($file), true);
-        $items = [];
         foreach (($json['data'] ?? []) as $m) {
-            $src = ($m['media_type'] ?? '') === 'VIDEO' ? ($m['thumbnail_url'] ?? '') : ($m['media_url'] ?? '');
-            if ($src === '') {
+            $local = (string)($m['local'] ?? '');
+            if ($local === '' || !is_file(PUBLIC_DIR . '/' . $local)) {
                 continue;
             }
-            $items[] = ['image' => $src, 'url' => $m['permalink'] ?? company('instagram_url'), 'alt' => mb_strimwidth((string)($m['caption'] ?? 'Instagram の投稿'), 0, 60, '…'), 'fallback' => false];
+            $items[] = ['image' => $local, 'url' => $m['permalink'] ?? company('instagram_url'), 'alt' => mb_strimwidth((string)($m['caption'] ?? 'Instagram の投稿'), 0, 60, '…'), 'fallback' => false];
             if (count($items) === 6) {
-                break;
+                return $items;
             }
         }
-        if (count($items) === 6) {
-            return $items;
-        }
     }
-    $items = [];
-    for ($i = 1; $i <= 6; $i++) {
+    for ($i = 1; count($items) < 6; $i++) {
         $items[] = ['image' => 'ig-fallback-' . $i . '.jpg', 'url' => company('instagram_url'), 'alt' => '株式会社野田の施工の様子 ' . $i, 'fallback' => true];
     }
     return $items;

@@ -18,3 +18,5 @@
 /vendor/
 # サーバーに上げる一式（sh tools/build-package.sh で作る）
 /dist/
+# Instagram の写真（サーバーが自動で保存する）
+/public/media/instagram/

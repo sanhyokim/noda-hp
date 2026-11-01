@@ -198,11 +198,7 @@ $marquee = [
     <?php foreach ($ig as $item): ?>
       <li>
         <a class="ig__item" href="<?= e($item['url']) ?>" target="_blank" rel="noopener" aria-label="<?= e($item['alt']) ?>（Instagram）">
-          <?php if ($item['fallback']): ?>
-            <?= picture($item['image'], 600, 600, '') ?>
-          <?php else: ?>
-            <img src="<?= e($item['image']) ?>" width="600" height="600" alt="" loading="lazy" decoding="async">
-          <?php endif; ?>
+          <?= picture($item['image'], 600, 600, '') /* Instagram の写真もサーバーに保存した物を出す */ ?>
           <span class="ig__mark" aria-hidden="true"><?= icon('instagram', 22) ?></span>
         </a>
       </li>

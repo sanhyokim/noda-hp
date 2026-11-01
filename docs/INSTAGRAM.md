@@ -91,5 +91,7 @@
 - 使っているのは Instagram API with Instagram Login（`graph.instagram.com`）。`/me/media` で最新12件を取り、画像・動画のサムネイルから6件を出す（`app/lib/instagram.php`）
 - 取得は6時間に1回まで。結果は `storage/cache/instagram.json` に保存し、公開ページはこのファイルだけを読む。取得に失敗した時は前回のファイルを使う
 - 長期トークン（60日）は、取得時に残り10日以下なら `refresh_access_token` で延長する
+- 読み込みは公開ページが開かれた時に6時間に1回、ページを返し終わってから行う（`instagram_tick()`、public/index.php）
+- 写真は Instagram のアドレスを直接使わず（数日で期限切れになるため）、`public/media/instagram/<投稿id>.jpg/.webp`（正方形600px）に保存して出す。保存できていない分は施工写真 `ig-fallback-N.jpg` で埋める
 - トークンが無い・無効の時は `ig-fallback-1.jpg`〜`ig-fallback-6.jpg` と「Instagram で見る」ボタン
 - 試験：`storage/cache/instagram.json` にダミーの JSON を置くと6枚表示になる（指示書 8章）

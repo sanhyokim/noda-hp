@@ -21,6 +21,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 if (site_noindex()) {
     header('X-Robots-Tag: noindex, nofollow'); // 試験用の場所（/new/）を検索エンジンに載せない
 }
+instagram_tick();   // Instagram の最新投稿を6時間に1回読み込む（ページを返し終わってから）
 chat_report_tick(); // AI 相談の知らせのメール（5分に1回だけ確かめ、ページを返し終わってから送る）
 
 $path = rawurldecode((string)parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
