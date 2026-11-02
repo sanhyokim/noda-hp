@@ -60,6 +60,24 @@ function breadcrumb_ld(array $items): array
     return ['@type' => 'BreadcrumbList', 'itemListElement' => $list];
 }
 
+/** 施工事例・お知らせの詳しいページ用（見出し・画像・公開日） */
+function article_ld(string $headline, string $path, string $published, string $modified, array $images): array
+{
+    $ld = [
+        '@type' => 'Article',
+        'headline' => mb_strimwidth($headline, 0, 110, '…'),
+        'mainEntityOfPage' => abs_url($path),
+        'datePublished' => date('c', strtotime($published)),
+        'dateModified' => date('c', strtotime($modified ?: $published)),
+        'author' => ['@id' => abs_url() . '#organization'],
+        'publisher' => ['@id' => abs_url() . '#organization'],
+    ];
+    if ($images) {
+        $ld['image'] = array_values($images);
+    }
+    return $ld;
+}
+
 function json_ld(array $graph): string
 {
     $data = ['@context' => 'https://schema.org', '@graph' => $graph];

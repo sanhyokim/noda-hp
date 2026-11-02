@@ -9,6 +9,7 @@ return [
         'tel' => '092-504-5502',
         'fax' => '092-504-5518',
         'hours' => '9:00〜17:00',
+        'closed' => '土日祝休み', // ボス確認済み：営業日は月〜金、土日祝は休み（2026-10-21）
         'hq_zip' => '812-0854',
         'hq_address' => '福岡県福岡市博多区東月隈3-5-4',
         'hq_region' => '福岡県',
@@ -69,6 +70,18 @@ return [
             'name' => '焼肉店 上引きフードのダクト工事',
             'title' => '焼肉店の上引きフード工事｜特許取得NC-02クリアーフード【株式会社野田】',
             'description' => '自社特許（2件）の上引きフード「NC-02クリアーフード」。少ない排煙量で従来型と同等の吸煙力、工事費は当社従来型比で約40%減、冷暖房費も節約。スリムで客席の視界を妨げません。店の内装に合わせた特注製作も可能。',
+        ],
+        'custom-hood' => [
+            'path' => 'custom-hood/',
+            'name' => '特注フード・オーダーメイド製作',
+            'title' => '特注フード・オーダーメイドの厨房フード｜内装に合わせたデザインフード【株式会社野田】',
+            'description' => '他店とは一味違う、記憶に残る特注フード。銅板貼りや金色・黒の特殊塗装、多角形や筒形など内装に合わせたデザインと、煙の量から計算した吸い込みを両立。梁や低い天井に合わせた変形フード、煙の多い業態の大容量フードも1台から設計・製作・取り付けします。',
+        ],
+        'coin-laundry' => [
+            'path' => 'coin-laundry/',
+            'name' => 'コインランドリーのダクト工事',
+            'title' => 'コインランドリーの排気ダクト工事｜乾燥機の排気・給気を設計施工【株式会社野田】',
+            'description' => 'コインランドリーの乾燥機の排気ダクト、給気口、排気口の位置まで設計・施工。高温・多湿・糸くずに強いステンレスダクトで、大手チェーン店の基準にも対応。開業日に合わせた短期施工、工務店様からのご依頼も承ります。福岡・九州・中国地方。',
         ],
         'smokeless_roster' => [
             'path' => 'smokeless_roster/',
@@ -137,7 +150,7 @@ return [
         ['key' => 'home'],
         ['key' => 'concept'],
         ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
-            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster',
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood', 'coin-laundry',
         ]],
         ['key' => 'construction_examples'],
         ['key' => 'flow'],
@@ -148,15 +161,43 @@ return [
         ['key' => 'contact'],
     ],
 
+    // PC 上部の横並びメニュー（現行サイトと同じ並び）。'children' はマウスを乗せると開く。
+    'gnav' => [
+        ['key' => 'home'],
+        ['key' => 'concept'],
+        ['key' => 'about_duct_work', 'label' => 'サービス', 'children' => [
+            'about_duct_work', 'new_stores', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood', 'coin-laundry',
+        ]],
+        ['key' => 'construction_examples'],
+        ['key' => 'flow'],
+        ['key' => 'afterfollow'],
+        ['key' => 'question'],
+        ['key' => 'company', 'children' => ['company', 'customer', 'news', 'privacypolicy']],
+    ],
+
+    // 左カラムの見出し付きメニュー（現行サイトの「ダクト工事の巧みな技」「会社案内」）
+    'side_groups' => [
+        ['title' => 'ダクト工事の巧みな技', 'en' => 'SERVICE', 'keys' => [
+            'new_stores', 'about_duct_work', 'duct-hood', 'smoke_problems', 'hood-installation', 'smokeless_roster', 'custom-hood', 'coin-laundry',
+        ]],
+        ['title' => '会社案内', 'en' => 'COMPANY', 'keys' => [
+            'home', 'concept', 'company', 'customer', 'flow', 'afterfollow', 'construction_examples', 'question', 'news', 'contact',
+        ]],
+    ],
+
     // フッターのリンク（横並び）
     'footer' => [
         'concept', 'about_duct_work', 'construction_examples', 'flow', 'afterfollow',
         'question', 'company', 'customer', 'news', 'contact', 'privacypolicy',
     ],
 
-    // 左カラム下のバナー
+    // 左カラム上の動画と施工事例バナー（現行サイトと同じもの。動画は押したときだけ YouTube を読み込む）
+    'side_video' => ['youtube_id' => 'Bd9sD0_vSvU', 'image' => 'side-video.jpg', 'title' => 'この吸引力をご覧ください！（消煙機の動画）'],
+    'side_cases' => ['image' => 'side-cases.jpg', 'w' => 540, 'h' => 425, 'alt' => '全てオーダーメイド設計 施工事例'],
+
+    // 左カラム下のバナー。w・h は元画像の大きさ（文字入りなので比率を変えず、元より大きく引き伸ばさない）
     'banners' => [
-        ['image' => 'banner-shoenki.png', 'alt' => '野田の消煙機', 'url' => 'https://shoenki.duct-noda.com/'],
-        ['image' => 'banner-cleaning.jpg', 'alt' => 'ダクト清掃', 'url' => 'https://www.cleaning-duct.com/'],
+        ['image' => 'banner-shoenki.png', 'w' => 260, 'h' => 112, 'alt' => '野田の消煙機', 'url' => 'https://shoenki.duct-noda.com/'],
+        ['image' => 'banner-cleaning.jpg', 'w' => 1200, 'h' => 600, 'alt' => 'ダクト清掃', 'url' => 'https://www.cleaning-duct.com/'],
     ],
 ];

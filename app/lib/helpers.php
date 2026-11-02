@@ -21,10 +21,34 @@ function e(?string $s): string
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/** 見出し用：「|」を改行できる位置に、製品の型番（NC-02 など）は途中で折り返さない */
+function heading_html(string $s): string
+{
+    $h = str_replace('|', '<wbr>', e($s));
+    return preg_replace('/[A-Z]{2,}-\d+/', '<span class="nw">$0</span>', $h);
+}
+
+/**
+ * 検索エンジンに載せない状態か。設定の noindex が true でも、サイトの一番上（/）に置いた時は載せる。
+ * /new/ から本番の場所へ移した時に、設定ファイルを書き換え忘れても検索から消えないように（引き渡し手順を短くするため）。
+ */
+function site_noindex(): bool
+{
+    return (bool)config('noindex') && base_url() !== '/';
+}
+
 function base_url(): string
 {
-    $b = (string)config('base_url', '/');
-    return '/' . trim($b, '/') . (trim($b, '/') === '' ? '' : '/');
+    static $base = null;
+    if ($base === null) {
+        $b = (string)config('base_url', 'auto');
+        if ($b === 'auto') {
+            // 置いた場所から決める（/new/index.php なら /new/）。設定ファイルを作る前の最初の設定画面でも正しく動くように
+            $b = PHP_SAPI === 'cli-server' || PHP_SAPI === 'cli' ? '/' : str_replace('\\', '/', dirname((string)($_SERVER['SCRIPT_NAME'] ?? '/index.php')));
+        }
+        $base = '/' . trim($b, '/') . (trim($b, '/') === '' ? '' : '/');
+    }
+    return $base;
 }
 
 // サイト内のリンク。BASE_URL を付ける。url('concept/') → /new/concept/
