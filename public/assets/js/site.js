@@ -399,4 +399,99 @@
       io.observe(el);
     });
   });
+
+  /* ---- 特注フードの素材サンプル：素材を選ぶとフードと素材プレートが切り替わる（2026-11-12）
+     70種類あっても重くならないよう、写真は選んだ素材とその前後だけを読む ---- */
+  document.querySelectorAll('[data-mat]').forEach(function (root) {
+    var hoods = root.querySelectorAll('.mat__hood');
+    var plates = root.querySelectorAll('.mat__plate');
+    var texts = root.querySelectorAll('.mat__text');
+    var chips = root.querySelectorAll('.mat__chip');
+    var fbtns = root.querySelectorAll('.mat__fbtn');
+    var more = root.querySelector('.mat__more');
+    var view = root.querySelector('.mat__view');
+    var cur = 0;
+    var load = function (i) {
+      [hoods[i], plates[i]].forEach(function (el) {
+        if (!el) return;
+        el.querySelectorAll('[data-srcset]').forEach(function (s) { s.srcset = s.dataset.srcset; s.removeAttribute('data-srcset'); });
+        el.querySelectorAll('[data-src]').forEach(function (s) { s.src = s.dataset.src; s.removeAttribute('data-src'); });
+      });
+    };
+    var visible = function () {
+      return Array.prototype.filter.call(chips, function (c) { return !c.parentNode.hidden; })
+        .map(function (c) { return +c.dataset.i; });
+    };
+    var show = function (i, scroll) {
+      if (i === cur || !hoods[i]) return;
+      load(i);
+      [hoods, plates, texts, chips].forEach(function (list) {
+        list[cur].classList.remove('is-on');
+        list[i].classList.add('is-on');
+      });
+      hoods[cur].setAttribute('aria-hidden', 'true');
+      hoods[i].removeAttribute('aria-hidden');
+      texts[cur].hidden = true;
+      texts[i].hidden = false;
+      chips[cur].setAttribute('aria-pressed', 'false');
+      chips[i].setAttribute('aria-pressed', 'true');
+      cur = i;
+      // 前後も先に読んでおく（次へを押した時に待たせない）
+      var v = visible(), k = v.indexOf(i);
+      if (k > -1) { load(v[(k + 1) % v.length]); load(v[(k - 1 + v.length) % v.length]); }
+      if (scroll) {
+        var strip = chips[i].closest('.mat__chips');
+        if (strip.scrollWidth > strip.clientWidth) {
+          var li = chips[i].parentNode;
+          strip.scrollTo({ left: li.offsetLeft - (strip.clientWidth - li.offsetWidth) / 2, behavior: reduce.matches ? 'auto' : 'smooth' });
+        }
+      }
+    };
+    var step = function (d) {
+      var v = visible(), k = v.indexOf(cur);
+      if (!v.length) return;
+      show(v[k < 0 ? 0 : (k + d + v.length) % v.length], true);
+    };
+    chips.forEach(function (c) {
+      c.addEventListener('click', function () { show(+c.dataset.i, true); });
+      // マウスを乗せたら先に読んでおく
+      c.addEventListener('pointerenter', function () { load(+c.dataset.i); });
+    });
+    root.querySelector('.mat__nav--prev').addEventListener('click', function () { step(-1); });
+    root.querySelector('.mat__nav--next').addEventListener('click', function () { step(1); });
+    view.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowLeft') { step(-1); e.preventDefault(); }
+      if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
+    });
+    // スマホ：写真を左右にはらって切り替え
+    var x0 = null, y0 = 0;
+    view.addEventListener('pointerdown', function (e) { if (e.pointerType !== 'mouse') { x0 = e.clientX; y0 = e.clientY; } });
+    view.addEventListener('pointerup', function (e) {
+      if (x0 === null) return;
+      var dx = e.clientX - x0, dy = e.clientY - y0;
+      x0 = null;
+      if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) step(dx < 0 ? 1 : -1);
+    });
+    view.addEventListener('pointercancel', function () { x0 = null; });
+    // 色で絞り込む
+    fbtns.forEach(function (b) {
+      b.addEventListener('click', function () {
+        var f = b.dataset.family;
+        fbtns.forEach(function (o) { o.classList.toggle('is-on', o === b); o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+        chips.forEach(function (c) { c.parentNode.hidden = !!f && c.parentNode.dataset.family !== f; });
+        if (more) more.hidden = !!f;
+        var v = visible();
+        if (v.length && v.indexOf(cur) < 0) show(v[0], false);
+        var strip = root.querySelector('.mat__chips');
+        strip.scrollLeft = 0;
+      });
+    });
+    // 見える所まで来たら、最初の前後の写真も読んでおく
+    if (hoods.length > 1 && 'IntersectionObserver' in window) {
+      var pre = new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { load(1); load(hoods.length - 1); pre.disconnect(); }
+      }, { rootMargin: '300px' });
+      pre.observe(view);
+    }
+  });
 })();

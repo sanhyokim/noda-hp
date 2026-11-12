@@ -57,6 +57,17 @@ $faq = [
     ['新しく開業するお店でも頼めますか？', 'はい。図面の段階からご相談いただくと、内装や設備と合わせて無理のない形を決められます。'],
 ];
 $works = cases_with_title_words(['特注', '変形', 'デザインフード', '銅板'], 6);
+// 素材サンプル（Boss 2026-11-12「多様な素材で想いの通りに希望のフードが叶う」。70種類以上あるので操作しやすく、カッコよく）
+$mat = require APP_DIR . '/data/custom-materials.php';
+$matItems = $mat['items'];
+$matPic = function (string $src, int $w, int $h, string $alt, bool $now): string {
+    // 最初の1枚だけすぐ読む。ほかは選ばれた時（とその前後）に JS が読む＝70種類でも重くならない
+    [$jpg, $webp] = img_urls($src);
+    $a = $now ? '' : 'data-';
+    return '<picture>' . ($webp ? '<source type="image/webp" ' . $a . 'srcset="' . e($webp) . '">' : '')
+        . '<img ' . $a . 'src="' . e($jpg) . '" width="' . $w . '" height="' . $h . '" alt="' . e($alt) . '" decoding="async"' . ($now ? ' loading="lazy"' : '') . '></picture>';
+};
+$nn = fn(int $n): string => sprintf('%02d', $n);
 ?>
 <section class="section wrap" aria-labelledby="s3">
   <?php render('section-head', ['label' => 'GALLERY', 'title' => 'お客様の記憶に残る|特注フード', 'id' => 's3', 'lead' => '同じフードは二つとありません。お店ごとの空間に合わせてつくった特注フードの一部をご紹介します。']); ?>
@@ -100,6 +111,56 @@ $works = cases_with_title_words(['特注', '変形', 'デザインフード', '�
   <div class="callout u-mt">
     <h3>ここにない形も、ご相談ください。</h3>
     <p>「こんなフードはできる？」というイメージや写真があれば、それをもとに形と仕上げをご提案します。</p>
+  </div>
+</section>
+
+<section class="mat" aria-labelledby="s9" data-mat>
+  <div class="section wrap">
+    <?php render('section-head', ['label' => 'MATERIAL', 'title' => '多様な素材で、|想いのままのフードを。', 'id' => 's9', 'lead' => '金・銅・黒・銀。同じ形のフードでも、素材を変えるだけでお店の印象はがらりと変わります。' . $mat['total'] . '種類以上の素材から、内装とコンセプトにぴったりの一枚をお選びいただけます。']); ?>
+    <div class="mat__stage">
+      <div class="mat__view" tabindex="0" aria-roledescription="素材の見本" aria-label="素材ごとの仕上がりイメージ">
+        <div class="mat__hoods">
+          <?php foreach ($matItems as $i => $m): ?>
+            <figure class="mat__hood<?= $i === 0 ? ' is-on' : '' ?>" data-i="<?= $i ?>"<?= $i ? ' aria-hidden="true"' : '' ?>><?= $matPic('assets/img/material/' . $nn($m['no']) . '-hood.jpg', 900, 1200, str_replace('|', '', $m['name']) . 'で仕上げたフードのイメージ', $i === 0) ?></figure>
+          <?php endforeach; ?>
+        </div>
+        <span class="mat__tag">仕上がりイメージ</span>
+        <div class="mat__plates" aria-hidden="true">
+          <?php foreach ($matItems as $i => $m): ?>
+            <span class="mat__plate<?= $i === 0 ? ' is-on' : '' ?>" data-i="<?= $i ?>"><?= $matPic('assets/img/material/' . $nn($m['no']) . '-plate.jpg', 720, 720, '', $i === 0) ?></span>
+          <?php endforeach; ?>
+          <span class="mat__platecap">素材プレート</span>
+        </div>
+        <button class="mat__nav mat__nav--prev" type="button" aria-label="前の素材"><?= icon('arrow', 20) ?></button>
+        <button class="mat__nav mat__nav--next" type="button" aria-label="次の素材"><?= icon('arrow', 20) ?></button>
+      </div>
+      <div class="mat__info" aria-live="polite">
+        <?php foreach ($matItems as $i => $m): ?>
+          <div class="mat__text<?= $i === 0 ? ' is-on' : '' ?>" data-i="<?= $i ?>"<?= $i ? ' hidden' : '' ?>>
+            <p class="mat__no"><span>No.</span><?= $nn($m['no']) ?></p>
+            <p class="mat__family"><?= e($mat['families'][$m['family']] ?? '') ?></p>
+            <h3 class="mat__name"><?= heading_html($m['name']) ?></h3>
+            <p class="mat__desc"><?= e($m['desc']) ?></p>
+          </div>
+        <?php endforeach; ?>
+        <p class="mat__total"><b><?= $mat['total'] ?></b><span>種類以上の<br>素材から選べます</span></p>
+      </div>
+      <div class="mat__pick">
+        <div class="mat__filter" role="group" aria-label="色で絞り込む">
+          <button class="mat__fbtn is-on" type="button" data-family="" aria-pressed="true">すべて</button>
+          <?php foreach ($mat['families'] as $key => $label): ?>
+            <button class="mat__fbtn" type="button" data-family="<?= e($key) ?>" aria-pressed="false"><?= e($label) ?><sup><?= count(array_filter($matItems, fn($m) => $m['family'] === $key)) ?></sup></button>
+          <?php endforeach; ?>
+        </div>
+        <ul class="mat__chips">
+          <?php foreach ($matItems as $i => $m): ?>
+            <li data-family="<?= e($m['family']) ?>"><button class="mat__chip<?= $i === 0 ? ' is-on' : '' ?>" type="button" data-i="<?= $i ?>" aria-pressed="<?= $i === 0 ? 'true' : 'false' ?>" title="<?= e(str_replace('|', ' ', $m['name'])) ?>"><span class="mat__swatch"><?= picture('assets/img/material/' . $nn($m['no']) . '-chip.jpg', 200, 200, '') ?></span><span class="mat__chipno"><?= $nn($m['no']) ?></span><span class="u-sr"><?= e(str_replace('|', ' ', $m['name'])) ?></span></button></li>
+          <?php endforeach; ?>
+          <li class="mat__more" aria-hidden="true"><b>+<?= max(0, $mat['total'] - count($matItems)) ?></b><span>ほかにも</span></li>
+        </ul>
+      </div>
+    </div>
+    <p class="mat__note">ここでご紹介しているのは一部です。ほかにも多くの素材があり、お打ち合わせで内装に合うものをご提案します。</p>
   </div>
 </section>
 
