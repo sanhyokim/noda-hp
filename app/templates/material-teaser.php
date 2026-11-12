@@ -2,7 +2,8 @@
 // 素材サンプルへの案内（Boss「ほかのページでも紹介したい」2026-11-12）。
 // 写真が素材ごとにゆっくり切り替わり、見本を押してもその素材になる。ボタンで特注フードのページの素材の欄へ。
 $mat = materials();
-$items = array_slice($mat['items'], 0, 6); // 案内では6種類だけ（全部は特注フードのページで）
+$byNo = array_column($mat['items'], null, 'no');
+$items = array_values(array_filter(array_map(fn($n) => $byNo[$n] ?? null, $mat['teaser'] ?? []))) ?: array_slice($mat['items'], 0, 6); // 案内では6種類だけ（全部は特注フードのページで）
 $nn = fn(int $n): string => sprintf('%02d', $n);
 $url = page_url('custom-hood') . '#material';
 $id = 'mtz-' . e($id ?? 'title');
