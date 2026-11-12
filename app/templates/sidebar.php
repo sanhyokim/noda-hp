@@ -35,9 +35,9 @@
             <span class="hb2__slide"><?= material_pic('assets/img/material/side-' . $k . '.jpg', 520, 520, '', true) ?></span>
           <?php endforeach; ?>
         </span>
+        <span class="hb2__en" aria-hidden="true">CUSTOM HOOD</span>
         <span class="hb2__text">
-          <span class="hb2__en" aria-hidden="true">CUSTOM HOOD</span>
-          <span class="hb2__title">野田の特注フード</span>
+          <span class="hb2__title"><small>野田の</small>特注フード</span>
           <span class="hb2__chips" aria-hidden="true">
             <?php foreach ($hbChips as $no): ?><span class="hb2__chip"><?= material_pic('assets/img/material/' . sprintf('%02d', $no) . '-chip.jpg', 200, 200, '', true) ?></span><?php endforeach; ?>
           </span>
