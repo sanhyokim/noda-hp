@@ -52,6 +52,8 @@ render('page-head', [
   </ul>
 </section>
 
+<?php render('material-teaser', ['id' => 'duct-hood']); // 特注フードの素材サンプルへ（Boss 2026-11-12） ?>
+
 <section class="section wrap" aria-labelledby="s4">
   <?php render('section-head', ['label' => 'INTERVIEW', 'title' => 'お客様インタビュー', 'id' => 's4']); ?>
   <?php render('interview', [

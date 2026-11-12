@@ -494,4 +494,46 @@
       pre.observe(view);
     }
   });
+
+  /* ---- 素材サンプルへの案内：写真が素材ごとにゆっくり切り替わる。見本を押すとその素材に（押したら自動はやめる） ---- */
+  document.querySelectorAll('[data-mtz]').forEach(function (root) {
+    var hoods = root.querySelectorAll('.mtz__hood');
+    var chips = root.querySelectorAll('.mtz__chip');
+    var name = root.querySelector('.mtz__name');
+    var cur = 0, timer = null, seen = false;
+    var load = function (i) {
+      var el = hoods[i];
+      if (!el) return;
+      el.querySelectorAll('[data-srcset]').forEach(function (s) { s.srcset = s.dataset.srcset; s.removeAttribute('data-srcset'); });
+      el.querySelectorAll('[data-src]').forEach(function (s) { s.src = s.dataset.src; s.removeAttribute('data-src'); });
+    };
+    var show = function (i) {
+      if (i === cur) return;
+      load(i);
+      var img = hoods[i].querySelector('img');
+      var go = function () {
+        hoods[cur].classList.remove('is-on'); chips[cur].classList.remove('is-on'); chips[cur].setAttribute('aria-pressed', 'false');
+        hoods[i].classList.add('is-on'); chips[i].classList.add('is-on'); chips[i].setAttribute('aria-pressed', 'true');
+        if (name) name.textContent = chips[i].dataset.name;
+        cur = i;
+        load((i + 1) % hoods.length);
+      };
+      // 読み終わってから切り替える（途中の真っ暗を見せない）
+      if (img && !img.complete) img.addEventListener('load', go, { once: true }); else go();
+    };
+    var stop = function () { clearInterval(timer); timer = null; };
+    var start = function () {
+      if (timer || reduce.matches || hoods.length < 2) return;
+      timer = setInterval(function () { show((cur + 1) % hoods.length); }, 3200);
+    };
+    chips.forEach(function (c) {
+      c.addEventListener('click', function () { stop(); seen = true; show(+c.dataset.i); });
+      c.addEventListener('pointerenter', function () { load(+c.dataset.i); });
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (es) {
+        if (es[0].isIntersecting) { load(1); if (!seen) start(); } else stop();
+      }, { threshold: 0.35 }).observe(root);
+    }
+  });
 })();

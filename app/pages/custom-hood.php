@@ -58,15 +58,9 @@ $faq = [
 ];
 $works = cases_with_title_words(['特注', '変形', 'デザインフード', '銅板'], 6);
 // 素材サンプル（Boss 2026-11-12「多様な素材で想いの通りに希望のフードが叶う」。70種類以上あるので操作しやすく、カッコよく）
-$mat = require APP_DIR . '/data/custom-materials.php';
+$mat = materials();
 $matItems = $mat['items'];
-$matPic = function (string $src, int $w, int $h, string $alt, bool $now): string {
-    // 最初の1枚だけすぐ読む。ほかは選ばれた時（とその前後）に JS が読む＝70種類でも重くならない
-    [$jpg, $webp] = img_urls($src);
-    $a = $now ? '' : 'data-';
-    return '<picture>' . ($webp ? '<source type="image/webp" ' . $a . 'srcset="' . e($webp) . '">' : '')
-        . '<img ' . $a . 'src="' . e($jpg) . '" width="' . $w . '" height="' . $h . '" alt="' . e($alt) . '" decoding="async"' . ($now ? ' loading="lazy"' : '') . '></picture>';
-};
+$matPic = 'material_pic';
 $nn = fn(int $n): string => sprintf('%02d', $n);
 ?>
 <?php // 素材の欄へのご案内（Boss「この機能を目立たせたい」2026-11-12） ?>

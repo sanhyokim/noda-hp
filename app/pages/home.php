@@ -124,6 +124,8 @@ $marquee = [
   <?php render('service-cards'); ?>
 </section>
 
+<?php render('material-teaser', ['id' => 'home']); // 特注フードの素材サンプルへ（Boss 2026-11-12） ?>
+
 <section class="section wrap" aria-labelledby="intro-title">
   <?php render('section-head', ['label' => 'ABOUT', 'title' => '飲食店の換気・給排気を|自社一貫でトータルサポート', 'id' => 'intro-title']); ?>
   <?php // 文章は現行サイトのトップから。お悩み→専門業者へ、の順に読めるよう区画を並べ替えた（2026-10-21） ?>

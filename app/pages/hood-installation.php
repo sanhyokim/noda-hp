@@ -60,6 +60,8 @@ $strengths = [
   </div>
 </section>
 
+<?php render('material-teaser', ['id' => 'hood']); // 特注フードの素材サンプルへ（Boss 2026-11-12） ?>
+
 <section class="section wrap" aria-labelledby="s3">
   <?php render('section-head', ['label' => 'CONSULT', 'title' => 'まずはご相談ください。', 'id' => 's3']); ?>
   <div class="prose">

@@ -1059,6 +1059,40 @@ main:focus { outline: none; }
   .mat__text.is-on { animation: none; }
   .mat__chip:hover .mat__swatch { transform: none; }
 }
+/* 素材サンプルへの案内（トップや各サービスのページ。Boss「ほかのページでも紹介したい」2026-11-12） */
+.mtz { display: grid; overflow: hidden; border-radius: var(--r-sm); background: #131417; color: #EEEBE5; }
+.mtz__img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: #0b0b0c; }
+.mtz__hood { position: absolute; inset: 0; opacity: 0; transform: scale(1.05); transition: opacity 1s var(--ease), transform 2.4s var(--ease); }
+.mtz__hood.is-on { z-index: 1; opacity: 1; transform: none; }
+.mtz__hood picture, .mtz__hood img { display: block; width: 100%; height: 100%; }
+.mtz__hood img { object-fit: cover; object-position: 50% 26%; }
+.mtz__img::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; background: linear-gradient(180deg, transparent 60%, rgb(0 0 0 / .6)); }
+.mtz__tag { position: absolute; z-index: 3; top: 12px; right: 12px; padding: 5px 9px; border: 1px solid rgb(255 255 255 / .35); border-radius: var(--r-sm); font-size: 11px; line-height: 1; letter-spacing: .08em; color: #fff; background: rgb(0 0 0 / .25); }
+.mtz__name { position: absolute; z-index: 3; left: 16px; right: 16px; bottom: 14px; font-size: 13px; font-weight: 700; letter-spacing: .06em; color: #fff; text-shadow: 0 1px 4px rgb(0 0 0 / .6); }
+.mtz__name::before { content: ""; display: inline-block; width: 18px; height: 1px; margin-right: 8px; vertical-align: .3em; background: #E2B865; }
+.mtz__body { display: flex; flex-direction: column; align-items: flex-start; padding: 26px 20px 28px; }
+.mtz__en { font-family: var(--font-num); font-size: 13px; font-weight: 600; letter-spacing: .24em; line-height: 1; color: #E2B865; }
+.mtz__title { margin-top: 12px; font-size: 21px; line-height: 1.55; font-weight: 700; letter-spacing: .04em; font-feature-settings: "palt"; color: #fff; word-break: auto-phrase; }
+.mtz__title b { font-family: var(--font-num); font-size: 1.5em; letter-spacing: .01em; color: #E2B865; margin-right: 2px; }
+.mtz__lead { margin-top: 12px; font-size: 14px; line-height: 1.9; color: #C9C5BD; }
+.mtz__chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
+.mtz__chip { display: block; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; overflow: hidden; background: none; cursor: pointer; box-shadow: 0 0 0 1px rgb(255 255 255 / .18); transition: transform .25s var(--ease), box-shadow .25s; }
+.mtz__chip .media, .mtz__chip img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.mtz__chip:hover { transform: translateY(-2px); }
+.mtz__chip.is-on { box-shadow: 0 0 0 2px #131417, 0 0 0 4px #E2B865; }
+.mtz__more { display: grid; place-items: center; width: 36px; height: 36px; border: 1px dashed rgb(255 255 255 / .3); border-radius: 50%; font-family: var(--font-num); font-size: 15px; font-weight: 700; color: #F4F1EA; }
+.mtz__btn { margin-top: 22px; background: #F4F1EA; color: #131417; }
+.mtz__btn:hover { color: #131417; }
+.mtz__btn svg { color: #9A6F1E; }
+@media (min-width: 760px) {
+  .mtz { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); }
+  .mtz__img { aspect-ratio: auto; min-height: 380px; }
+  .mtz__body { justify-content: center; padding: 40px 40px 42px; }
+  .mtz__title { font-size: 24px; }
+  .mtz__chips { gap: 8px; }
+  .mtz__chip, .mtz__more { width: 42px; height: 42px; }
+}
+@media (prefers-reduced-motion: reduce) { .mtz__hood { transform: none; transition: opacity .35s; } .mtz__chip:hover { transform: none; } }
 .row__img--contain { aspect-ratio: auto; background: #000; }
 .row__img--figure { aspect-ratio: auto; background: var(--c-white); border-radius: 0; }
 .row__img--contain img { object-fit: contain; }

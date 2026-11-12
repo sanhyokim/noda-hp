@@ -67,3 +67,19 @@ function slides(array $images, int $w, int $h, string $alt = ''): string
     }
     return '<span class="slides" data-slides>' . $out . '</span>';
 }
+
+// 特注フードの素材サンプル（app/data/custom-materials.php。2026-11-12）
+function materials(): array
+{
+    static $m = null;
+    return $m ??= require APP_DIR . '/data/custom-materials.php';
+}
+
+// 素材の写真。$now が false の時は data-src にして、選ばれた時に JS が読む（70種類でも重くならない）
+function material_pic(string $src, int $w, int $h, string $alt, bool $now): string
+{
+    [$jpg, $webp] = img_urls($src);
+    $a = $now ? '' : 'data-';
+    return '<picture>' . ($webp ? '<source type="image/webp" ' . $a . 'srcset="' . e($webp) . '">' : '')
+        . '<img ' . $a . 'src="' . e($jpg) . '" width="' . $w . '" height="' . $h . '" alt="' . e($alt) . '" decoding="async"' . ($now ? ' loading="lazy"' : '') . '></picture>';
+}

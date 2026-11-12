@@ -55,6 +55,8 @@ $troubles = [
   ]]); ?>
 </section>
 
+<?php render('material-teaser', ['id' => 'new']); // 特注フードの素材サンプルへ（Boss 2026-11-12） ?>
+
 <section class="section wrap" aria-labelledby="s3">
   <?php render('section-head', ['label' => 'LEAVE IT TO US', 'title' => '私たちにお任せください', 'id' => 's3']); ?>
   <p class="prose">厨房換気扇・排煙ダクト工事に特化した専門業者「株式会社野田」は、飲食店新規開業をサポートいたします。各店舗の規模やレイアウトに合わせた機器のご提案・設置に加え、ダクトの入れ替え、メンテナンス、清掃まで一貫して対応。専門業者として培ったノウハウで、さまざまなトラブルやお悩みを解消しますので、お気軽にお問い合わせください。</p>
