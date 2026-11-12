@@ -20,7 +20,7 @@ $id = 'mtz-' . e($id ?? 'title');
     <div class="mtz__body">
       <p class="mtz__en" aria-hidden="true">MATERIAL</p>
       <h2 class="mtz__title kw" id="<?= $id ?>"><b><?= $mat['total'] ?>種類以上</b>の素材で、<wbr>想いのままのフードを。</h2>
-      <p class="mtz__lead">金・銅・黒・銀。同じ形のフードでも、素材を変えるだけでお店の印象はがらりと変わります。野田の特注フードなら、内装とコンセプトにぴったりの一枚をお選びいただけます。</p>
+      <p class="mtz__lead">金・銅・黒・銀、色や模様まで。同じ形のフードでも、素材を変えるだけでお店の印象はがらりと変わります。野田の特注フードなら、内装とコンセプトにぴったりの一枚をお選びいただけます。</p>
       <ul class="mtz__chips">
         <?php foreach ($items as $i => $m): ?>
           <li><button class="mtz__chip<?= $i === 0 ? ' is-on' : '' ?>" type="button" data-i="<?= $i ?>" data-name="<?= e(str_replace('|', ' ', $m['name'])) ?>" aria-pressed="<?= $i === 0 ? 'true' : 'false' ?>" aria-label="<?= e(str_replace('|', ' ', $m['name'])) ?>"><?= picture('assets/img/material/' . $nn($m['no']) . '-chip.jpg', 200, 200, '') ?></button></li>

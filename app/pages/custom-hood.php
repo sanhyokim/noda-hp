@@ -77,7 +77,7 @@ $nn = fn(int $n): string => sprintf('%02d', $n);
 
 <section class="mat" id="material" aria-labelledby="s9" data-mat>
   <div class="section wrap">
-    <?php render('section-head', ['label' => 'MATERIAL', 'title' => '多様な素材で、|想いのままのフードを。', 'id' => 's9', 'lead' => '金・銅・黒・銀。同じ形のフードでも、素材を変えるだけでお店の印象はがらりと変わります。' . $mat['total'] . '種類以上の素材から、内装とコンセプトにぴったりの一枚をお選びいただけます。']); ?>
+    <?php render('section-head', ['label' => 'MATERIAL', 'title' => '多様な素材で、|想いのままのフードを。', 'id' => 's9', 'lead' => '金・銅・黒・銀、色や模様まで。同じ形のフードでも、素材を変えるだけでお店の印象はがらりと変わります。' . $mat['total'] . '種類以上の素材から、内装とコンセプトにぴったりの一枚をお選びいただけます。']); ?>
     <div class="mat__stage">
       <div class="mat__view" tabindex="0" aria-roledescription="素材の見本" aria-label="素材ごとの仕上がりイメージ">
         <div class="mat__hoods">
