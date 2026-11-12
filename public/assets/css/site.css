@@ -1043,6 +1043,17 @@ main:focus { outline: none; }
   .mat__chips > li { width: auto; }
   .mat__more { aspect-ratio: 1; }
 }
+/* ページ上部から素材の欄へ（Boss「目立たせたい」2026-11-12） */
+.matjump { margin-top: 18px; }
+.matjump a { display: inline-flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 18px 8px 10px; border-radius: 999px; background: #131417; color: #F4F1EA; font-size: 14px; font-weight: 700; transition: transform .25s var(--ease), box-shadow .25s; }
+.matjump a:hover { color: #fff; transform: translateY(-2px); box-shadow: 0 8px 20px rgb(0 0 0 / .2); }
+.matjump b { font-family: var(--font-num); font-size: 19px; letter-spacing: .02em; color: #E2B865; margin-right: 2px; }
+.matjump__dots { display: flex; }
+.matjump__dots .media { display: block; width: 32px; height: 32px; border-radius: 50%; overflow: hidden; box-shadow: 0 0 0 2px #131417; }
+.matjump__dots .media + .media { margin-left: -9px; }
+.matjump__dots img { width: 100%; height: 100%; object-fit: cover; }
+.matjump svg { transform: rotate(90deg); color: #E2B865; }
+.mat { scroll-margin-top: 80px; }
 @media (prefers-reduced-motion: reduce) {
   .mat__hood, .mat__plate { transform: none; transition: opacity .35s; }
   .mat__text.is-on { animation: none; }

@@ -69,6 +69,9 @@ $matPic = function (string $src, int $w, int $h, string $alt, bool $now): string
 };
 $nn = fn(int $n): string => sprintf('%02d', $n);
 ?>
+<?php // 素材の欄へのご案内（Boss「この機能を目立たせたい」2026-11-12） ?>
+<p class="wrap matjump"><a href="#material"><span class="matjump__dots" aria-hidden="true"><?php foreach (array_slice($matItems, 0, 5) as $m): ?><?= picture('assets/img/material/' . $nn($m['no']) . '-chip.jpg', 200, 200, '') ?><?php endforeach; ?></span><span class="matjump__text"><b><?= $mat['total'] ?>種類以上</b>の素材から選べます</span><?= icon('arrow', 16) ?></a></p>
+
 <section class="section wrap" aria-labelledby="s3">
   <?php render('section-head', ['label' => 'GALLERY', 'title' => 'お客様の記憶に残る|特注フード', 'id' => 's3', 'lead' => '同じフードは二つとありません。お店ごとの空間に合わせてつくった特注フードの一部をご紹介します。']); ?>
   <ul class="hoodgal">
@@ -78,43 +81,7 @@ $nn = fn(int $n): string => sprintf('%02d', $n);
   </ul>
 </section>
 
-<section class="band" aria-labelledby="s1">
-  <div class="section wrap">
-    <?php render('section-head', ['label' => 'REQUEST', 'title' => 'こんなご要望・お悩みは|ありませんか？', 'id' => 's1']); ?>
-    <?php render('bullets', ['icon' => 'alert', 'items' => [
-        '他店にない、お客様の記憶に残るフードにしたい',
-        '銀色の既製品フードがお店の内装に合わない。見せるフードにしたい',
-        '天井の梁（はり）が邪魔をして、既製品のフードが取り付けられない',
-        '天井が低く、普通の形のフードでは頭がぶつかる・ダクトの通り道がない',
-        '焼き鳥・鶏皮・焼肉など煙と油が多く、既製品では吸いきれない',
-    ]]); ?>
-    <div class="callout u-mt">
-      <h3>ひとつでも当てはまれば、特注フードでかなえられるかもしれません。</h3>
-      <p>「既製品では無理」とあきらめる前に、私たち排煙のプロにご相談ください。</p>
-    </div>
-  </div>
-</section>
-
-<section class="section wrap" aria-labelledby="s2">
-  <?php render('section-head', ['label' => 'WHAT WE MAKE', 'title' => '野田がつくる特注フード', 'id' => 's2', 'lead' => '形・大きさ・色・素材に決まりはありません。これまでにつくってきた特注フードの一例をご紹介します。']); ?>
-  <ol class="rows">
-    <?php foreach ($types as [$t, $img, $alt, $ps]): ?>
-      <li class="row">
-        <div class="row__img"><?= picture($img, 900, 600, $alt) ?></div>
-        <div class="row__body">
-          <h3 class="row__head"><?= e($t) ?></h3>
-          <?php foreach ($ps as $p): ?><p><?= e($p) ?></p><?php endforeach; ?>
-        </div>
-      </li>
-    <?php endforeach; ?>
-  </ol>
-  <div class="callout u-mt">
-    <h3>ここにない形も、ご相談ください。</h3>
-    <p>「こんなフードはできる？」というイメージや写真があれば、それをもとに形と仕上げをご提案します。</p>
-  </div>
-</section>
-
-<section class="mat" aria-labelledby="s9" data-mat>
+<section class="mat" id="material" aria-labelledby="s9" data-mat>
   <div class="section wrap">
     <?php render('section-head', ['label' => 'MATERIAL', 'title' => '多様な素材で、|想いのままのフードを。', 'id' => 's9', 'lead' => '金・銅・黒・銀。同じ形のフードでも、素材を変えるだけでお店の印象はがらりと変わります。' . $mat['total'] . '種類以上の素材から、内装とコンセプトにぴったりの一枚をお選びいただけます。']); ?>
     <div class="mat__stage">
@@ -161,6 +128,42 @@ $nn = fn(int $n): string => sprintf('%02d', $n);
       </div>
     </div>
     <p class="mat__note">ここでご紹介しているのは一部です。ほかにも多くの素材があり、お打ち合わせで内装に合うものをご提案します。</p>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="s1">
+  <div class="section wrap">
+    <?php render('section-head', ['label' => 'REQUEST', 'title' => 'こんなご要望・お悩みは|ありませんか？', 'id' => 's1']); ?>
+    <?php render('bullets', ['icon' => 'alert', 'items' => [
+        '他店にない、お客様の記憶に残るフードにしたい',
+        '銀色の既製品フードがお店の内装に合わない。見せるフードにしたい',
+        '天井の梁（はり）が邪魔をして、既製品のフードが取り付けられない',
+        '天井が低く、普通の形のフードでは頭がぶつかる・ダクトの通り道がない',
+        '焼き鳥・鶏皮・焼肉など煙と油が多く、既製品では吸いきれない',
+    ]]); ?>
+    <div class="callout u-mt">
+      <h3>ひとつでも当てはまれば、特注フードでかなえられるかもしれません。</h3>
+      <p>「既製品では無理」とあきらめる前に、私たち排煙のプロにご相談ください。</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" aria-labelledby="s2">
+  <?php render('section-head', ['label' => 'WHAT WE MAKE', 'title' => '野田がつくる特注フード', 'id' => 's2', 'lead' => '形・大きさ・色・素材に決まりはありません。これまでにつくってきた特注フードの一例をご紹介します。']); ?>
+  <ol class="rows">
+    <?php foreach ($types as [$t, $img, $alt, $ps]): ?>
+      <li class="row">
+        <div class="row__img"><?= picture($img, 900, 600, $alt) ?></div>
+        <div class="row__body">
+          <h3 class="row__head"><?= e($t) ?></h3>
+          <?php foreach ($ps as $p): ?><p><?= e($p) ?></p><?php endforeach; ?>
+        </div>
+      </li>
+    <?php endforeach; ?>
+  </ol>
+  <div class="callout u-mt">
+    <h3>ここにない形も、ご相談ください。</h3>
+    <p>「こんなフードはできる？」というイメージや写真があれば、それをもとに形と仕上げをご提案します。</p>
   </div>
 </section>
 
