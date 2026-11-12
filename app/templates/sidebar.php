@@ -27,13 +27,21 @@
         <span class="svideo__play" aria-hidden="true"></span>
       </a>
       <a class="banner" href="<?= e(page_url('construction_examples')) ?>"><?= picture($c['image'], $c['w'], $c['h'], $c['alt']) ?></a>
-      <?php // 特注フードのページへの案内（Boss 提案 2026-11-01）。文字は画像に入れず重ねるので、途中で切れない ?>
-      <a class="banner hbanner" href="<?= e(page_url('custom-hood')) ?>">
-        <?= picture('banner-custom-hood.jpg', 520, 390, '') ?>
-        <span class="hbanner__text">
-          <span class="hbanner__en" aria-hidden="true">CUSTOM HOOD</span>
-          <span class="hbanner__title">野田の<br>特注フード</span>
-          <span class="hbanner__sub">記憶に残る一台を<?= icon('arrow', 12) ?></span>
+      <?php // 特注フードのページへの案内（Boss 提案 2026-11-01、2026-11-12 素材の切り替わりで一新）。文字は画像に入れず重ねるので、途中で切れない
+        $hbMat = materials(); $hbChips = array_slice($hbMat['teaser'] ?? [1, 2, 10, 3, 13, 7], 0, 6); ?>
+      <a class="banner hb2" href="<?= e(page_url('custom-hood')) ?>">
+        <span class="hb2__slides" aria-hidden="true">
+          <?php foreach (['01', '02', '10', '03'] as $k): ?>
+            <span class="hb2__slide"><?= material_pic('assets/img/material/side-' . $k . '.jpg', 520, 520, '', true) ?></span>
+          <?php endforeach; ?>
+        </span>
+        <span class="hb2__text">
+          <span class="hb2__en" aria-hidden="true">CUSTOM HOOD</span>
+          <span class="hb2__title">野田の特注フード</span>
+          <span class="hb2__chips" aria-hidden="true">
+            <?php foreach ($hbChips as $no): ?><span class="hb2__chip"><?= material_pic('assets/img/material/' . sprintf('%02d', $no) . '-chip.jpg', 200, 200, '', true) ?></span><?php endforeach; ?>
+          </span>
+          <span class="hb2__sub"><span><b><?= (int) ($hbMat['total'] ?? 70) ?></b>種類以上の素材から</span><?= icon('arrow', 12) ?></span>
         </span>
       </a>
     </div>
