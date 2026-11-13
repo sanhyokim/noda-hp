@@ -117,13 +117,12 @@ $nn = fn(int $n): string => sprintf('%02d', $n);
           <?php foreach ($matItems as $i => $m): ?>
             <li data-family="<?= e($m['family']) ?>"><button class="mat__chip<?= $i === 0 ? ' is-on' : '' ?>" type="button" data-i="<?= $i ?>" aria-pressed="<?= $i === 0 ? 'true' : 'false' ?>" title="<?= e(str_replace('|', ' ', $m['name'])) ?>"><span class="mat__swatch"><?= picture('assets/img/material/' . $nn($m['no']) . '-chip.jpg', 200, 200, '') ?></span><span class="mat__chipno"><?= $nn($m['no']) ?></span><span class="u-sr"><?= e(str_replace('|', ' ', $m['name'])) ?></span></button></li>
           <?php endforeach; ?>
-          <?php if ($mat['total'] > count($matItems)): // 載せていない分がある時だけ ?>
-          <li class="mat__more" aria-hidden="true"><b>+<?= $mat['total'] - count($matItems) ?></b><span>ほかにも</span></li>
-          <?php endif; ?>
+          <?php // 実際の素材はここに載せた数より多い（Boss 2026-11-13）ので、数は出さずに「ほかにも多数」 ?>
+          <li class="mat__more" aria-hidden="true"><b>+α</b><span>ほかにも多数</span></li>
         </ul>
       </div>
     </div>
-    <p class="mat__note">どれを選べばよいか迷ったら、お気軽にご相談ください。お打ち合わせで、お店の内装やコンセプトに合う素材をご提案します。</p>
+    <p class="mat__note">ここでご紹介しているのは一部です。ほかにも多くの素材があり、お打ち合わせでお店の内装やコンセプトに合うものをご提案します。</p>
   </div>
 </section>
 
