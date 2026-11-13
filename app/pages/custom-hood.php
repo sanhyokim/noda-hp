@@ -57,7 +57,7 @@ $faq = [
     ['新しく開業するお店でも頼めますか？', 'はい。図面の段階からご相談いただくと、内装や設備と合わせて無理のない形を決められます。'],
 ];
 $works = cases_with_title_words(['特注', '変形', 'デザインフード', '銅板'], 6);
-// 素材サンプル（Boss 2026-11-12「多様な素材で想いの通りに希望のフードが叶う」。70種類以上あるので操作しやすく、カッコよく）
+// 素材サンプル（Boss 2026-11-12「多様な素材で想いの通りに希望のフードが叶う」。50種類以上あるので操作しやすく、カッコよく）
 $mat = materials();
 $matItems = $mat['items'];
 $matPic = 'material_pic';
@@ -117,11 +117,13 @@ $nn = fn(int $n): string => sprintf('%02d', $n);
           <?php foreach ($matItems as $i => $m): ?>
             <li data-family="<?= e($m['family']) ?>"><button class="mat__chip<?= $i === 0 ? ' is-on' : '' ?>" type="button" data-i="<?= $i ?>" aria-pressed="<?= $i === 0 ? 'true' : 'false' ?>" title="<?= e(str_replace('|', ' ', $m['name'])) ?>"><span class="mat__swatch"><?= picture('assets/img/material/' . $nn($m['no']) . '-chip.jpg', 200, 200, '') ?></span><span class="mat__chipno"><?= $nn($m['no']) ?></span><span class="u-sr"><?= e(str_replace('|', ' ', $m['name'])) ?></span></button></li>
           <?php endforeach; ?>
-          <li class="mat__more" aria-hidden="true"><b>+<?= max(0, $mat['total'] - count($matItems)) ?></b><span>ほかにも</span></li>
+          <?php if ($mat['total'] > count($matItems)): // 載せていない分がある時だけ ?>
+          <li class="mat__more" aria-hidden="true"><b>+<?= $mat['total'] - count($matItems) ?></b><span>ほかにも</span></li>
+          <?php endif; ?>
         </ul>
       </div>
     </div>
-    <p class="mat__note">ここでご紹介しているのは一部です。ほかにも多くの素材があり、お打ち合わせで内装に合うものをご提案します。</p>
+    <p class="mat__note">どれを選べばよいか迷ったら、お気軽にご相談ください。お打ち合わせで、お店の内装やコンセプトに合う素材をご提案します。</p>
   </div>
 </section>
 

@@ -401,7 +401,7 @@
   });
 
   /* ---- 特注フードの素材サンプル：素材を選ぶとフードと素材プレートが切り替わる（2026-11-12）
-     70種類あっても重くならないよう、写真は選んだ素材とその前後だけを読む ---- */
+     50種類以上あっても重くならないよう、写真は選んだ素材とその前後だけを読む ---- */
   document.querySelectorAll('[data-mat]').forEach(function (root) {
     var hoods = root.querySelectorAll('.mat__hood');
     var plates = root.querySelectorAll('.mat__plate');
