@@ -998,7 +998,7 @@ main:focus { outline: none; }
 .mat .head .h2 { color: #fff; }
 .mat .head .h2::before { background: var(--m-gold); }
 .mat .head__lead { color: var(--m-sub); text-wrap: pretty; word-break: auto-phrase; }
-.mat__stage { display: grid; grid-template-areas: "view" "pick" "info"; gap: 18px; }
+.mat__stage { display: grid; grid-template-areas: "pick" "view" "info"; /* スマホは選ぶ→写真→説明の順（Boss 2026-11-13） */ gap: 18px; }
 .mat__view { grid-area: view; } .mat__info { grid-area: info; } .mat__pick { grid-area: pick; min-width: 0; }
 .mat__view { position: relative; overflow: hidden; aspect-ratio: 4 / 5; border-radius: var(--r-sm); background: #0b0b0c; touch-action: pan-y; user-select: none; }
 .mat__hoods, .mat__hood { position: absolute; inset: 0; margin: 0; }
