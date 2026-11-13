@@ -20,4 +20,8 @@ return [
     'check' => '<circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/>',
     'alert' => '<path d="M12 4 2.5 20h19L12 4z"/><path d="M12 10v4M12 17h.01"/>',
     'clock' => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    'chev' => '<path d="m6 9 6 6 6-6"/>',
+    'logout' => '<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M9 16l-4-4 4-4M5 12h11"/>',
+    'send' => '<path d="M4 12 20 4l-4 16-4-7-8-1z"/><path d="m12 13 8-9"/>',
+    'checkbox' => '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="m7.5 12 3 3 6-6.5"/>',
 ];

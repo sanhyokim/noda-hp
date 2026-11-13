@@ -1,17 +1,61 @@
 <?php
 render('page-head', ['label' => 'PRIVACY POLICY', 'title' => 'プライバシーポリシー', 'lead' => '株式会社野田の個人情報の取り扱いについて。']);
-// 本文は現行ページ https://duct-noda.com/privacypolicy/ の内容をそのまま移す（取得後に差し替え）。
-$articles = ['個人情報の取得と利用目的', '第三者提供', '管理', '開示・訂正・削除', 'Cookieとアクセス解析', '本ポリシーの変更'];
+// 本文は現行ページ https://duct-noda.com/privacypolicy/ の内容をそのまま移したもの（2026-10-21 取得）。
+// 窓口の電話番号だけ指示書 A-17 に従い 092-504-5502 に直している。
 ?>
 <div class="section wrap">
   <div class="policy prose">
-    <p class="notice">本文は現行サイトのページから移す準備中です（見出しのみ表示しています）。</p>
-    <?php foreach ($articles as $i => $t): ?>
-      <section class="policy__item"><h2><?= $i + 1 ?>. <?= e($t) ?></h2></section>
-    <?php endforeach; ?>
+    <p>株式会社野田（以下「当社」）は、お客様及び取引先の皆様（以下「お客様等」）の個人情報の重要性を認識し、その適切な保護のため以下のプライバシーポリシーを定め、個人情報の管理を徹底いたします。</p>
+
+    <section class="policy__item">
+      <h2>1. 個人情報の取得と利用目的</h2>
+      <p>当社は、お客様等の以下の個人情報を取得します。</p>
+      <ul>
+        <li>氏名</li>
+        <li>法人名</li>
+        <li>電話番号</li>
+        <li>メールアドレス</li>
+        <li>住所</li>
+      </ul>
+      <p>これらの個人情報は、当社サービスの提供および顧客サポートを目的として利用いたします。</p>
+    </section>
+
+    <section class="policy__item">
+      <h2>2. 個人情報の第三者提供について</h2>
+      <p>当社は、お客様等から取得した個人情報を、本人の同意を得ることなく第三者に提供することはありません。ただし、法令に基づく場合や、人命、身体、財産の保護のために必要であって、本人の同意を得ることが困難な場合を除きます。</p>
+    </section>
+
+    <section class="policy__item">
+      <h2>3. 個人情報の管理</h2>
+      <p>当社は、個人情報を管理する担当者を明確に定め、管理者のみが閲覧可能な環境で個人情報を厳重に保管いたします。適切なセキュリティ対策を実施し、個人情報の漏洩、紛失、破壊、不正アクセス等の防止に努めます。</p>
+    </section>
+
+    <section class="policy__item">
+      <h2>4. 個人情報の開示、訂正、削除</h2>
+      <p>お客様等ご本人から自己の個人情報について、開示・訂正・削除等のご要望があった場合には、速やかに対応いたします。下記のお問い合わせ窓口までご連絡ください。</p>
+    </section>
+
+    <section class="policy__item">
+      <h2>5. Cookieおよびアクセス解析ツールの利用</h2>
+      <p>当社のウェブサイトではGoogle Analyticsを使用していますが、これによりお客様等個人を特定できる情報を収集することはありません。また、LINE、Instagram、X等のSNS利用についても、個人情報との関連付けは行っておりません。</p>
+    </section>
+
+<?php $chat = function_exists('chat_enabled') && chat_enabled(); // AI 相談を使っている時だけ載せる ?>
+<?php if ($chat): ?>
+    <section class="policy__item" id="ai-chat">
+      <h2>6. AI相談（チャット）の利用</h2>
+      <p>当社のウェブサイトのAI相談（チャット）に入力された内容は、回答を作成するため、外部のAIサービス<?= chat_provider() === 'openrouter' ? '（OpenRouter社を通じて、同社が取り次ぐAIの提供会社。入力内容を学習に使わない提供会社だけを選んでいます）' : '（Anthropic社のClaude）' ?>に送信されます。また、サービスの改善とお問い合わせへの対応のため、入力内容と回答を当社で保存し、当社の担当者が確認します。お問い合わせフォーム・LINE・お電話に進まれた場合は、それまでの会話を担当者が引き継いでご対応します。AI相談の会話欄には、お名前・電話番号・住所などの個人情報を入力しないでください。なお、AI相談の「担当者から電話をもらう」に入力されたお名前・電話番号・都道府県は、AIには送信せず、折り返しのご連絡のためだけに当社の担当者が利用します。AIの回答は参考情報であり、費用・工期などの正式なご案内は当社の担当者が行います。</p>
+    </section>
+<?php endif; ?>
+
+    <section class="policy__item">
+      <h2><?= $chat ? 7 : 6 ?>. 本ポリシーの変更</h2>
+      <p>本ポリシーの内容は、法令等の変更や必要に応じて予告なく改訂される場合があります。変更後のプライバシーポリシーは、ウェブサイトへの掲載をもって効力を生じるものとします。</p>
+    </section>
+
     <section class="policy__item">
       <h2>お問い合わせ窓口</h2>
-      <p><?= e(company('name')) ?><br>〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?><br>TEL <?= e(company('tel')) ?></p>
+      <p><?= e(company('name')) ?> 個人情報保護担当窓口<br>〒<?= e(company('hq_zip')) ?> <?= e(company('hq_address')) ?><br>TEL <a href="<?= e(tel_href(company('tel'))) ?>"><?= e(company('tel')) ?></a>（<?= e(company('hours')) ?>・<?= e(company('closed')) ?>）</p>
     </section>
   </div>
 </div>

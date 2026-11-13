@@ -2,7 +2,9 @@
 /** @var array $meta  title, description, path, og_image, og_type, trail, jsonld */
 /** @var string $content */
 /** @var string $current */
-$gtm = (string)config('gtm_id', '');
+$adminBar = $meta['admin_bar'] ?? null; // 管理ページからの確認用の表示：[説明, 編集ページの URL]
+// 管理者の確認中と、試験用の場所（noindex）ではアクセス解析を数えない
+$gtm = $adminBar || site_noindex() ? '' : (string)config('gtm_id', '');
 $canonical = abs_url($meta['path'] ?? '');
 $ogImage = $meta['og_image'] ?? abs_url('assets/img/og-default.jpg');
 $trail = $meta['trail'] ?? null;
@@ -10,7 +12,11 @@ $graph = [organization_ld(), breadcrumb_ld(breadcrumb_items($trail ?? []))];
 foreach (($meta['jsonld'] ?? []) as $ld) {
     $graph[] = $ld;
 }
-$fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap';
+$fonts = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap';
+// 日本語の Web フォント（Noto Sans JP）はパソコンの幅だけで読む。スマホは端末の日本語フォント（iPhone はヒラギノ、Android は Noto Sans CJK）で表示し、
+// 100 個近いフォントの断片を読むたびに起きる組み直しをなくす（スマホの表示の速さのため）。英数字の Barlow Condensed は小さいのでどちらでも読む。
+$fontNum = 'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&display=swap';
+$fontJa = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap';
 ?><!doctype html>
 <html lang="ja">
 <head>
@@ -20,8 +26,14 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','<?= e($gtm) ?>');</script>
 <?php endif; ?>
 <title><?= e($meta['title']) ?></title>
+<?php if ($adminBar || site_noindex()): ?>
+<meta name="robots" content="noindex, nofollow">
+<?php endif; ?>
 <meta name="description" content="<?= e($meta['description']) ?>">
 <link rel="canonical" href="<?= e($canonical) ?>">
+<?php foreach (($meta['head_links'] ?? []) as $rel => $href): // 一覧のページ送り（rel="prev/next"） ?>
+<link rel="<?= e($rel) ?>" href="<?= e(rtrim((string)config('site_origin', ''), '/') . $href) ?>">
+<?php endforeach; ?>
 <meta property="og:title" content="<?= e($meta['title']) ?>">
 <meta property="og:description" content="<?= e($meta['description']) ?>">
 <meta property="og:image" content="<?= e($ogImage) ?>">
@@ -30,7 +42,7 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
 <meta property="og:site_name" content="<?= e(company('name')) ?>">
 <meta property="og:locale" content="ja_JP">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="theme-color" content="#0B4F82">
+<meta name="theme-color" content="#0A39B4">
 <?php if (image_exists('favicon.ico')): ?>
 <link rel="icon" href="<?= e(asset('img/favicon.ico')) ?>" sizes="any">
 <link rel="icon" href="<?= e(asset('img/favicon-32.png')) ?>" type="image/png" sizes="32x32">
@@ -38,9 +50,14 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
 <?php endif; ?>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="<?= e($fonts) ?>" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="<?= e($fontNum) ?>" media="print" onload="this.media='all'">
+<script>if(matchMedia('(min-width: 1024px)').matches){var l=document.createElement('link');l.rel='stylesheet';l.href=<?= json_encode($fontJa) ?>;document.head.appendChild(l)}</script>
 <noscript><link rel="stylesheet" href="<?= e($fonts) ?>"></noscript>
 <link rel="stylesheet" href="<?= e(asset('css/site.css')) ?>">
+<?php foreach (($meta['preload'] ?? []) as $pre): // 最初の画面の背景写真など、CSS から読む画像を先に取りに行く（assets/img のファイル名か、サイト内のパス） ?>
+<?php $preUrl = str_contains($pre, '/') ? url($pre) : url('assets/img/' . $pre); ?>
+<link rel="preload" as="image"<?= str_ends_with($pre, '.webp') ? ' type="image/webp"' : '' ?> href="<?= e($preUrl) ?>" fetchpriority="high"><?php /* CSS の url() と同じアドレスにする（?v= を付けると別物として2回読み込まれる） */ ?>
+<?php endforeach; ?>
 <?= json_ld($graph) ?>
 
 <script>document.documentElement.classList.add('js')</script>
@@ -50,17 +67,34 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=<?= e($gtm) ?>" height="0" width="0" style="display:none;visibility:hidden" title="Google Tag Manager"></iframe></noscript>
 <?php endif; ?>
 <a class="skip" href="#main">本文へ移動</a>
+<?php if ($adminBar): ?>
+<div class="adminbar" role="status"><span><?= e($adminBar[0]) ?></span><a href="<?= e($adminBar[1]) ?>"><?= icon('arrow', 16, 'adminbar__back') ?>編集に戻る</a></div>
+<?php endif; ?>
 
-<header class="topbar">
-  <a class="topbar__logo" href="<?= e(url()) ?>" aria-label="<?= e(company('name')) ?> ホーム"><?= picture('logo.png', 240, 78, company('name')) ?></a>
-  <a class="topbar__btn" href="<?= e(tel_href(company('tel_free'))) ?>" aria-label="電話をかける <?= e(company('tel_free')) ?>"><?= icon('phone', 22) ?></a>
-  <button class="topbar__btn topbar__menu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="メニューを開く"><?= icon('menu', 24) ?></button>
+<div class="util">
+  <div class="frame util__inner">
+    <p class="util__copy">飲食店の換気扇・排煙ダクト工事｜福岡発・全国対応の<?= e(company('name')) ?></p>
+    <p class="util__tel"><span class="util__tel-l">お電話でのご相談</span><span>受付 <?= e(company('hours')) ?>（<?= e(company('closed')) ?>）</span><a href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 15) ?><?= e(company('tel_free')) ?></a></p>
+  </div>
+</div>
+
+<header class="gh">
+  <div class="frame gh__inner">
+    <a class="gh__logo" href="<?= e(url()) ?>" aria-label="<?= e(company('name')) ?> ホーム"><?= picture('logo.png', 240, 60, company('name'), ['priority' => true]) ?></a>
+    <?php render('gnav', ['current' => $current]); ?>
+    <div class="gh__actions">
+      <a class="gh__contact" href="<?= e(page_url('contact')) ?>">お問い合わせ</a>
+      <a class="gh__sns" href="<?= e(company('line_url')) ?>" target="_blank" rel="noopener" aria-label="LINEで相談する"><img src="<?= e(asset('img/line-icon-black.png')) ?>" width="30" height="30" alt="" decoding="async"></a>
+      <a class="gh__sns gh__sns--ig" href="<?= e(company('instagram_url')) ?>" target="_blank" rel="noopener" aria-label="Instagram"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="7" fill="#111"/><rect x="7.5" y="7.5" width="15" height="15" rx="4.2" fill="none" stroke="#fff" stroke-width="1.9"/><circle cx="15" cy="15" r="3.6" fill="none" stroke="#fff" stroke-width="1.9"/><circle cx="19.4" cy="10.6" r="1.1" fill="#fff"/></svg></a>
+    </div>
+    <a class="gh__btn gh__tel" href="<?= e(tel_href(company('tel_free'))) ?>" aria-label="電話をかける <?= e(company('tel_free')) ?>"><?= icon('phone', 22) ?></a>
+    <button class="gh__btn gh__menu topbar__menu" type="button" aria-controls="sidebar" aria-expanded="false" aria-label="メニューを開く"><?= icon('menu', 24) ?><span>MENU</span></button>
+  </div>
 </header>
 
-<div class="shell">
-  <?php render('sidebar', ['current' => $current]); ?>
-  <div class="backdrop" hidden></div>
+<?= $meta['top'] ?? '' ?>
 
+<div class="frame shell">
   <div class="body">
     <main id="main" tabindex="-1">
       <?php if ($trail !== null): ?>
@@ -69,9 +103,14 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
       <?= $content ?>
       <?php render('cta', ['text' => $meta['cta_text'] ?? null]); ?>
     </main>
-    <?php render('footer'); ?>
   </div>
+  <?php render('sidebar', ['current' => $current]); ?>
+  <div class="backdrop" hidden></div>
 </div>
+
+<?php render('footer'); ?>
+
+<a class="side-tab" href="<?= e(page_url('contact')) ?>"><?= icon('chat', 26) ?><span>お問い合わせはこちら</span></a>
 
 <nav class="dock" aria-label="お問い合わせ">
   <a class="dock__tel" href="<?= e(tel_href(company('tel_free'))) ?>"><?= icon('phone', 20) ?>電話</a>
@@ -79,6 +118,10 @@ $fonts = 'https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700
   <a class="dock__mail" href="<?= e(page_url('contact')) ?>"><?= icon('mail', 20) ?>メール</a>
 </nav>
 
+<?php if (chat_enabled() && !$adminBar): ?>
+<?php render('chat', ['current' => $current ?? '']); ?>
+<script src="<?= e(asset('js/chat.js')) ?>" defer></script>
+<?php endif; ?>
 <script src="<?= e(asset('js/site.js')) ?>" defer></script>
 </body>
 </html>
